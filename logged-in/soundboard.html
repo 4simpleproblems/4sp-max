@@ -14,14 +14,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="../injector.js"></script>
-
-    <script type="module">
-        import { firebaseConfig } from '../firebase-config.js';
-        // Expose config for use by the modular script below
-        window.firebaseConfig = firebaseConfig;
-    </script>
 
     <style>
         /* --- FONT & BASE STYLING --- */
@@ -80,16 +72,40 @@
             color: #6366f1;
         }
 
-        /* Dropdown Styling */
+        /* --- FLOATING OPTIONS BUTTON STYLES --- */
+        #options-menu-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 900; /* High z-index to sit above sound buttons */
+        }
+
+        /* Update button style to look more like a Floating Action Button */
+        #options-menu-btn {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            border-color: #4f46e5;
+            background-color: #0a0a0a;
+            padding: 0.75rem 1.25rem;
+            border-radius: 18px; /* Pill shape */
+        }
+        
+        #options-menu-btn:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Dropdown Styling - Updated to open UPWARDS */
         .dropdown-menu {
             position: absolute;
-            top: 100%;
+            top: auto;        /* Disable top positioning */
+            bottom: 100%;     /* Anchor to bottom 100% (pushes it up) */
             right: 0;
-            margin-top: 0.5rem;
+            margin-bottom: 0.75rem; /* Gap between button and menu */
+            margin-top: 0;
             background: var(--menu-bg);
             border: 1px solid var(--menu-border);
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-radius: 18px; /* Pill shape */
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.4); /* Shadow adjusted for upward menu */
             z-index: 1010;
             min-width: 280px;
             padding: 0.75rem;
@@ -99,7 +115,7 @@
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
             color: var(--menu-text);
-            border-radius: 0.375rem;
+            border-radius: 8px; /* Pill shape */
             cursor: pointer;
             transition: background-color 0.15s, color 0.15s;
             display: flex;
@@ -231,7 +247,7 @@
             background-color: rgba(13, 13, 13, 0.95);
             backdrop-filter: blur(5px);
             padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
+            border-radius: 18px;
             border: 1px solid #333;
             font-size: 0.85rem;
             color: #fff;
@@ -243,7 +259,49 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-    </style>
+    
+/* INJECTED STYLES */
+:root { --bg-page: #040404; --bg-container: #000000; --border-color: #333; --text-primary: #c0c0c0; --text-light-grey: #d1d5db; --accent-color: #6366f1; --navbar-bg: #000000; --navbar-border: #1f2937; --tab-text: #9ca3af; --tab-hover-text: #ffffff; --tab-active-text: #4f46e5; --tab-active-bg: rgba(79, 70, 229, 0.1); --tab-active-border: #4f46e5; }
+@keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px) rotate(-5deg); } 50% { transform: translateX(5px) rotate(5deg); } 75% { transform: translateX(-5px) rotate(-5deg); } 100% { transform: translateX(0); } }
+.shake-anim { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+body.no-animations * { transition: none !important; animation: none !important; transform: none !important; }
+body:not(.no-animations) .btn-toolbar-style, body:not(.no-animations) .btn-lock-screen, body:not(.no-animations) .icon-btn, body:not(.no-animations) .nav-tab, body:not(.no-animations) .btn-card-action, body:not(.no-animations) .input-text-style, body:not(.no-animations) .input-lock-screen, body:not(.no-animations) .input-key-style { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
+body:not(.no-animations) .btn-toolbar-style:active, body:not(.no-animations) .btn-lock-screen:active, body:not(.no-animations) .icon-btn:active, body:not(.no-animations) .nav-tab:active, body:not(.no-animations) .btn-card-action:active { transform: scale(0.96); transition: transform 0.05s ease-out !important; }
+.btn-toolbar-style { background: #0a0a0a; border: 1px solid #333; border-radius: 14px; color: #d1d5db; padding: 0.75rem 1.25rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); }
+.btn-toolbar-style:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1); border-color: #fff; color: #ffffff; }
+.btn-toolbar-style.btn-primary-override { background-color: rgba(79, 70, 229, 0.1); border: 1px solid #4f46e5; color: #4f46e5; }
+.btn-toolbar-style.btn-primary-override:hover { background-color: rgba(79, 70, 229, 0.2); border-color: #6366f1; color: #6366f1; box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); }
+.btn-toolbar-style.btn-primary-override-danger { background-color: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; color: #dc2626; }
+.btn-toolbar-style.btn-primary-override-danger:hover { background-color: rgba(220, 38, 38, 0.2); border-color: #ef4444; color: #ef4444; box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4); }
+.btn-lock-screen { padding: 0.75rem 1.25rem; font-size: 0.875rem; font-weight: 500; border-radius: 14px; color: rgb(99 102 241); background-color: rgba(99, 102, 241, 0.1); border: 1px solid rgb(99 102 241); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); }
+.btn-lock-screen:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); background-color: rgba(99, 102, 241, 0.2); }
+.icon-btn { width: 40px; height: 40px; border-radius: 14px; border: 1px solid #4b5563; display: flex; align-items: center; justify-content: center; color: #d1d5db; cursor: pointer; background: transparent; }
+.icon-btn:hover { background-color: #374151; color: white; transform: scale(1.1); }
+.btn-card-action { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 14px; background-color: transparent; border: 1px solid transparent; color: #9ca3af; cursor: pointer; }
+.btn-card-action:hover { background-color: rgba(79, 70, 229, 0.1); color: #4f46e5; border-color: #4f46e5; transform: scale(1.15); }
+.input-text-style, .input-select-style { width: 100%; padding: 0.75rem; border: 1px solid #252525; background-color: #111111; border-radius: 14px; color: #c0c0c0; }
+.input-text-style:focus, .input-select-style:focus { border-color: #505050; outline: none; box-shadow: 0 0 0 2px rgba(80, 80, 80, 0.5); transform: scale(1.02); }
+.input-lock-screen { background-color: #111; border: 1px solid #252525; color: white; border-radius: 14px; padding: 0.75rem; text-align: center; letter-spacing: 0.2em; outline: none; }
+.input-lock-screen:focus { border-color: rgb(99 102 241); transform: scale(1.02); }
+.input-key-style { width: 4rem; padding: 0.75rem; border: 1px solid #252525; background-color: #111111; border-radius: 14px; color: #c0c0c0; font-size: 1.1rem; text-align: center; font-weight: 500; text-transform: uppercase; }
+.input-key-style:focus { border-color: #505050; outline: none; box-shadow: 0 0 0 2px rgba(80, 80, 80, 0.5); transform: scale(1.1); }
+.settings-box { border: 1px solid #333; border-radius: 24px; background-color: #000000; padding: 1.5rem; }
+.nav-tab { padding: 0.5rem 1rem; color: var(--tab-text); font-size: 0.875rem; font-weight: 400; border-radius: 12px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; border: 1px solid transparent; cursor: pointer; background: transparent; }
+.nav-tab:hover { color: var(--tab-hover-text); background-color: rgba(79, 70, 229, 0.05); border-color: var(--tab-active-border); transform: scale(1.05); }
+.nav-tab.active { color: var(--tab-active-text); border-color: var(--tab-active-border); background-color: var(--tab-active-bg); transform: scale(1.05); }
+.eagler-dropdown { position: relative; background-color: rgba(20, 20, 20, 0.98); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 14px; padding: 0.5rem; min-width: 200px; display: inline-block; }
+.eagler-dropdown-link { display: block; padding: 0.6rem 0.8rem; color: #d1d5db; text-decoration: none; border-radius: 14px; font-size: 0.9rem; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.eagler-dropdown-link:hover { background-color: rgba(255, 255, 255, 0.1); color: white; transform: translateX(4px); }
+#notification-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 1000; pointer-events: none; }
+.notification-toast { background-color: #0a0a0a; border: 1px solid #333; border-radius: 14px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
+.notification-toast.show { transform: translateX(0); opacity: 1; }
+.notification-toast.show:hover { transform: scale(1.05) translateX(-5px); background-color: #151515; border-color: #555; box-shadow: 0 8px 25px rgba(0,0,0,0.7); }
+.notification-icon { font-size: 1.1rem; }
+.notification-icon.success { color: #4ade80; }
+.notification-icon.info { color: #60a5fa; }
+.notification-icon.warning { color: #fbbf24; }
+
+</style>
     
 </head>
 <body class="min-h-screen">
@@ -256,69 +314,21 @@
         
         <header class="flex justify-between items-center p-4 border-b border-[#1a1a1a] sticky top-0 bg-[#040404] z-40">
             <h1 class="text-2xl font-bold text-white">4SP Soundboard</h1>
-            
-            <div class="flex items-center gap-2">
-                <div id="options-menu-container" class="relative">
-                    <button id="options-menu-btn" class="btn-toolbar-style btn-primary-override">
-                        <i class="fa-solid fa-sliders"></i> <span>Options</span>
-                    </button>
-
-                    <div id="options-dropdown" class="dropdown-menu hidden">
-                        <div class="dropdown-header">Playback Settings</div>
-                        
-                        <label class="dropdown-item">
-                            <span><i class="fa-solid fa-layer-group w-5"></i> Sound Overlay</span>
-                            <input type="checkbox" id="soundOverlayCheckbox" class="custom-checkbox">
-                        </label>
-
-                        <label class="dropdown-item">
-                            <span><i class="fa-solid fa-computer-mouse w-5"></i> Auto Clicker</span>
-                            <input type="checkbox" id="autoClickerCheckbox" class="custom-checkbox">
-                        </label>
-
-                        <div id="delay-settings" class="dropdown-item hidden">
-                            <span class="text-sm">Delay (ms)</span>
-                            <div class="flex gap-2">
-                                <input type="number" id="autoClickDelay" value="1000" min="0" class="custom-input">
-                                <button id="applyDelayBtn" class="btn-toolbar-style" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Set</button>
-                            </div>
-                        </div>
-
-                        <div class="dropdown-divider border-t border-[#333] my-2"></div>
-                        
-
-
-                        <div class="dropdown-divider border-t border-[#333] my-2"></div>
-                        
-                        <div id="clear-sounds-btn" class="dropdown-item text-red-500 hover:bg-red-900/20">
-                            <span><i class="fa-solid fa-volume-xmark w-5"></i> Stop All Sounds</span>
-                            <span class="text-xs text-gray-500 border border-[#333] px-1 rounded">SHIFT+C</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </header>
 
-        <main class="flex-grow p-5 md:p-8 max-w-7xl mx-auto w-full">
+        <main class="flex-grow p-5 md:p-8 max-w-7xl mx-auto w-full relative">
             
-            <div class="mb-8 p-5 rounded-2xl border border-cyan-900/30 bg-cyan-900/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div class="flex-grow">
-                    <h3 class="text-lg text-cyan-400 mb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-globe"></i> Unblockable Soundboard Available
-                    </h3>
-                    <p class="text-sm text-cyan-100/80 leading-relaxed max-w-3xl">
-                        A local soundboard file is available that uses <code class="text-cyan-300 bg-cyan-900/30 px-1 rounded">cdn.jsdelivr.net</code> to bypass the Soundboard game block on the GAMES collection. 
-                        <br>
-                        <span class="text-cyan-300/60 italic text-xs mt-1 block">
-                            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                            Note: This contains non-4SP approved sounds. Titles in this version may not accurately explain the sounds they play.
-                        </span>
-                    </p>
-                </div>
-                
-                <a href="../logged-in/third-party-soundboard.html" download="third-party-soundboard.html" class="btn-toolbar-style text-sm whitespace-nowrap shrink-0">
-                    <i class="fa-solid fa-file-arrow-down"></i> <span>Download HTML</span>
-                </a>
+            <div class="mb-8 p-5 rounded-2xl border border-cyan-900/30 bg-cyan-900/10 flex flex-col items-start gap-3">
+                <h3 class="text-lg text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-server"></i> Integrated Third-Party Soundboard
+                </h3>
+                <p class="text-sm text-cyan-100/80 leading-relaxed max-w-4xl">
+                    Since you are utilizing the downloaded client, the <strong>Third Party Soundboard</strong> is now hosted directly within this page (located at the bottom). There is no need to download separate HTML files or bypass external blocks. 
+                </p>
+                <p class="text-xs text-cyan-300/60 italic border-t border-cyan-800/30 pt-2 mt-1 w-full">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    This direct integration logic has also been applied to the Messenger.
+                </p>
             </div>
 
             <div class="mb-10">
@@ -326,22 +336,80 @@
                 <div id="normalSoundsContainer" class="sound-grid"></div>
             </div>
 
-            <div class="mb-10" id="explicitSectionWrapper">
+            <div class="mb-10" id="explicitSectionWrapper" style="display: none;">
                 <h2 class="section-header text-red-400/80 border-red-900/30">Explicit Sounds</h2>
                 <div id="explicitSoundsContainer" class="sound-grid"></div>
             </div>
+
+            <div class="mb-10" id="thirdPartySectionWrapper">
+                <h2 class="section-header text-blue-400/80 border-blue-900/30">Third Party Sounds</h2>
+                <div id="thirdPartySoundsContainer" class="sound-grid">
+                     <div class="text-gray-500 italic col-span-full text-center p-10">Loading sounds from CDN...</div>
+                </div>
+            </div>
         </main>
+
+        <div id="options-menu-container" class="relative">
+            <div id="options-dropdown" class="dropdown-menu hidden">
+                <div class="dropdown-header">Playback Settings</div>
+                
+                <label class="dropdown-item">
+                    <span><i class="fa-solid fa-layer-group w-5"></i> Sound Overlay</span>
+                    <input type="checkbox" id="soundOverlayCheckbox" class="custom-checkbox">
+                </label>
+
+                <label class="dropdown-item">
+                    <span><i class="fa-solid fa-computer-mouse w-5"></i> Auto Clicker</span>
+                    <input type="checkbox" id="autoClickerCheckbox" class="custom-checkbox">
+                </label>
+
+                <div id="delay-settings" class="dropdown-item hidden">
+                    <span class="text-sm">Delay (ms)</span>
+                    <div class="flex gap-2">
+                        <input type="number" id="autoClickDelay" value="1000" min="0" class="custom-input">
+                        <button id="applyDelayBtn" class="btn-toolbar-style" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Set</button>
+                    </div>
+                </div>
+
+                <div class="dropdown-divider border-t border-[#333] my-2"></div>
+                
+                <div id="clear-sounds-btn" class="dropdown-item text-red-500 hover:bg-red-900/20">
+                    <span><i class="fa-solid fa-volume-xmark w-5"></i> Stop All Sounds</span>
+                    <span class="text-xs text-gray-500 border border-[#333] px-1 rounded">SHIFT+C</span>
+                </div>
+            </div>
+
+            <button id="options-menu-btn" class="btn-toolbar-style btn-primary-override">
+                <i class="fa-solid fa-sliders"></i> <span>Options</span>
+            </button>
+        </div>
     </div>
 
     <div id="status-toaster"></div>
 
     <script type="module">
-        import { firebaseConfig } from '../firebase-config.js';
         
-        // Import Modular SDKs directly
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        // Import Third Party Sounds from CDN
+        import { sounds as thirdPartySounds } from 'https://cdn.jsdelivr.net/gh/genizy/soundboard@main/sounds.js';
+
+        // --- Firebase Integration ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Same config as the admin file
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZBKAckVa4IMvJGjcyndZx6Y1XD52lgro",
+            authDomain: "project-zirconium.firebaseapp.com",
+            projectId: "project-zirconium",
+            storageBucket: "project-zirconium.firebasestorage.app",
+            messagingSenderId: "1096564243475",
+            appId: "1:1096564243475:web:6d0956a70125eeea1ad3e6",
+            measurementId: "G-1D4F692C1Q"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         // --- UI & State References ---
         const loadingScreen = document.getElementById('loading-screen');
@@ -355,9 +423,13 @@
         const applyDelayBtn = document.getElementById('applyDelayBtn');
         const clearSoundsBtn = document.getElementById('clear-sounds-btn');
         const statusToaster = document.getElementById('status-toaster');
+        
+        // Sound Containers
         const normalSoundsContainer = document.getElementById('normalSoundsContainer');
         const explicitSoundsContainer = document.getElementById('explicitSoundsContainer');
+        const thirdPartySoundsContainer = document.getElementById('thirdPartySoundsContainer');
         const explicitSectionWrapper = document.getElementById('explicitSectionWrapper');
+        const thirdPartySectionWrapper = document.getElementById('thirdPartySectionWrapper');
 
         // --- Soundboard Logic State ---
         let playingAudios = [];
@@ -366,54 +438,55 @@
         let currentlyHoveredButton = null;
         let toasterTimeout = null;
 
-        // --- Firebase Initialization (Modular) ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        function initApp() {
+            // Remove loading screen and show content immediately
+            loadingScreen.style.display = 'none';
+            pageContent.classList.remove('hidden');
+            
+            // Load sounds
+            loadSoundsLocal();
+            loadThirdPartySounds();
 
-        function setupAuthAndLoad() {
-            try {
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        loadingScreen.style.display = 'none';
-                        pageContent.classList.remove('hidden');
-                        loadSoundsLocal();
-                        monitorExplicitSettings();
-                    } else {
-                        window.location.href = '../index.html'; 
-                    }
-                });
-
-
-            } catch (e) {
-                console.error("Auth Setup Error", e);
-            }
+            // Initialize Config Listener
+            initRealtimeConfig();
         }
 
-        function monitorExplicitSettings() {
-            try {
-                onSnapshot(doc(db, 'config', 'soundboard'), (docSnap) => {
-                    // Default to true if document doesn't exist or field is missing
-                    let isEnabled = true;
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data.explicitEnabled !== undefined) {
-                            isEnabled = data.explicitEnabled;
-                        }
+        // --- Firestore Realtime Listener ---
+        function initRealtimeConfig() {
+            const configRef = doc(db, 'config', 'soundboard');
+            onSnapshot(configRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    // Admin toggle logic checks "explicitEnabled". Default to true if field missing but doc exists.
+                    const isExplicitEnabled = data.explicitEnabled !== false;
+                    
+                    if (isExplicitEnabled) {
+                        explicitSectionWrapper.style.display = 'block';
+                    } else {
+                        explicitSectionWrapper.style.display = 'none';
+                        // Optional: Ensure any "explicit" sounds stop playing if they were active?
+                        // For now we just hide the section as per typical admin toggle logic
                     }
 
-                    if (explicitSectionWrapper) {
-                        if (isEnabled) {
-                            explicitSectionWrapper.style.display = 'block';
-                        } else {
-                            explicitSectionWrapper.style.display = 'none';
-                            stopAllAudios(); // Stop all sounds to be safe as per requirements
-                        }
+                    // Admin toggle logic for "thirdPartyEnabled". Default to true.
+                    const isThirdPartyEnabled = data.thirdPartyEnabled !== false;
+
+                    if (isThirdPartyEnabled) {
+                        thirdPartySectionWrapper.style.display = 'block';
+                    } else {
+                        thirdPartySectionWrapper.style.display = 'none';
                     }
-                });
-            } catch (err) {
-                console.error("Error monitoring explicit settings:", err);
-            }
+                } else {
+                    // Doc doesn't exist? Default to true.
+                    explicitSectionWrapper.style.display = 'block';
+                    thirdPartySectionWrapper.style.display = 'block';
+                }
+            }, (error) => {
+                console.warn("Config listener error:", error);
+                // Fallback to visible on error
+                explicitSectionWrapper.style.display = 'block';
+                thirdPartySectionWrapper.style.display = 'block';
+            });
         }
 
         function showStatus(message, type = 'info') {
@@ -429,28 +502,52 @@
 
         async function loadSoundsLocal() {
             try {
-                const response = await fetch('../soundboard_names.json');
+                const response = await fetch('https://cdn.jsdelivr.net/npm/4sp-sounds@latest/soundboard_names.json');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const data = await response.json();
 
-                if (data.NormalSounds) data.NormalSounds.forEach(f => createSoundButton(f, normalSoundsContainer));
-                if (data.ExplicitSounds) data.ExplicitSounds.forEach(f => createSoundButton(f, explicitSoundsContainer));
+                if (data.NormalSounds) {
+                    data.NormalSounds.forEach(f => {
+                        const name = f.replace('.mp3', '').replace(/_/g, ' ');
+                        const path = `https://cdn.jsdelivr.net/npm/4sp-sounds@latest/sounds/${f}`;
+                        createSoundButton(name, normalSoundsContainer, path);
+                    });
+                }
+                
+                if (data.ExplicitSounds) {
+                    data.ExplicitSounds.forEach(f => {
+                        const name = f.replace('.mp3', '').replace(/_/g, ' ');
+                        const path = `https://cdn.jsdelivr.net/npm/4sp-sounds@latest/sounds/${f}`;
+                        createSoundButton(name, explicitSoundsContainer, path);
+                    });
+                }
 
             } catch (error) {
                 console.error("Load Error:", error);
-                showStatus("Unable to load sounds.", "error");
+                showStatus("Unable to load local sounds.", "error");
                 normalSoundsContainer.innerHTML = `<p class="text-red-500 text-sm italic border border-red-900/50 p-2 rounded bg-red-900/10">Unable to load sounds. (Check Console)</p>`;
             }
         }
 
-        function createSoundButton(fileName, container) {
-            const soundName = fileName.replace('.mp3', '').replace(/_/g, ' ');
+        function loadThirdPartySounds() {
+            thirdPartySoundsContainer.innerHTML = '';
+            const baseUrl = "https://cdn.jsdelivr.net/gh/genizy/soundboard@main/";
+            
+            if (thirdPartySounds && Array.isArray(thirdPartySounds)) {
+                thirdPartySounds.forEach(sound => {
+                    const fullAudioUrl = baseUrl + sound.mp3;
+                    createSoundButton(sound.name, thirdPartySoundsContainer, fullAudioUrl);
+                });
+            } else {
+                thirdPartySoundsContainer.innerHTML = '<div class="text-red-500">Failed to load sounds list.</div>';
+            }
+        }
+
+        function createSoundButton(soundName, container, audioPath) {
             const btn = document.createElement('div');
             btn.className = 'sound-btn';
             btn.textContent = soundName;
-            
-            const audioPath = `../sounds/${fileName}`;
             
             btn.addEventListener('click', async () => {
                 if (!soundOverlayCheckbox.checked) stopAllAudios();
@@ -579,8 +676,51 @@
             autoClickDelayInput.value = savedDelay;
 
             if (savedAutoClick) delaySettings.classList.remove('hidden');
-            setupAuthAndLoad();
+            initApp();
         });
     </script>
+
+    <div id="notification-container"></div>
+    <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let isMuted = false; let areAnimationsEnabled = true;
+    function playClickSound() {
+        if (isMuted) return; if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
+        osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+        osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.015);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.015);
+    }
+    function playTypeSound() {
+        if (isMuted) return; if (audioCtx.state === 'suspended') audioCtx.resume();
+        const bufferSize = audioCtx.sampleRate * 0.02; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+        const noiseFilter = audioCtx.createBiquadFilter(); noiseFilter.type = 'bandpass'; noiseFilter.frequency.value = 3000 + (Math.random() * 1000); noiseFilter.Q.value = 1;
+        const noiseGain = audioCtx.createGain(); noiseGain.gain.setValueAtTime(0.04, audioCtx.currentTime); noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.01);
+        noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(audioCtx.destination);
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(150 + (Math.random() * 50), audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.03, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.02);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        noise.start(); osc.start(); noise.stop(audioCtx.currentTime + 0.02); osc.stop(audioCtx.currentTime + 0.02);
+    }
+    const notificationContainer = document.getElementById('notification-container');
+    function showNotification(message, iconClass = 'fa-solid fa-info-circle', type = 'info') {
+        if (!notificationContainer) return;
+        while (notificationContainer.children.length >= 3) notificationContainer.removeChild(notificationContainer.firstChild);
+        const toast = document.createElement('div'); toast.className = 'notification-toast';
+        toast.innerHTML = `<i class="${iconClass} notification-icon ${type}"></i><span>${message}</span>`;
+        notificationContainer.appendChild(toast);
+        requestAnimationFrame(() => { toast.classList.add('show'); playClickSound(); });
+        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => { if (toast.parentElement) toast.remove(); }, 300); }, 3000);
+    }
+    document.addEventListener('click', (e) => { const target = e.target.closest('button, .nav-tab, .zone-item, .btn-card-action, a, .icon-btn'); if (target) playClickSound(); });
+    document.addEventListener('keydown', (e) => { const target = e.target.closest('input, textarea'); if (target && !e.repeat) playTypeSound(); });
+    document.addEventListener('copy', () => { if (window.getSelection().toString().length > 0) showNotification('Copied to clipboard', 'fa-solid fa-copy', 'success'); });
+    document.addEventListener('paste', (e) => { if (e.target.closest('input, textarea')) showNotification('Pasted from clipboard', 'fa-solid fa-paste', 'info'); });
+    </script>
+
 </body>
 </html>
