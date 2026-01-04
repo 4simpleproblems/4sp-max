@@ -322,7 +322,11 @@
         connection.setTransport("/LEVIUM/libcurl/index.mjs", [{ websocket: wispUrl }]);
 
         if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => navigator.serviceWorker.register("/uv/sw.js"));
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register(__uv$config.stockSW, {
+                    scope: __uv$config.prefix
+                });
+            });
         }
 
         // --- State ---
@@ -438,7 +442,9 @@
         window.fetchSuggestions = async (query) => {
             if (!query) return [];
             try {
-                const res = await fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&type=list`);
+                const url = `https://duckduckgo.com/ac/?q=${encodeURIComponent(query)}&type=list`;
+                const proxyUrl = (window.__uv$config) ? __uv$config.prefix + __uv$config.encodeUrl(url) : url;
+                const res = await fetch(proxyUrl);
                 const data = await res.json();
                 return data[1] || [];
             } catch (e) { return []; }
