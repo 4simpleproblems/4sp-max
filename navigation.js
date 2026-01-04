@@ -288,8 +288,8 @@ let db;
                 /* UPDATED: transform-origin ensures scaling happens from top-left corner */
                 transform-origin: top left;
                 z-index: 1000;
-                background: var(--navbar-bg);
-                border-bottom: 1px solid var(--navbar-border);
+                background: var(--navbar-bg, #000000);
+                border-bottom: 1px solid var(--navbar-border, #1f2937);
                 height: 64px;
                 transition: background-color 0.3s ease, border-color 0.3s ease;
                 /* Width is handled dynamically by applyCounterZoom now */
@@ -371,7 +371,7 @@ let db;
             
             .nav-tab { 
                 flex-shrink: 0; padding: 8px 12px; color: var(--tab-text); 
-                font-size: 0.875rem; font-weight: 500; border-radius: 0.7rem; 
+                font-size: 0.875rem; font-weight: 400; border-radius: 12px; 
                 transition: all 0.2s, color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease; 
                 text-decoration: none; line-height: 1.5; display: flex; align-items: center; margin-right: 8px; 
                 border: 1px solid transparent; 
@@ -936,42 +936,27 @@ let db;
             } catch (e) { savedTheme = null; }
             window.applyTheme(savedTheme || DEFAULT_THEME); 
 
-            if (currentScrollLeft > 0) {
-                const savedScroll = currentScrollLeft;
-                requestAnimationFrame(() => {
-                    if (tabContainer) tabContainer.scrollLeft = savedScroll;
-                    currentScrollLeft = 0; 
-                    requestAnimationFrame(() => {
-                        updateScrollGilders();
-                    });
-                });
-            } else if (!hasScrolledToActiveTab) { 
+            // Initial check
+            setTimeout(() => {
+                updateScrollGilders();
+                
+                // Ensure Active Tab Visibility (Scroll if under gradient)
                 const activeTab = document.querySelector('.nav-tab.active');
                 if (activeTab && tabContainer) {
-                    const centerOffset = (tabContainer.offsetWidth - activeTab.offsetWidth) / 2;
-                    const idealCenterScroll = activeTab.offsetLeft - centerOffset;
-                    const maxScroll = tabContainer.scrollWidth - tabContainer.offsetWidth;
-                    const extraRoomOnRight = maxScroll - idealCenterScroll;
-                    let scrollTarget;
+                    const containerRect = tabContainer.getBoundingClientRect();
+                    const tabRect = activeTab.getBoundingClientRect();
+                    const gradientWidth = 70; // Gradient width
 
-                    if (idealCenterScroll > 0 && extraRoomOnRight < centerOffset) {
-                        scrollTarget = maxScroll + 50;
-                    } else {
-                        scrollTarget = Math.max(0, idealCenterScroll);
+                    // Check Left Edge
+                    if (tabRect.left < containerRect.left + gradientWidth) {
+                        tabContainer.scrollBy({ left: tabRect.left - containerRect.left - gradientWidth - 20, behavior: 'smooth' });
                     }
-                    requestAnimationFrame(() => {
-                        tabContainer.scrollLeft = scrollTarget;
-                        requestAnimationFrame(() => {
-                            updateScrollGilders();
-                        });
-                    });
-                    hasScrolledToActiveTab = true; 
-                } else if (tabContainer) {
-                    requestAnimationFrame(() => {
-                        updateScrollGilders();
-                    });
+                    // Check Right Edge
+                    else if (tabRect.right > containerRect.right - gradientWidth) {
+                         tabContainer.scrollBy({ left: tabRect.right - containerRect.right + gradientWidth + 20, behavior: 'smooth' });
+                    }
                 }
-            }
+            }, 50);
             
             checkMarquees();
         };

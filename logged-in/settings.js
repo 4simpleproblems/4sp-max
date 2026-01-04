@@ -1017,14 +1017,26 @@
                         </p>
                         
                         <div class="flex flex-col gap-4">
-                            <!-- Mode Selection Dropdown -->
-                            <div>
-                                <label for="pfpModeSelect" class="block text-gray-400 text-sm font-light mb-2">Display Mode</label>
-                                <select id="pfpModeSelect" class="input-select-style">
-                                    <option value="google">Use Google Profile Picture</option>
-                                    <option value="mibi">Use Mibi Avatar</option>
-                                    <option value="custom">Upload Custom Image</option>
-                                </select>
+                            <!-- Mode Selection Buttons -->
+                            <div class="flex gap-4 mb-4 border-b border-[#333] pb-4">
+                                <button class="pfp-mode-btn active btn-toolbar-style" data-mode="google">Google PFP</button>
+                                <button class="pfp-mode-btn btn-toolbar-style" data-mode="letter">Letter Avatar</button>
+                                <button class="pfp-mode-btn btn-toolbar-style" data-mode="mibi">Mibi Avatar</button>
+                                <button class="pfp-mode-btn btn-toolbar-style" data-mode="upload">Upload Image</button>
+                            </div>
+
+                            <!-- Letter Avatar Options -->
+                            <div id="pfpLetterSettings" class="hidden flex flex-col gap-4 mt-2">
+                                <label class="block text-gray-400 text-xs mb-1 font-light">Custom Text (Max 3)</label>
+                                <div class="flex gap-4 items-center mb-4">
+                                    <input type="text" id="pfp-custom-text" maxlength="3" class="input-text-style w-24 text-center uppercase" placeholder="A">
+                                    <p class="text-xs text-gray-500">Leave empty to use username initial.</p>
+                                </div>
+                                
+                                <label class="block text-gray-400 text-xs mb-2 font-light">Background Color</label>
+                                <div class="flex flex-wrap gap-2 mb-6" id="pfp-color-grid"></div>
+                                
+                                <button id="save-letter-pfp-btn" class="btn-toolbar-style btn-primary-override w-full justify-center">Set Letter Avatar</button>
                             </div>
 
                             <!-- Mibi Avatar Settings (Hidden by default) -->
@@ -1637,6 +1649,13 @@
             offsetY: 0
         };
         
+        const letterColors = [
+            'EF4444', 'F97316', 'FDBA74', 'EAB308', 'FDE047',
+            '22C55E', '86EFAC', '06B6D4', '67E8F9', '3B82F6',
+            '93C5FD', '6366F1', 'A5B4FC', 'A855F7', 'D8B4FE',
+            'EC4899', 'F9A8D4', '6B7280', '000000'
+        ];
+
         // Constants for Assets
         const MIBI_ASSETS = {
             eyes: ['default-eyes.png', 'glasses.png', 'odd.png'],
@@ -3548,24 +3567,20 @@ const performAccountDeletion = async (credential) => {
                 } catch (e) { console.error("Error fetching PFP settings:", e); }
 
                 const currentPfpType = userData.pfpType || 'google';
-                const pfpModeSelect = document.getElementById('pfpModeSelect');
-                const mibiSettings = document.getElementById('pfpMibiSettings'); // Renamed
+                const pfpModeBtns = document.querySelectorAll('.pfp-mode-btn');
+                const pfpLetterSettings = document.getElementById('pfpLetterSettings');
+                const mibiSettings = document.getElementById('pfpMibiSettings');
                 const customSettings = document.getElementById('pfpCustomSettings');
                 const previewImg = document.getElementById('customPfpPreview');
                 const previewPlaceholder = document.getElementById('customPfpPlaceholder');
-                const macMenu = document.getElementById('mibi-mac-menu'); // Reference to the MAC menu overlay
-                const openMacMenuBtn = document.getElementById('open-mac-menu-btn'); // New button
+                const macMenu = document.getElementById('mibi-mac-menu'); 
+                const openMacMenuBtn = document.getElementById('open-mac-menu-btn'); 
 
                 // --- CONDITIONAL GOOGLE OPTION ---
                 const hasGoogle = currentUser.providerData.some(p => p.providerId === 'google.com');
                 if (!hasGoogle) {
-                    const googleOption = Array.from(pfpModeSelect.options).find(opt => opt.value === 'google');
-                    if (googleOption) {
-                        googleOption.remove();
-                    }
-                    if (currentPfpType === 'google') {
-                        // Just let the UI default to the first available option or handle visually.
-                    }
+                    const googleBtn = Array.from(pfpModeBtns).find(btn => btn.dataset.mode === 'google');
+                    if (googleBtn) googleBtn.remove();
                 }
 
                 // Function to dispatch instant update event
@@ -3573,53 +3588,105 @@ const performAccountDeletion = async (credential) => {
                     window.dispatchEvent(new CustomEvent('pfp-updated', { 
                         detail: { 
                             pfpType: userData.pfpType, 
-                            customPfp: userData.customPfp
+                            customPfp: userData.customPfp,
+                            pfpLetterBg: userData.pfpLetterBg,
+                            letterAvatarText: userData.letterAvatarText
                         }
                     }));
                 };
 
-                // Function to update UI visibility and the avatar preview
+                // Function to update UI visibility
                 const updatePfpUi = (type) => {
+                    pfpModeBtns.forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.mode === type);
+                        btn.classList.toggle('bg-[#222]', btn.dataset.mode === type);
+                    });
+                    
+                    pfpLetterSettings.classList.toggle('hidden', type !== 'letter');
                     mibiSettings.classList.toggle('hidden', type !== 'mibi');
                     customSettings.classList.toggle('hidden', type !== 'custom');
-                    // Hide the MAC menu overlay unless explicitly opened
-                    macMenu.classList.add('hidden');
-
-                    // Update avatar preview based on type
+                    
+                    // Update preview if possible
                     if (type === 'custom' && userData.customPfp) {
-                        customPfpPreview.src = userData.customPfp;
-                        customPfpPreview.style.display = 'block';
-                        customPfpPlaceholder.style.display = 'none';
+                        previewImg.src = userData.customPfp;
+                        previewImg.style.display = 'block';
+                        previewPlaceholder.style.display = 'none';
+                    } else if (type === 'letter') {
+                        previewImg.style.display = 'none';
+                        previewPlaceholder.style.display = 'flex';
+                        const text = userData.letterAvatarText || (userData.username || 'U').charAt(0).toUpperCase();
+                        previewPlaceholder.innerText = text;
+                        previewPlaceholder.style.backgroundColor = userData.pfpLetterBg || '#3B82F6';
+                        previewPlaceholder.style.color = '#FFFFFF';
                     } else {
-                        // Default/Google or no custom/mibi set
-                        customPfpPreview.style.display = 'none';
-                        customPfpPlaceholder.style.display = 'flex';
-                        customPfpPlaceholder.className = `w-full h-full flex items-center justify-center text-gray-600`;
-                        customPfpPlaceholder.innerHTML = '<i class="fa-solid fa-user"></i>'; // Reset to default icon
-                        customPfpPlaceholder.style.background = ''; // Clear custom background
-                        customPfpPlaceholder.style.color = ''; // Clear custom color
+                        previewImg.style.display = 'none';
+                        previewPlaceholder.style.display = 'flex';
+                        previewPlaceholder.innerHTML = '<i class="fa-solid fa-user"></i>';
+                        previewPlaceholder.style.background = '';
                     }
                 };
 
-                // Init Custom Dropdown
-                const pfpDropdown = setupCustomDropdown(pfpModeSelect, async (type) => {
-                    updatePfpUi(type);
-                    // Auto-save type change
-                    try {
-                        await updateDoc(userDocRef, { pfpType: type });
-                        userData.pfpType = type; // Update local state
-                        triggerNavbarUpdate();
-                        showMessage(pfpMessage, 'Preference saved!', 'success');
-                    } catch (e) {
-                        showMessage(pfpMessage, 'Error saving preference.', 'error');
-                    }
+                // Mode Button Clicks
+                pfpModeBtns.forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const type = btn.dataset.mode;
+                        updatePfpUi(type);
+                        try {
+                            await updateDoc(userDocRef, { pfpType: type });
+                            userData.pfpType = type;
+                            triggerNavbarUpdate();
+                            showMessage(pfpMessage, 'Preference saved!', 'success');
+                        } catch (e) { showMessage(pfpMessage, 'Error saving preference.', 'error'); }
+                    });
                 });
 
-                if (!pfpDropdown) { // Defensive check
-                    console.error("pfpDropdown could not be initialized.");
-                    return; // Exit if dropdown failed to initialize
-                }
+                // Initial UI state
+                updatePfpUi(currentPfpType);
+
+                // --- Letter Avatar Logic ---
+                const pfpCustomText = document.getElementById('pfp-custom-text');
+                const pfpColorGrid = document.getElementById('pfp-color-grid');
+                const saveLetterBtn = document.getElementById('save-letter-pfp-btn');
+                let selectedLetterColor = userData.pfpLetterBg || '#3B82F6';
+
+                if (pfpCustomText) pfpCustomText.value = userData.letterAvatarText || "";
                 
+                if (pfpColorGrid) {
+                    pfpColorGrid.innerHTML = '';
+                    letterColors.forEach(color => {
+                        const d = document.createElement('div');
+                        d.className = 'w-8 h-8 rounded-lg cursor-pointer border-2 transition hover:scale-110 ' + (selectedLetterColor === '#' + color ? 'border-white' : 'border-transparent');
+                        d.style.backgroundColor = '#' + color;
+                        d.onclick = () => {
+                            selectedLetterColor = '#' + color;
+                            pfpColorGrid.querySelectorAll('div').forEach(el => el.classList.replace('border-white', 'border-transparent'));
+                            d.classList.replace('border-transparent', 'border-white');
+                            // Update live preview in settings
+                            previewPlaceholder.style.backgroundColor = selectedLetterColor;
+                        };
+                        pfpColorGrid.appendChild(d);
+                    });
+                }
+
+                if (saveLetterBtn) {
+                    saveLetterBtn.onclick = async () => {
+                        const text = pfpCustomText.value.trim().toUpperCase();
+                        showMessage(pfpMessage, 'Saving...', 'warning');
+                        try {
+                            await updateDoc(userDocRef, {
+                                pfpType: 'letter',
+                                pfpLetterBg: selectedLetterColor,
+                                letterAvatarText: text
+                            });
+                            userData.pfpType = 'letter';
+                            userData.pfpLetterBg = selectedLetterColor;
+                            userData.letterAvatarText = text;
+                            triggerNavbarUpdate();
+                            showMessage(pfpMessage, 'Letter avatar saved!', 'success');
+                        } catch (e) { showMessage(pfpMessage, 'Error saving letter avatar.', 'error'); }
+                    };
+                }
+
                 // Add event listener for the Open Mibi Avatar Creator button
                 if (openMacMenuBtn) {
                     openMacMenuBtn.addEventListener('click', () => {
@@ -3629,13 +3696,6 @@ const performAccountDeletion = async (credential) => {
                     });
                 }
 
-                // Set initial display based on saved settings
-                pfpDropdown.setValue(currentPfpType);
-                if (currentPfpType === 'custom') {
-                    customSettings.classList.remove('hidden');
-                } else if (currentPfpType === 'mibi') {
-                    mibiSettings.classList.remove('hidden'); // Ensure the container div for Mibi settings is visible
-                }
                 const uploadBtn = document.getElementById('uploadPfpBtn');
                 const fileInput = document.getElementById('pfpFileInput');
                 const cropperModal = document.getElementById('cropperModal');
@@ -3650,7 +3710,7 @@ const performAccountDeletion = async (credential) => {
                     previewPlaceholder.style.display = 'none';
                 }
 
-                uploadBtn.addEventListener('click', () => fileInput.click());
+                if (uploadBtn) uploadBtn.addEventListener('click', () => fileInput.click());
 
                 let cropperImage = null;
                 let cropState = { x: 0, y: 0, radius: 100 };
@@ -3738,8 +3798,6 @@ const performAccountDeletion = async (credential) => {
                         let newY = cropState.y + dy;
                         
                         // Constraint: Circle must stay within canvas
-                        // x - radius >= 0  => x >= radius
-                        // x + radius <= w  => x <= w - radius
                         const r = cropState.radius;
                         const w = cropperCanvas.width;
                         const h = cropperCanvas.height;
@@ -3761,28 +3819,16 @@ const performAccountDeletion = async (credential) => {
                     e.preventDefault();
                     const delta = e.deltaY > 0 ? -5 : 5;
                     let newRadius = cropState.radius + delta;
-                    
                     const w = cropperCanvas.width;
                     const h = cropperCanvas.height;
-                    
-                    // 1. Absolute Max Radius constraint (half of smallest dimension)
                     const maxPossibleRadius = Math.min(w, h) / 2;
-                    
-                    // Clamp requested radius to valid range [20, maxPossibleRadius]
                     newRadius = Math.max(20, Math.min(newRadius, maxPossibleRadius));
-                    
-                    // 2. Calculate required bounds for center (x, y) given newRadius
-                    // The center must be at least newRadius away from any edge.
                     const minX = newRadius;
                     const maxX = w - newRadius;
                     const minY = newRadius;
                     const maxY = h - newRadius;
-                    
-                    // 3. Clamp current center to these new valid bounds
-                    // This effectively "pushes" the circle inwards if it was too close to the edge for the new size
                     cropState.x = Math.max(minX, Math.min(cropState.x, maxX));
                     cropState.y = Math.max(minY, Math.min(cropState.y, maxY));
-                    
                     cropState.radius = newRadius;
                     requestAnimationFrame(drawCropper);
                 };
@@ -3793,74 +3839,31 @@ const performAccountDeletion = async (credential) => {
                 cropperCanvas.addEventListener('mouseleave', handleEnd);
                 cropperCanvas.addEventListener('wheel', handleScroll);
                 
-                // Touch support
-                cropperCanvas.addEventListener('touchstart', e => {
-                    e.preventDefault();
-                    const rect = cropperCanvas.getBoundingClientRect();
-                    const touch = e.touches[0];
-                    // Account for CSS scaling if canvas is displayed smaller than actual size
-                    // offsetX = (clientX - left) * (canvas.width / clientWidth)
-                    const scaleX = cropperCanvas.width / rect.width;
-                    const scaleY = cropperCanvas.height / rect.height;
-                    handleStart((touch.clientX - rect.left) * scaleX, (touch.clientY - rect.top) * scaleY);
-                });
-                cropperCanvas.addEventListener('touchmove', e => {
-                    e.preventDefault();
-                    const rect = cropperCanvas.getBoundingClientRect();
-                    const touch = e.touches[0];
-                    const scaleX = cropperCanvas.width / rect.width;
-                    const scaleY = cropperCanvas.height / rect.height;
-                    handleMove((touch.clientX - rect.left) * scaleX, (touch.clientY - rect.top) * scaleY);
-                });
-                cropperCanvas.addEventListener('touchend', handleEnd);
-
                 cancelCropBtn.addEventListener('click', () => {
                     cropperModal.style.display = 'none';
-                    fileInput.value = ''; // Reset
+                    fileInput.value = ''; 
                 });
 
                 submitCropBtn.addEventListener('click', async () => {
-                    // Create final cropped image
                     const tempCanvas = document.createElement('canvas');
                     const size = 128; // Output size
                     tempCanvas.width = size;
                     tempCanvas.height = size;
                     const tCtx = tempCanvas.getContext('2d');
-                    
-                    // Mapping back to original image
-                    // Canvas was scaled to fixedHeight (400).
-                    // scale = 400 / image.height
-                    // originalX = cropState.x / scale
                     const scale = cropperCanvas.height / cropperImage.height;
-                    
                     const sourceX = (cropState.x - cropState.radius) / scale;
                     const sourceY = (cropState.y - cropState.radius) / scale;
                     const sourceSize = (cropState.radius * 2) / scale;
-                    
                     tCtx.drawImage(cropperImage, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
-                    
                     const base64 = tempCanvas.toDataURL('image/jpeg', 0.8);
-                    
-                    // Save to Firestore
                     try {
                         submitCropBtn.disabled = true;
                         submitCropBtn.textContent = "Saving...";
-                        await updateDoc(userDocRef, { 
-                            customPfp: base64,
-                            pfpType: 'custom'
-                        });
-                        
+                        await updateDoc(userDocRef, { customPfp: base64, pfpType: 'custom' });
                         userData.customPfp = base64;
                         userData.pfpType = 'custom';
                         triggerNavbarUpdate();
-                        
-                        // Update UI
-                        pfpDropdown.setValue('custom'); // Use custom dropdown method
                         updatePfpUi('custom');
-                        previewImg.src = base64;
-                        previewImg.style.display = 'block';
-                        previewPlaceholder.style.display = 'none';
-                        
                         cropperModal.style.display = 'none';
                         showMessage(pfpMessage, 'Profile picture updated!', 'success');
                     } catch (e) {

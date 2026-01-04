@@ -3,42 +3,769 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4SP - LOCAL CLIENT</title>
-    <base href="https://cdn.jsdelivr.net/gh/v5-4simpleproblems/v5@main/logged-in/">
+    <title>4SP - VERSION 5 CLIENT</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
+
+    <base href="./logged-in/">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
+
     <style>
-        body { background-color: #040404; color: #c0c0c0; font-family: sans-serif; height: 100vh; margin: 0; display: flex; flex-direction: column; }
-        .center-box { margin: auto; padding: 2rem; background: #0d0d0d; border: 1px solid #333; border-radius: 1rem; max-width: 400px; width: 90%; text-align: center; }
-        .input-style { width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: #111; border: 1px solid #333; color: white; border-radius: 0.5rem; text-align: center; letter-spacing: 2px; }
-        .btn-style { background: #4f46e5; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: bold; cursor: pointer; border: none; width: 100%; }
-        .btn-style:hover { background: #4338ca; }
-        .error-msg { color: #ef4444; margin-top: 1rem; font-size: 0.875rem; }
-        #app-frame { width: 100%; height: 100%; border: none; display: none; flex-grow: 1; }
-        .hidden { display: none !important; }
-        #loading-text { color: #888; margin-top: 1rem; }
+    body { 
+        background-color: #040404; 
+        color: #c0c0c0; 
+        font-family: 'Geist', sans-serif; 
+        height: 100vh; 
+        margin: 0; 
+        display: flex; 
+        flex-direction: column; 
+        font-weight: 300;
+    }
+    
+    h1, h2, h3, .font-bold, .font-semibold, strong, b, .tracking-widest {
+        font-weight: 400 !important;
+    }
+
+    #app-frame { width: 100%; height: 100%; border: none; display: none; flex-grow: 1; }
+    .hidden { display: none !important; }
+
+    /* --- Navbar Styles --- */
+    #navbar-container {
+        background: var(--navbar-bg, #000000);
+        border-bottom: 1px solid var(--navbar-border, #1f2937);
+        height: 64px;
+        width: 100%;
+        display: none; /* Hidden until unlocked */
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        box-sizing: border-box;
+        flex-shrink: 0;
+        z-index: 60; 
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        position: relative; 
+        overflow: visible; 
+    }
+
+    /* --- FIREWORKS CONTAINER --- */
+    #fireworks-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* Let clicks pass through */
+        z-index: 1; /* Sit above background */
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        overflow: hidden; 
+    }
+    
+    /* Ensure navbar content sits ABOVE the fireworks */
+    #navbar-container > *:not(#fireworks-container) {
+        position: relative;
+        z-index: 10;
+    }
+
+    /* --- FIXED OVERLAY LOGIC --- */
+    body.nav-overlay-mode #navbar-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: var(--navbar-bg, rgba(0, 0, 0, 0.6)); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--navbar-border, rgba(255, 255, 255, 0.08));
+    }
+
+    body.nav-overlay-mode #app-frame {
+        height: 100vh; 
+        margin-top: 0; 
+    }
+
+    .navbar-logo { height: 40px; width: auto; transition: filter 0.3s ease; }
+    
+    /* --- GLIDE / SCROLL STYLES --- */
+    .tab-wrapper { 
+        flex-grow: 1; 
+        display: flex; 
+        align-items: center; 
+        position: relative; 
+        min-width: 0; 
+        margin: 0 1rem; 
+        justify-content: center; 
+        overflow: hidden; 
+    }
+
+    .tab-scroll-container { 
+        display: flex; 
+        align-items: center; 
+        gap: 0.5rem; 
+        overflow-x: auto; 
+        scrollbar-width: none; 
+        white-space: nowrap; 
+        max-width: 100%;
+        scroll-behavior: smooth; 
+        padding-left: 20px;      
+        padding-right: 20px;
+        padding-block: 10px;
+    }
+    .tab-scroll-container::-webkit-scrollbar { display: none; }
+
+    /* Glide Buttons */
+    .scroll-glide-button {
+        position: absolute; 
+        top: 0; 
+        height: 100%; 
+        width: 60px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        color: var(--glide-btn-color, #ffffff); 
+        font-size: 1rem; 
+        cursor: pointer; 
+        opacity: 1; 
+        transition: opacity 0.3s, color 0.3s ease, background-color 0.3s ease; 
+        z-index: 55; 
+        pointer-events: auto;
+        background: transparent;
+        border: none;
+    }
+
+    #glide-left { 
+        left: 0; 
+        background-color: var(--navbar-bg, #000000);
+        -webkit-mask-image: linear-gradient(to right, black 30%, transparent);
+        mask-image: linear-gradient(to right, black 30%, transparent);
+        justify-content: flex-start; 
+        padding-left: 8px; 
+    }
+    #glide-right { 
+        right: 0; 
+        background-color: var(--navbar-bg, #000000);
+        -webkit-mask-image: linear-gradient(to left, black 30%, transparent);
+        mask-image: linear-gradient(to left, black 30%, transparent);
+        justify-content: flex-end; 
+        padding-right: 8px; 
+    }
+    
+    .scroll-glide-button.hidden { opacity: 0 !important; pointer-events: none !important; }
+
+    .nav-tab { 
+        padding: 0.5rem 1rem; 
+        color: var(--tab-text, #9ca3af); 
+        font-size: 0.875rem; font-weight: 400; 
+        border-radius: 12px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+        border: 1px solid transparent; transition: all 0.2s; cursor: pointer;
+        flex-shrink: 0; 
+        position: relative;
+    }
+    .nav-tab:hover { 
+        color: var(--tab-hover-text, #ffffff); 
+        background-color: var(--tab-hover-bg, rgba(79, 70, 229, 0.05));
+        border-color: var(--tab-active-border, #4f46e5);
+        transform: translateY(-1px);
+        z-index: 50; 
+    }
+    .nav-tab.active { 
+        color: var(--tab-active-text, #4f46e5); 
+        border-color: var(--tab-active-border, #4f46e5); 
+        background-color: var(--tab-active-bg, rgba(79, 70, 229, 0.1)); 
+    }
+    .nav-tab.active:hover {
+        color: var(--tab-active-hover-text, #6366f1);
+        border-color: var(--tab-active-hover-border, #6366f1);
+        background-color: var(--tab-active-hover-bg, rgba(79, 70, 229, 0.15));
+    }
+        
+    .auth-controls-wrapper { display: flex; align-items: center; gap: 1rem; position: relative; }
+    
+    .icon-btn {
+        width: 40px; height: 40px; border-radius: 50%; border: 1px solid #4b5563; 
+        display: flex; align-items: center; justify-content: center; color: #d1d5db; 
+        cursor: pointer; background: transparent; transition: background 0.2s; position: relative;
+    }
+    .icon-btn:hover { 
+        background-color: #374151; color: white;
+        z-index: 50;
+    }
+
+    #auth-btn, #auth-btn:hover, #auth-btn:active {
+        transform: none !important;
+        transition: none !important;
+        background-color: transparent !important;
+        z-index: 65 !important;
+        cursor: pointer !important;
+    }
+
+    /* --- Auth Menu & Settings (Updated for dynamic theming) --- */
+    .auth-menu {
+        position: absolute; 
+        right: 0; 
+        top: 55px; 
+        width: 16rem;
+        background: var(--menu-bg, #000); 
+        border: 1px solid var(--menu-border, #333); 
+        border-radius: 1.5rem;
+        padding: 0.75rem; 
+        display: none; 
+        flex-direction: column; 
+        gap: 0.5rem; 
+        z-index: 70;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        transform-origin: top right;
+    }
+    
+    @keyframes menu-pop-in {
+        0% { opacity: 0; transform: translateY(-10px) scale(0.95); }
+        70% { transform: translateY(2px) scale(1.01); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .auth-menu.open { 
+        display: flex; 
+        animation: menu-pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    
+    .auth-menu-item {
+        display: flex; 
+        align-items: center; 
+        gap: 0.75rem; 
+        padding: 0.75rem 1rem;
+        /* UPDATED: Uses variables for dynamic theme support */
+        color: var(--menu-item-text, #d1d5db); 
+        background: var(--menu-item-bg, #0a0a0a);
+        border: 1px solid var(--menu-item-border, #333);
+        border-radius: 1rem;
+        text-decoration: none; 
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+    }
+    
+    .auth-menu-item:hover { 
+        /* UPDATED: Uses variables for dynamic theme support */
+        background-color: var(--menu-item-hover-bg, #000); 
+        border-color: var(--menu-item-hover-border, #fff); 
+        color: var(--menu-item-hover-text, #fff);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 5px 15px rgba(255,255,255,0.05);
+    }
+
+    .auth-menu-item:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .auth-header { 
+        padding: 0.5rem 1rem; 
+        border-bottom: 1px solid var(--menu-divider, #333); 
+        margin-bottom: 0.25rem; 
+    }
+    .auth-username { color: var(--menu-username-text, white); font-weight: 400; font-size: 0.9rem; }
+    .auth-email { color: var(--menu-email-text, #9ca3af); font-size: 0.75rem; }
+
+    #settings-overlay {
+        position: fixed; bottom: 0; left: 0; right: 0; top: 64px;
+        background: #040404; z-index: 50; display: flex; flex-direction: column;
+    }
+    
+    #settings-container { display: flex; flex-grow: 1; padding: 20px; overflow: hidden; }
+
+    #settings-sidebar {
+        width: 250px; padding-right: 20px; flex-shrink: 0;
+        display: flex; flex-direction: column; gap: 10px; overflow-y: auto;
+    }
+
+    #settings-main-view {
+        flex-grow: 1; padding: 20px; background-color: #0d0d0d;
+        border: 1px solid #1a1a1a; border-radius: 0.75rem;
+        overflow-y: auto; overflow-x: hidden;
+    }
+
+    .btn-toolbar-style {
+        background: #000000; border: 1px solid #333; border-radius: 0.75rem;
+        color: #d1d5db; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer;
+        transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+        position: relative;
+    }
+    .btn-toolbar-style:hover {
+        background-color: #000000; border-color: #fff; color: #ffffff;
+        z-index: 50;
+    }
+    
+    .btn-toolbar-style.btn-primary-override {
+        justify-content: center; background-color: rgba(79, 70, 229, 0.1);
+        border: 1px solid #4f46e5; color: #4f46e5;
+    }
+    .btn-toolbar-style.btn-primary-override:hover {
+        background-color: rgba(79, 70, 229, 0.15); border-color: #6366f1; color: #6366f1;
+    }
+
+    .btn-toolbar-style.btn-primary-override-danger {
+        justify-content: center; background-color: rgba(220, 38, 38, 0.1);
+        border: 1px solid #dc2626; color: #dc2626;
+    }
+    .btn-toolbar-style.btn-primary-override-danger:hover {
+        background-color: rgba(220, 38, 38, 0.15); border-color: #ef4444; color: #ef4444;
+    }
+
+    .settings-tab { width: 100%; justify-content: flex-start; }
+    .settings-tab.active {
+        background-color: rgba(79, 70, 229, 0.1); border: 1px solid #4f46e5; color: #4f46e5;
+    }
+    .settings-tab.active:hover {
+        background-color: rgba(79, 70, 229, 0.15); border-color: #6366f1; color: #6366f1;
+    }
+
+    /* --- DISABLE ANIMATIONS FOR SETTINGS TABS --- */
+    .settings-tab, .settings-tab:hover, .settings-tab:active {
+        transition: none !important;
+        transform: none !important;
+        animation: none !important;
+    }
+
+    .settings-box { 
+        border: 1px solid #333; border-radius: 1rem; 
+        background-color: #000000; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    
+    .input-text-style, .input-select-style {
+        width: 100%; padding: 0.75rem; border: 1px solid #252525; 
+        background-color: #111111; border-radius: 0.5rem; color: #c0c0c0; transition: all 0.2s;
+    }
+    .input-text-style:focus, .input-select-style:focus { 
+        border-color: #505050; outline: none; box-shadow: 0 0 0 2px rgba(80, 80, 80, 0.5);
+    }
+
+    .input-key-style {
+        width: 4rem; padding: 0.75rem; border: 1px solid #252525; 
+        background-color: #111111; border-radius: 0.5rem; color: #c0c0c0; 
+        transition: all 0.2s; font-size: 1.1rem; text-align: center;
+        font-weight: 500; text-transform: uppercase; caret-color: transparent;
+    }
+    .input-key-style:focus {
+        border-color: #505050; outline: none; box-shadow: 0 0 0 2px rgba(80, 80, 80, 0.5);
+    }
+    .input-key-style::placeholder { font-size: 1rem; text-transform: none; }
+    
+    .general-message-area { min-height: 20px; margin-top: 1rem; font-weight: 400; }
+
+    #theme-picker-container {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem; width: 100%;
+    }
+    .theme-button {
+        border: 2px solid var(--tab-active-border, #4f46e5); 
+        background-color: #111; border-radius: 0.75rem; padding: 0.75rem; 
+        text-align: center; cursor: pointer; transition: all 0.2s ease-out;
+        opacity: 0.7; position: relative;
+    }
+    .theme-button:hover {
+        opacity: 1; border-color: var(--tab-active-hover-border, #6366f1);
+        transform: translateY(-2px);
+    }
+    .theme-button.active { opacity: 1; box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+    .theme-button-name { font-weight: 500; color: #e0e0e0; }
+
+    /* --- ANIMATION & THEME VARIABLES --- */
+    :root {
+        --bg-page: #040404; --bg-container: #000000; --border-color: #333;
+        --text-primary: #c0c0c0; --text-light-grey: #d1d5db; --accent-color: #6366f1;
+        --navbar-bg: #000000; --navbar-border: #1f2937;
+        --tab-text: #9ca3af; --tab-hover-text: #ffffff;
+        --tab-active-text: #4f46e5; --tab-active-bg: rgba(79, 70, 229, 0.1);
+        --tab-active-border: #4f46e5;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px) rotate(-5deg); }
+        50% { transform: translateX(5px) rotate(5deg); }
+        75% { transform: translateX(-5px) rotate(-5deg); }
+        100% { transform: translateX(0); }
+    }
+    .shake-anim { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+    body.no-animations * {
+        transition: none !important; animation: none !important; transform: none !important;
+    }
+
+    /* Bubbly Spring Transition */
+    body:not(.no-animations) .btn-toolbar-style, 
+    body:not(.no-animations) .btn-lock-screen, 
+    body:not(.no-animations) .icon-btn, 
+    body:not(.no-animations) .nav-tab, 
+    body:not(.no-animations) .btn-card-action, 
+    body:not(.no-animations) .input-text-style, 
+    body:not(.no-animations) .input-lock-screen, 
+    body:not(.no-animations) .input-key-style {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+
+    body:not(.no-animations) .btn-toolbar-style:active, 
+    body:not(.no-animations) .btn-lock-screen:active, 
+    body:not(.no-animations) .icon-btn:active, 
+    body:not(.no-animations) .nav-tab:active, 
+    body:not(.no-animations) .btn-card-action:active {
+        transform: scale(0.98); transition: transform 0.05s ease-out !important;
+    }
+
+    /* Refined Buttons - Reduced Scale for less clipping/pop */
+    .btn-toolbar-style {
+        background: #0a0a0a; border: 1px solid #333; border-radius: 14px;
+        color: #d1d5db; padding: 0.75rem 1.25rem; font-weight: 500; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); position: relative;
+    }
+    .btn-toolbar-style:hover {
+        transform: scale(1.02) translateY(-1px);
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
+        border-color: #fff; color: #ffffff;
+        z-index: 50;
+    }
+
+    .btn-lock-screen {
+        padding: 0.75rem 1.25rem; font-size: 0.875rem; font-weight: 500; border-radius: 14px;
+        color: rgb(99 102 241); background-color: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgb(99 102 241); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        position: relative;
+    }
+    .btn-lock-screen:hover {
+        transform: scale(1.02) translateY(-1px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        background-color: rgba(99, 102, 241, 0.2);
+        z-index: 50;
+    }
+
+    .icon-btn {
+        width: 40px; height: 40px; border-radius: 14px;
+        border: 1px solid #4b5563; display: flex; align-items: center; justify-content: center; color: #d1d5db; 
+        cursor: pointer; background: transparent; position: relative;
+    }
+    .icon-btn:hover { 
+        background-color: #374151; color: white; transform: scale(1.05);
+        z-index: 50;
+    }
+
+    .btn-card-action {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 2rem; height: 2rem; border-radius: 14px;
+        background-color: transparent; border: 1px solid transparent;
+        color: #9ca3af; cursor: pointer; position: relative;
+    }
+    .btn-card-action:hover {
+        background-color: rgba(79, 70, 229, 0.1); color: #4f46e5; border-color: #4f46e5;
+        transform: scale(1.05); z-index: 50;
+    }
+
+    /* Notifications */
+    #notification-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        z-index: 9999;
+        pointer-events: none;
+    }
+    .notification-toast {
+        background-color: #0a0a0a; border: 1px solid #333; border-radius: 14px;
+        padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem;
+        min-width: 200px; transform: translateX(120%);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s;
+        opacity: 0; pointer-events: auto; cursor: default;
+    }
+    .notification-toast.show { transform: translateX(0); opacity: 1; }
+    .notification-toast.show:hover {
+        transform: scale(1.02) translateX(-5px); background-color: #151515;
+        border-color: #555; box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+    }
+
+    /* UNIVERSAL LOADER CSS */
+    #universal-loader {
+        pointer-events: none; /* Allows clicks to pass through when hidden/opacity 0 */
+    }
+    #universal-loader.active {
+        pointer-events: auto;
+    }
     </style>
 </head>
 <body>
-    <div id="lock-screen" class="center-box">
-        <h1 class="text-2xl font-bold text-white mb-4">4SP v5 Local</h1>
-        <p class="text-gray-400 mb-6 text-sm">Enter your access code to unlock this secure file.</p>
-        <input type="text" id="codeInput" class="input-style" placeholder="XXXX-XXXX-XXXX">
-        <button id="unlockBtn" class="btn-style">Unlock</button>
-        <p id="lockMessage" class="error-msg"></p>
-        <p id="loading-text" class="hidden">Restoring data...</p>
+    <div id="lock-screen" class="w-full h-full flex flex-col items-center justify-center p-4">
+        <div class="max-w-5xl w-full bg-[#040404] flex flex-col md:flex-row border border-[#252525] rounded-3xl overflow-hidden shadow-2xl">
+            <div class="flex-1 p-8 flex flex-col justify-center items-center border-b md:border-b-0 md:border-r border-[#252525]">
+                <h2 class="text-3xl text-[#c0c0c0] mb-6 text-center w-full font-light tracking-tighter">4SP Version 5 Client (DV)</h2>
+                <p id="lockMessage" class="text-[#505050] text-center mb-8 text-sm">Please log in to continue.</p>
+                
+                <button id="unlockBtn" class="w-full max-w-xs py-2 px-4 text-sm font-medium rounded-xl text-indigo-500 bg-indigo-500/10 border border-indigo-500 hover:bg-indigo-500/20 transition mb-4">
+                    Log In to 4SP
+                </button>
+            </div>
+
+            <div class="flex-1 p-8 flex flex-col justify-center items-center bg-[#040404]">
+                <h2 class="text-3xl text-[#c0c0c0] mb-6 text-center w-full font-light tracking-tighter">How it works</h2>
+                <p class="text-lg text-[#505050] mb-8 text-center max-w-md font-light leading-relaxed">
+                    This client provides secure access to the 4SP suite. Use your 4SP account to log in and sync your data.
+                </p>
+                
+                <a href="../authentication.html" class="w-full max-w-xs py-2 px-4 text-sm font-medium rounded-xl text-cyan-500 bg-cyan-500/10 border border-cyan-500 hover:bg-cyan-500/20 transition text-center flex items-center justify-center">
+                    Authentication Page
+                </a>
+            </div>
+        </div>
     </div>
 
-    <iframe id="app-frame"></iframe>
+    <div id="navbar-container">
+        <div id="fireworks-container"></div>
+        
+        <img src="../images/logo.png" id="navbar-logo" class="navbar-logo" alt="Logo">
+        
+        <div class="tab-wrapper">
+             <button id="glide-left" class="scroll-glide-button hidden"><i class="fa-solid fa-chevron-left"></i></button>
+             <div class="tab-scroll-container" id="tabs-container"></div>
+             <button id="glide-right" class="scroll-glide-button hidden"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
 
-    <!-- INJECTED DATA PLACEHOLDERS -->
-    <script>
-        window.__ACCESS_CODE__ = "{{ACCESS_CODE}}";
-        window.__USER_DATA__ = {{USER_DATA}};
-    </script>
+        <div class="auth-controls-wrapper">
+            <div class="relative">
+                <button id="auth-btn" class="icon-btn">
+                    <i class="fa-solid fa-user"></i>
+                </button>
+                <div id="auth-menu" class="auth-menu">
+                    <div class="auth-header">
+                        <div class="auth-username" id="display-username">Client User</div>
+                        <div class="auth-email" id="display-email">local@client</div>
+                    </div>
+                    <a href="#" id="auth-settings-btn" class="auth-menu-item" onclick="loadPage('settings.html'); return false;">
+                        <i class="fa-solid fa-gear w-4"></i> Settings
+                    </a>
+                    <div class="auth-menu-item text-red-400 hover:text-red-300" id="logout-btn">
+                        <i class="fa-solid fa-right-from-bracket w-4"></i> Log Out
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-overlay" class="hidden">
+        <header class="flex justify-between items-center p-4 border-b border-[#1a1a1a]">
+            <h1 class="text-2xl font-bold text-white">4SP Settings</h1>
+        </header>
+
+        <div id="settings-container">
+            <nav id="settings-sidebar">
+                <button class="btn-toolbar-style settings-tab active" data-tab="general">
+                    <i class="fa-solid fa-gear w-5"></i> <span>General</span>
+                </button>
+                <button class="btn-toolbar-style settings-tab" data-tab="personalization">
+                    <i class="fa-solid fa-palette w-5"></i> <span>Personalization</span>
+                </button>
+                <button class="btn-toolbar-style settings-tab" data-tab="privacy">
+                    <i class="fa-solid fa-shield-halved w-5"></i> <span>Privacy & Security</span>
+                </button>
+                <button class="btn-toolbar-style settings-tab" data-tab="about">
+                    <i class="fa-solid fa-circle-info w-5"></i> <span>About 4SP</span>
+                </button>
+            </nav>
+
+            <div id="settings-main-view">
+                <div id="tab-general" class="settings-section">
+                    <h3 class="text-3xl font-bold text-white mb-6">General Settings</h3>
+                    
+                    <div class="settings-box">
+                        <h3 class="text-xl font-bold text-white mb-2">Account Username</h3>
+                        <label class="block text-gray-400 text-sm mb-2 font-light">New Username</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="settings-username-input" class="input-text-style" placeholder="Enter username">
+                            <button id="save-username-btn" class="btn-toolbar-style btn-primary-override">Save</button>
+                        </div>
+                        <p id="username-msg" class="general-message-area text-sm mt-2"></p>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-white mb-2 mt-6">Organization</h3>
+                    <div class="settings-box bg-cyan-500/10 border-cyan-500/50 p-4">
+                        <p class="text-sm font-light text-cyan-300 mb-3">
+                            Visit the official 4SP Organization website for updates and more tools.
+                        </p>
+                        <a href="https://4sp-organization.github.io/" target="_blank" class="btn-toolbar-style w-full justify-center bg-cyan-500/10 border-cyan-500 text-cyan-500 hover:bg-cyan-500/20 hover:text-cyan-400">
+                            <i class="fa-solid fa-globe mr-2"></i> Visit Website
+                        </a>
+                    </div>
+            
+                    <h3 class="text-xl font-bold text-white mb-2 mt-6">Log Out</h3>
+                    <div class="settings-box bg-red-900/10 border-red-700/50 p-4">
+                        <p class="text-sm font-light text-red-300 mb-3">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i>
+                            Log out of your 4SP account on this device.
+                        </p>
+                        <button id="logout-account-btn" class="btn-toolbar-style btn-primary-override-danger w-full justify-center">
+                            <i class="fa-solid fa-power-off mr-2"></i> Log Out
+                        </button>
+                    </div>
+
+                </div>
+
+                <div id="tab-personalization" class="settings-section hidden">
+                    <h3 class="text-3xl font-bold text-white mb-6">Personalization</h3>
+                    
+                    <h3 class="text-xl font-bold text-white mb-2">Profile Picture</h3>
+                    <div class="settings-box mb-8 p-4">
+                        <div class="flex items-start gap-6">
+                            <div class="flex flex-col items-center gap-2">
+                                <div id="pfp-preview" class="w-24 h-24 rounded-[32px] bg-gray-700 overflow-hidden border-2 border-[#333] flex items-center justify-center text-3xl font-bold text-white relative">
+                                </div>
+                                <p class="text-xs text-gray-500">Preview</p>
+                            </div>
+                            
+                            <div class="flex-grow">
+                                <div class="flex gap-4 mb-4 border-b border-[#333] pb-4">
+                                    <button class="pfp-mode-btn active btn-toolbar-style" data-mode="letter">Letter Avatar</button>
+                                    <button class="pfp-mode-btn btn-toolbar-style" data-mode="upload">Upload Image</button>
+                                </div>
+
+                                <div id="pfp-letter-options" class="block">
+                                    <label class="block text-gray-400 text-xs mb-1 font-light">Custom Text (Max 3)</label>
+                                    <div class="flex gap-4 items-center mb-4">
+                                        <input type="text" id="pfp-custom-text" maxlength="3" class="input-text-style w-24 text-center uppercase" placeholder="A">
+                                        <p class="text-xs text-gray-500">Leave empty to use username initial.</p>
+                                    </div>
+                                    
+                                    <label class="block text-gray-400 text-xs mb-2 font-light">Background Color</label>
+                                    <div class="flex flex-wrap gap-2 mb-6" id="pfp-color-grid">
+                                        </div>
+                                    
+                                    <button id="save-letter-pfp-btn" class="btn-toolbar-style btn-primary-override w-full justify-center">Set Letter Avatar</button>
+                                </div>
+
+                                <div id="pfp-upload-options" class="hidden">
+                                    <input type="file" id="pfp-upload-input" accept="image/*" class="hidden"/>
+                                    
+                                    <button id="trigger-upload-btn" class="btn-toolbar-style mb-4 w-full justify-center">
+                                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Choose Image...
+                                    </button>
+                                    
+                                    <p class="text-xs text-gray-500 mb-4 text-center">Max size 2MB. Square images work best.</p>
+                                    <button id="save-upload-pfp-btn" class="btn-toolbar-style btn-primary-override w-full justify-center">Upload & Set</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-white mb-2">Navigation Bar Theme</h3>
+                    <div class="settings-box p-4">
+                        <div id="theme-picker-container"></div>
+                    </div>
+                </div>
+
+                <div id="tab-privacy" class="settings-section hidden">
+                    <h3 class="text-3xl font-bold text-white mb-6">Privacy & Security</h3>
+                    
+                    <h3 class="text-xl font-bold text-white mb-2">Panic Key Settings</h3>
+                    <div class="settings-box p-4">
+                        <p class="text-sm font-light text-gray-400 mb-4">
+                            Configure up to 3 panic keys. Pressing the specified key (without Shift, Ctrl, or Alt) on any page will redirect you to the URL you set.
+                            <br>
+                            <span class="text-yellow-400">Valid keys:</span> a-z, 0-9, and &#96; - = [ ] \ ; ' , . /
+                        </p>
+                        
+                        <div class="flex items-center gap-4 px-2 mb-2">
+                            <label class="block text-gray-400 text-sm font-light" style="width: 4rem; text-align: center;">Key</label>
+                            <label class="block text-gray-400 text-sm font-light flex-grow">Redirect URL</label>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-3">
+                            <input type="text" id="panicKey1" data-key-id="1" class="input-key-style panic-key-input" placeholder="-" maxlength="1">
+                            <input type="url" id="panicUrl1" class="input-text-style" placeholder="e.g., https://google.com">
+                        </div>
+                        
+                        <div class="flex items-center gap-4 mb-3">
+                            <input type="text" id="panicKey2" data-key-id="2" class="input-key-style panic-key-input" placeholder="-" maxlength="1">
+                            <input type="url" id="panicUrl2" class="input-text-style" placeholder="e.g., https://youtube.com/feed/subscriptions">
+                        </div>
+                        
+                        <div class="flex items-center gap-4 mb-3">
+                            <input type="text" id="panicKey3" data-key-id="3" class="input-key-style panic-key-input" placeholder="-" maxlength="1">
+                            <input type="url" id="panicUrl3" class="input-text-style" placeholder="e.g., https://wikipedia.org">
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-4 border-t border-[#252525]">
+                            <p id="panicKeyMessage" class="general-message-area text-sm"></p>
+                            <button id="applyPanicKeyBtn" class="btn-toolbar-style btn-primary-override w-36" style="padding: 0.5rem 0.75rem;">
+                                <i class="fa-solid fa-check mr-1"></i> Apply Keys
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-about" class="settings-section hidden">
+                    <h3 class="text-3xl font-bold text-white mb-6">About 4SP</h3>
+                    <div class="settings-box p-6 flex flex-col items-center text-center">
+                        <img src="../images/logo.png" class="h-24 mb-4" alt="Logo">
+                        <h1 class="text-3xl font-bold text-white mb-2">(4SP) 4simpleproblems</h1>
+                        <p class="text-gray-400 mb-6 max-w-lg font-light">From a soundboard, to a full downloadable client of a platform.</p>
+                        
+                        <div class="inline-block bg-[#0a0a0a] border border-[#333] px-4 py-2 rounded-[14px] mb-8">
+  <span class="text-gray-500 text-sm">Version:</span>
+  <span class="text-indigo-400 font-mono font-bold ml-2">5.0.0 (DV)</span>
+</div>
+
+                        
+                        <div class="flex gap-4">
+                            <a href="https://github.com/4simpleproblems-v5" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-github fa-xl"></i></a>
+                            <a href="https://youtube.com/4simpleproblems" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-youtube fa-xl"></i></a>
+                            <a href="https://x.com/@4simpleproblems" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-discord fa-xl"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="cropperModal" style="display: none; position: fixed; z-index: 2050; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; flex-direction: column;">
+        <div id="cropperContent" style="background-color: #000000; padding: 0; border-radius: 1rem; border: 1px solid #333; display: flex; flex-direction: column; width: 90%; max-width: 600px; overflow: hidden;">
+            <div class="flex justify-between items-center p-6 border-b border-[#333] bg-black">
+                <h3 class="text-2xl font-bold text-white">Adjust Profile Picture</h3>
+                <button id="cancelCropBtn" class="btn-toolbar-style w-10 h-10 flex items-center justify-center p-0 rounded-xl">
+                     <i class="fa-solid fa-xmark fa-xl"></i>
+                </button>
+            </div>
+            <div class="flex flex-col items-center p-6 bg-[#0a0a0a]">
+                <p class="text-sm text-gray-400 mb-4">Drag to move. Scroll to resize.</p>
+                <div id="cropperCanvasContainer" class="relative mb-6 border border-[#333] rounded-lg overflow-hidden w-full flex justify-center bg-black">
+                    <canvas id="cropperCanvas"></canvas>
+                </div>
+                <div class="flex justify-end w-full">
+                    <button id="submitCropBtn" class="btn-toolbar-style btn-primary-override px-6 py-2 rounded-xl">
+                        <i class="fa-solid fa-check mr-2"></i> Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="universal-loader" class="fixed inset-0 bg-[#000000] z-[9999] opacity-0 flex flex-col items-end justify-end p-12 transition-opacity duration-200 hidden">
+        <img src="../images/logo.png" class="absolute top-6 right-6 h-12 w-auto opacity-50" alt="Logo">
+        <div class="flex flex-col items-end gap-2">
+            <h2 id="loader-title" class="text-white text-3xl font-light italic font-[Geist]">Loading...</h2>
+            <div class="w-64 h-1 bg-[#333] rounded-full overflow-hidden">
+                <div id="loader-bar" class="h-full bg-white w-0 transition-all duration-1000 ease-out"></div>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
-        // Firebase Config included for reference/completeness as requested
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc, onSnapshot, collection, query, where, getDocs, serverTimestamp, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAZBKAckVa4IMvJGjcyndZx6Y1XD52lgro",
             authDomain: "project-zirconium.firebaseapp.com",
@@ -49,170 +776,410 @@
             measurementId: "G-1D4F692C1Q"
         };
 
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
         const lockScreen = document.getElementById('lock-screen');
-        const appFrame = document.getElementById('app-frame');
-        const codeInput = document.getElementById('codeInput');
+        const navbar = document.getElementById('navbar-container');
+        let appFrame = document.getElementById('app-frame');
         const unlockBtn = document.getElementById('unlockBtn');
         const lockMessage = document.getElementById('lockMessage');
-        const loadingText = document.getElementById('loading-text');
+        
+        // Navbar elements
+        const tabsContainer = document.getElementById('tabs-container');
+        const glideLeft = document.getElementById('glide-left');
+        const glideRight = document.getElementById('glide-right');
+        
+        // Auth Elements
+        const authBtn = document.getElementById('auth-btn');
+        const authMenu = document.getElementById('auth-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        const logoutAccountBtn = document.getElementById('logout-account-btn');
+        const displayUsername = document.getElementById('display-username');
+        const displayEmail = document.getElementById('display-email');
 
-        const BASE_URL = 'https://cdn.jsdelivr.net/gh/v5-4simpleproblems/v5@main/logged-in/';
+        const BASE_URL = './logged-in/';
+        const USER_DATA_KEY = 'local_user_data';
+        const LAST_PAGE_KEY = 'local_last_page';
+        const OWNER_EMAIL = "4simpleproblems@gmail.com"; 
 
-        // Check if data is present
-        if (!window.__ACCESS_CODE__ || window.__ACCESS_CODE__ === "{{ACCESS_CODE}}") {
-            lockMessage.innerText = "Error: This file is corrupt or missing embedded data.";
-            unlockBtn.disabled = true;
-            unlockBtn.style.opacity = "0.5";
-        }
+        const CLIENT_PAGE_DATA = {
+            "dashboard": { "name": "Dashboard", "icon": "fa-solid fa-house-user", "url": "dashboard.html" },
+            "soundboard": { "name": "Soundboard", "icon": "fa-solid fa-volume-up", "url": "soundboard.html" },
+            "notes": { "name": "Notes", "icon": "fa-solid fa-sticky-note", "url": "notes.html" },
+            "dailyphoto": { "name": "Dailyphoto", "icon": "fa-solid fa-image", "url": "dailyphoto.html" },
+            "countdowns": { "name": "Countdowns", "icon": "fa-solid fa-clock", "url": "countdowns.html" },
+            "weather": { "name": "Weather", "icon": "fa-solid fa-cloud-sun", "url": "weather.html" },
+            "dictionary": { "name": "Dictionary", "icon": "fa-solid fa-book", "url": "dictionary.html" },
+            "messenger-v2": { "name": "Messenger", "icon": "fa-solid fa-comments", "url": "messenger-v2.html" },
+            "games": { "name": "GAMES", "icon": "fa-solid fa-gamepad", "url": "games.html" },
+            "settings": { "name": "Settings", "icon": "fa-solid fa-gear", "url": "settings.html" }
+        };
 
-        unlockBtn.addEventListener('click', async () => {
-            const code = codeInput.value.trim();
-            if (!code) {
-                lockMessage.innerText = "Please enter a code.";
-                return;
-            }
+        let currentUser = null;
+        let userDataUnsubscribe = null;
 
-            if (code !== window.__ACCESS_CODE__) {
-                lockMessage.innerText = "Invalid access code.";
-                return;
-            }
+        // --- FIREWORKS ENGINE ---
+        const fwContainer = document.getElementById('fireworks-container');
+        const fireworks = new Fireworks.default(fwContainer, {
+             autoresize: true, opacity: 1.0, acceleration: 1.05, friction: 0.97, gravity: 1.5,
+             particles: 50, traceLength: 3, traceSpeed: 10, explosion: 5, intensity: 5,
+             flickering: 50, lineStyle: 'round', rocketsPoint: { min: 50, max: 50 }
+        });
 
-            // Code is valid
-            lockMessage.innerText = "";
-            unlockBtn.classList.add('hidden');
-            codeInput.classList.add('hidden');
-            loadingText.classList.remove('hidden');
-
-            try {
-                await restoreUserData();
-                // Start with dashboard
-                loadPage('dashboard.html');
-            } catch (e) {
-                lockMessage.innerText = "Failed to restore data: " + e.message;
-                console.error(e);
+        // --- Auth State Logic ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = {
+                    uid: user.uid,
+                    username: user.displayName || "User",
+                    email: user.email || "No email"
+                };
+                await fetchUserData(user.uid);
+                launchApp();
+            } else {
+                resetLockScreen();
             }
         });
 
-        async function restoreUserData() {
-            const data = window.__USER_DATA__;
-            if (!data) return;
-
-            // 1. Restore LocalStorage
-            if (data.localStorage) {
-                for (const [key, value] of Object.entries(data.localStorage)) {
-                    localStorage.setItem(key, value);
-                }
+        function resetLockScreen() {
+            if (lockScreen) lockScreen.classList.remove('hidden');
+            if (navbar) navbar.style.display = 'none';
+            if (appFrame) appFrame.style.display = 'none';
+            if (unlockBtn) {
+                unlockBtn.onclick = () => window.location.href = '../authentication.html';
             }
+        }
 
-            // 2. Restore IndexedDB
-            if (data.indexedDB) {
-                for (const dbName in data.indexedDB) {
-                    const storesData = data.indexedDB[dbName];
-                    await new Promise(r => {
-                        const req = indexedDB.deleteDatabase(dbName);
-                        req.onsuccess = r; req.onerror = r;
-                    });
+        async function fetchUserData(ownerUid) {
+            if (userDataUnsubscribe) userDataUnsubscribe();
+            try {
+                 const adminDoc = await getDoc(doc(db, "admins", ownerUid));
+                 userDataUnsubscribe = onSnapshot(doc(db, "users", ownerUid), (docSnap) => {
+                     if (docSnap.exists()) {
+                         const data = docSnap.data();
+                         currentUser = { ...currentUser, ...data };
+                         localStorage.setItem(USER_DATA_KEY, JSON.stringify(currentUser));
+                         updateUIWithUser(currentUser);
+                         if (data.navbarTheme) applyTheme(data.navbarTheme);
+                     }
+                 });
+                let isAdmin = (currentUser?.email === OWNER_EMAIL) || adminDoc.exists();
+                if (isAdmin) {
+                    sessionStorage.setItem('analytics_is_admin', 'true');
+                    initAdminKeybinds(db, auth, { uid: ownerUid, email: currentUser?.email });
+                } else {
+                    sessionStorage.removeItem('analytics_is_admin');
+                }
+                initAnalytics(db, ownerUid);
+            } catch (e) { console.error(e); }
+        }
 
-                    await new Promise((resolve, reject) => {
-                        const req = indexedDB.open(dbName, 1);
-                        req.onupgradeneeded = (e) => {
-                            const db = e.target.result;
-                            for (const storeName in storesData) {
-                                if (!db.objectStoreNames.contains(storeName)) {
-                                    db.createObjectStore(storeName); 
-                                }
-                            }
-                        };
-                        req.onsuccess = async (e) => {
-                            const db = e.target.result;
-                            const tx = db.transaction(Object.keys(storesData), 'readwrite');
-                            for (const storeName in storesData) {
-                                const store = tx.objectStore(storeName);
-                                for (const item of storesData[storeName]) {
-                                    store.put(item.value, item.key);
-                                }
-                            }
-                            tx.oncomplete = () => {
-                                db.close();
-                                resolve();
-                            };
-                            tx.onerror = (err) => reject(err);
-                        };
-                        req.onerror = reject;
-                    });
+        function updateUIWithUser(userData) {
+            if (!userData) return;
+            displayUsername.textContent = userData.username;
+            displayEmail.textContent = userData.email;
+            const pfpType = userData.pfpType || 'letter';
+            let pfpHtml = '';
+            if (pfpType === 'custom' && userData.customPfp) {
+                pfpHtml = `<img src="${userData.customPfp}" class="w-full h-full object-cover rounded-[14px]" alt="Profile">`;
+            } else {
+                const initial = (userData.username || 'U').charAt(0).toUpperCase();
+                const letter = userData.letterAvatarText || initial;
+                const bgColor = userData.pfpLetterBg || '#3B82F6';
+                const fontSizeClass = letter.length > 2 ? 'text-xs' : (letter.length > 1 ? 'text-sm' : 'text-lg');
+                pfpHtml = `<div class="w-full h-full rounded-[14px] flex items-center justify-center text-white font-bold ${fontSizeClass}" style="background-color: ${bgColor};">${letter}</div>`;
+            }
+            authBtn.innerHTML = pfpHtml;
+            const previewEl = document.getElementById('pfp-preview');
+            if (previewEl) {
+                if (pfpType === 'custom' && userData.customPfp) {
+                    previewEl.style.backgroundImage = `url('${userData.customPfp}')`;
+                    previewEl.style.backgroundColor = "transparent";
+                    previewEl.innerText = "";
+                } else {
+                    previewEl.style.backgroundImage = 'none';
+                    previewEl.style.backgroundColor = userData.pfpLetterBg || '#3B82F6';
+                    previewEl.innerText = (userData.username || 'U').charAt(0).toUpperCase();
                 }
             }
         }
 
-        // Exposed function to load pages
+        function launchApp() {
+            if (lockScreen) lockScreen.classList.add('hidden');
+            if (navbar) navbar.style.display = 'flex';
+            if (appFrame) appFrame.style.display = 'block';
+            let startPage = localStorage.getItem(LAST_PAGE_KEY) || 'dashboard.html';
+            loadPage(startPage);
+            try {
+                const savedTheme = JSON.parse(localStorage.getItem('user-navbar-theme'));
+                if (savedTheme) applyTheme(savedTheme);
+            } catch(e){}
+        }
+
         window.loadPage = function(pageName) {
-            // Handle relative paths roughly
-            if (pageName.startsWith('./')) pageName = pageName.substring(2);
-            if (pageName.startsWith('../')) pageName = pageName.substring(3); // Assuming flattened structure for simplified view
-            
-            // If full URL, strip base
-            if (pageName.startsWith(BASE_URL)) {
-                pageName = pageName.substring(BASE_URL.length);
+            if (window.trackPageView) window.trackPageView();
+            if (pageName === 'settings.html' || pageName === 'settings') {
+                window.lastLoadedPage = 'settings.html';
+                localStorage.setItem(LAST_PAGE_KEY, 'settings.html');
+                renderNavbar(BASE_URL + 'settings.html');
+                document.body.classList.remove('nav-overlay-mode');
+                openSettings();
+                return;
+            }
+            const settingsOverlay = document.getElementById('settings-overlay');
+            if (settingsOverlay) settingsOverlay.classList.add('hidden');
+
+            const loader = document.getElementById('universal-loader');
+            const loaderTitle = document.getElementById('loader-title');
+            const loaderBar = document.getElementById('loader-bar');
+            if (loader) {
+                let lookupName = pageName.split('?')[0].replace('.html', '').replace('./', '');
+                let pageEntry = Object.values(CLIENT_PAGE_DATA).find(p => p.url.includes(lookupName));
+                loaderTitle.textContent = pageEntry ? pageEntry.name : "Loading...";
+                loader.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    loader.classList.remove('opacity-0');
+                    loader.classList.add('active');
+                    loaderBar.style.width = "70%";
+                });
             }
 
-            const url = BASE_URL + pageName;
-            
-            fetch(url)
-                .then(res => res.text())
-                .then(html => {
-                    lockScreen.classList.add('hidden');
-                    appFrame.style.display = 'block';
-                    
-                    const doc = appFrame.contentWindow.document;
-                    doc.open();
-                    
-                    const baseTag = '<base href="' + BASE_URL + '">';
-                    
-                    // Script to intercept clicks and keep them "local" (in the iframe fetch loop)
-                    // Also mock Auth
-                    const patchScript = `
-                        <script>
-                            window._LOCAL_MODE = true;
-                            
-                            // Mock Firebase Auth User if profile exists
-                            try {
-                                const profile = localStorage.getItem('offline_user_profile');
-                                if (profile) {
-                                    const userData = JSON.parse(profile);
-                                    // Mock enough for the UI to render
-                                    window.currentUser = {
-                                        uid: 'offline-user',
-                                        displayName: userData.username || 'Offline User',
-                                        email: 'offline@local',
-                                        photoURL: userData.customPfp || null,
-                                        providerData: []
-                                    };
-                                }
-                            } catch(e) {}
+            if (pageName.includes('games') || pageName.includes('settings') || pageName.includes('messenger')) {
+                document.body.classList.remove('nav-overlay-mode');
+            } else {
+                document.body.classList.add('nav-overlay-mode');
+            }
 
-                            document.addEventListener('click', e => {
-                                const link = e.target.closest('a');
-                                if (link && link.href) {
-                                    e.preventDefault();
-                                    const href = link.getAttribute('href');
-                                    // Call parent loader
-                                    window.parent.loadPage(href);
-                                }
-                            });
-                        <\/script>
-                    `;
-                    
-                    let modifiedHtml = html.replace('<head>', '<head>' + baseTag + patchScript);
-                    
-                    doc.write(modifiedHtml);
-                    doc.close();
-                })
-                .catch(err => {
-                    // If dashboard fails, we show lock screen again? Or alert inside frame?
-                    console.error(err);
-                    alert("Failed to load page: " + pageName);
-                });
+            window.lastLoadedPage = pageName;
+            localStorage.setItem(LAST_PAGE_KEY, pageName);
+            renderNavbar(pageName);
+
+            fetch(BASE_URL + pageName).then(res => res.text()).then(html => {
+                const oldFrame = document.getElementById('app-frame');
+                const newFrame = document.createElement('iframe');
+                newFrame.id = 'app-frame';
+                newFrame.style.cssText = oldFrame ? oldFrame.style.cssText : 'width:100%;height:100%;border:none;display:block;flex-grow:1;';
+                if (oldFrame) oldFrame.parentNode.replaceChild(newFrame, oldFrame);
+                else document.body.appendChild(newFrame);
+                appFrame = newFrame;
+                newFrame.onload = () => {
+                    if (loaderBar) loaderBar.style.width = "100%";
+                    setTimeout(() => {
+                        if (loader) {
+                            loader.classList.add('opacity-0'); loader.classList.remove('active');
+                            setTimeout(() => { loader.classList.add('hidden'); loaderBar.style.width = "0%"; }, 200);
+                        }
+                    }, 200);
+                };
+                const doc = newFrame.contentWindow.document;
+                doc.open();
+                const patchScript = `<script>
+                    window._LOCAL_MODE = true;
+                    window.currentUser = { uid: '${currentUser.uid}', displayName: '${currentUser.username}', email: '${currentUser.email}' };
+                    window.openSettings = () => window.parent.openSettings();
+                    window.addEventListener('keydown', e => {
+                        if(window.parent.handlePanic) window.parent.handlePanic(e);
+                        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') window.parent.triggerAdminKeybind();
+                        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'f') window.parent.triggerThirdPartyKeybind();
+                        if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && !e.repeat) window.parent.playTypeSound();
+                    }, { capture: true });
+                    document.addEventListener('click', e => {
+                        const link = e.target.closest('a');
+                        if (link && link.href) {
+                            const href = link.getAttribute('href');
+                            if (href.includes('settings.html')) { e.preventDefault(); window.parent.openSettings(); }
+                            else { e.preventDefault(); window.parent.loadPage(href); }
+                        }
+                    });
+                <\/script>`;
+                doc.write(html.replace('<head>', '<head><base href="' + BASE_URL + '">' + patchScript));
+                doc.close();
+            });
         };
+
+        function renderNavbar(activePageUrl) {
+            if (!tabsContainer) return;
+            tabsContainer.innerHTML = '';
+            let currentPath = activePageUrl.replace(BASE_URL, '').replace('./', '');
+            Object.entries(CLIENT_PAGE_DATA).forEach(([key, page]) => {
+                const isActive = page.url === currentPath;
+                const tab = document.createElement('a');
+                tab.className = `nav-tab ${isActive ? 'active' : ''}`;
+                tab.innerHTML = `<i class="${page.icon}"></i> ${page.name}`;
+                tab.onclick = () => loadPage(page.url);
+                tabsContainer.appendChild(tab);
+            });
+            const updateScroll = () => {
+                if (tabsContainer.scrollWidth <= tabsContainer.offsetWidth + 2) {
+                    glideLeft.classList.add('hidden'); glideRight.classList.add('hidden');
+                    tabsContainer.style.justifyContent = 'center';
+                } else {
+                    tabsContainer.style.justifyContent = 'flex-start';
+                    glideLeft.classList.toggle('hidden', tabsContainer.scrollLeft <= 5);
+                    glideRight.classList.toggle('hidden', tabsContainer.scrollLeft + tabsContainer.offsetWidth >= tabsContainer.scrollWidth - 5);
+                }
+            };
+            tabsContainer.onscroll = updateScroll;
+            window.onresize = updateScroll;
+            glideLeft.onclick = () => tabsContainer.scrollLeft = 0;
+            glideRight.onclick = () => tabsContainer.scrollLeft = tabsContainer.scrollWidth;
+            setTimeout(updateScroll, 50);
+        }
+
+        authBtn.onclick = (e) => { e.stopPropagation(); authMenu.classList.toggle('open'); };
+        document.onclick = (e) => { if (authMenu && !authMenu.contains(e.target) && !authBtn.contains(e.target)) authMenu.classList.remove('open'); };
+        const performLogout = () => { signOut(auth).then(() => location.reload()); };
+        logoutBtn.onclick = performLogout;
+        if(logoutAccountBtn) logoutAccountBtn.onclick = performLogout;
+
+        window.openSettings = () => {
+            document.getElementById('settings-overlay').classList.remove('hidden');
+            const usernameInput = document.getElementById('settings-username-input');
+            usernameInput.value = currentUser.username || "";
+            loadThemes();
+        };
+
+        document.querySelectorAll('.settings-tab').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.settings-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.settings-section').forEach(s => s.classList.add('hidden'));
+                document.getElementById(`tab-${btn.dataset.tab}`).classList.remove('hidden');
+            };
+        });
+
+        document.getElementById('save-username-btn').onclick = async () => {
+            const newName = document.getElementById('settings-username-input').value.trim();
+            const msg = document.getElementById('username-msg');
+            if (newName.length < 3) { msg.innerText = "Too short"; return; }
+            await updateDoc(doc(db, "users", currentUser.uid), { username: newName });
+            msg.innerText = "Saved!";
+        };
+
+        const letterColors = ['EF4444', 'F97316', 'FDBA74', 'EAB308', 'FDE047', '22C55E', '86EFAC', '06B6D4', '67E8F9', '3B82F6', '93C5FD', '6366F1', 'A5B4FC', 'A855F7', 'D8B4FE', 'EC4899', 'F9A8D4', '6B7280', '000000'];
+        const colorGrid = document.getElementById('pfp-color-grid');
+        let selectedLetterColor = '#3B82F6';
+        if(colorGrid) {
+            colorGrid.innerHTML = '';
+            letterColors.forEach(c => {
+                const d = document.createElement('div');
+                d.className = 'w-8 h-8 rounded-lg cursor-pointer border-2 border-transparent hover:scale-110';
+                d.style.backgroundColor = '#' + c;
+                d.onclick = () => { selectedLetterColor = '#' + c; updateUIWithUser({ ...currentUser, pfpLetterBg: selectedLetterColor, pfpType: 'letter' }); };
+                colorGrid.appendChild(d);
+            });
+        }
+
+        document.querySelectorAll('.pfp-mode-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.pfp-mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('pfp-letter-options').classList.toggle('hidden', btn.dataset.mode !== 'letter');
+                document.getElementById('pfp-upload-options').classList.toggle('hidden', btn.dataset.mode !== 'upload');
+            };
+        });
+
+        document.getElementById('save-letter-pfp-btn').onclick = async () => {
+            const text = document.getElementById('pfp-custom-text').value.trim().toUpperCase();
+            await updateDoc(doc(db, "users", currentUser.uid), { pfpType: 'letter', pfpLetterBg: selectedLetterColor, letterAvatarText: text });
+        };
+
+        document.getElementById('trigger-upload-btn').onclick = () => document.getElementById('pfp-upload-input').click();
+        document.getElementById('pfp-upload-input').onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.getElementById('cropperCanvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.height = 400; canvas.width = img.width * (400 / img.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    document.getElementById('cropperModal').style.display = 'flex';
+                    document.getElementById('submitCropBtn').onclick = async () => {
+                        const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                        await updateDoc(doc(db, "users", currentUser.uid), { customPfp: base64, pfpType: 'custom' });
+                        document.getElementById('cropperModal').style.display = 'none';
+                    };
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+        document.getElementById('cancelCropBtn').onclick = () => document.getElementById('cropperModal').style.display = 'none';
+
+        async function loadThemes() {
+            const res = await fetch('../themes.json');
+            let themes = await res.json();
+            const container = document.getElementById('theme-picker-container');
+            container.innerHTML = '';
+            themes.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'theme-button';
+                btn.style.backgroundColor = t['navbar-bg'] || '#000';
+                btn.innerHTML = `<div style="color:white">${t.name}</div>`;
+                btn.onclick = () => applyTheme(t);
+                container.appendChild(btn);
+            });
+        }
+
+        function applyTheme(theme) {
+            const root = document.documentElement;
+            if (theme.name === 'The New Year') { document.getElementById('fireworks-container').style.opacity = '1'; fireworks.start(); }
+            else { document.getElementById('fireworks-container').style.opacity = '0'; fireworks.stop(); }
+            for (const [k, v] of Object.entries(theme)) { if (k !== 'name' && k !== 'logo-src') root.style.setProperty(`--${k}`, v); }
+            const logo = document.getElementById('navbar-logo');
+            if (logo) {
+                logo.src = theme.name === 'Christmas' ? '../images/logo-christmas.png' : (['Light', 'Lavender', 'Rose Gold', 'Mint', 'Pink'].includes(theme.name) ? '../images/logo-dark.png' : '../images/logo.png');
+                if (!['Dark', 'Light', 'Christmas'].includes(theme.name)) {
+                    logo.style.filter = `drop-shadow(100px 0 0 ${theme['tab-active-text'] || '#fff'})`;
+                    logo.style.transform = 'translateX(-100px)';
+                } else { logo.style.filter = ''; logo.style.transform = ''; }
+            }
+            localStorage.setItem('user-navbar-theme', JSON.stringify(theme));
+            if (currentUser) updateDoc(doc(db, "users", currentUser.uid), { navbarTheme: theme });
+        }
+
+        const DB_NAME = 'userLocalSettingsDB';
+        const STORE_NAME = 'panicKeyStore';
+        function openDB() { return new Promise((resolve) => { const req = indexedDB.open(DB_NAME); req.onupgradeneeded = e => e.target.result.createObjectStore(STORE_NAME, { keyPath: 'id' }); req.onsuccess = e => resolve(e.target.result); }); }
+        window.handlePanic = async (e) => {
+            if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            const db = await openDB();
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.getAll();
+            req.onsuccess = () => {
+                const match = req.result.find(s => s.key.toLowerCase() === e.key.toLowerCase());
+                if (match) window.location.href = match.url;
+            };
+        };
+        window.addEventListener('keydown', window.handlePanic);
+
+        document.getElementById('applyPanicKeyBtn').onclick = async () => {
+            const settings = [];
+            for (let i = 1; i <= 3; i++) {
+                const key = document.getElementById(`panicKey${i}`).value;
+                const url = document.getElementById(`panicUrl${i}`).value;
+                if (key && url) settings.push({ id: `panicKey${i}`, key, url });
+            }
+            const db = await openDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            settings.forEach(s => store.put(s));
+            alert("Saved!");
+        };
+
+        function initAdminKeybinds(db, auth, user) {
+            window.triggerAdminKeybind = () => console.log("Admin E triggered");
+            window.triggerThirdPartyKeybind = () => console.log("Admin F triggered");
+        }
+        function initAnalytics() {}
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window.playTypeSound = () => { if (audioCtx.state === 'suspended') audioCtx.resume(); };
     </script>
 </body>
 </html>
