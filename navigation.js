@@ -447,7 +447,7 @@ let db;
             #auth-toggle {
                 border-color: var(--avatar-border);
                 transition: border-color 0.3s ease;
-                border-radius: 16px; 
+                border-radius: 24px; 
                 width: 40px; height: 40px;
                 display: flex; align-items: center; justify-content: center;
                 cursor: pointer; position: relative;
@@ -459,7 +459,7 @@ let db;
                 position: absolute; right: 0; top: 55px; width: 16rem;
                 background: var(--menu-bg, #000);
                 border: 1px solid var(--menu-border, #333);
-                border-radius: 1.5rem; padding: 0.75rem; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+                border-radius: 1.25rem; padding: 0.75rem; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
                 transition: transform 0.2s ease-out, opacity 0.2s ease-out, background-color 0.3s ease, border-color 0.3s ease;
                 transform-origin: top right; z-index: 10000;
             }
@@ -480,7 +480,7 @@ let db;
                 display: flex; align-items: center; gap: 0.75rem; width: 100%; text-align: left; 
                 padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--menu-text, #d1d5db); 
                 background: transparent;
-                border: 1px solid transparent;
+                border: 1px solid var(--logged-out-icon-border, #374151);
                 border-radius: 1rem; 
                 transition: all 0.2s ease; border: none; cursor: pointer;
                 border: 1px solid transparent;
