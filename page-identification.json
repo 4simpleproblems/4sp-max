@@ -47,7 +47,7 @@
     "levium": {
         "name": "Levium",
         "icon": "fa-solid fa-globe",
-        "url": "../logged-in/levium.html",
+        "url": "../LEVIUM/levium.html",
         "adminOnly": true
     },
     "securly-tester": {

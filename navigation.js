@@ -27,7 +27,7 @@ const THEME_STORAGE_KEY = 'user-navbar-theme';
 const lightThemeNames = ['Light', 'Lavender', 'Rose Gold', 'Mint', 'Pink']; // Define light theme names
 
 const DEFAULT_THEME = {
-    'name': 'Dark', // <--- ADD THIS LINE
+    'name': 'Dark',
     'logo-src': '/images/logo.png', 
     'navbar-bg': '#000000',
     'navbar-border': 'rgb(31 41 55)',
@@ -38,7 +38,7 @@ const DEFAULT_THEME = {
     'menu-divider': '#374151',
     'menu-text': '#d1d5db',
     'menu-username-text': '#ffffff', 
-    'menu-email-text': '#9ca3af', // NEW: Default email text color 
+    'menu-email-text': '#9ca3af', 
     'menu-item-hover-bg': 'rgb(55 65 81)', 
     'menu-item-hover-text': '#ffffff',
     'glass-menu-bg': 'rgba(10, 10, 10, 0.8)',
@@ -67,6 +67,8 @@ const DEFAULT_THEME = {
     'hint-text': '#ffffff'
 };
 
+let fireworksInstance = null; // Store fireworks instance globally
+
 window.applyTheme = (theme) => {
     const root = document.documentElement;
     if (!root) return;
@@ -83,12 +85,45 @@ window.applyTheme = (theme) => {
 
     // Apply specific colors for light themes
     if (isLightTheme) {
-        root.style.setProperty('--menu-username-text', '#000000'); // Black for username
-        root.style.setProperty('--menu-email-text', '#333333');   // Dark grey for email
+        root.style.setProperty('--menu-username-text', '#000000'); 
+        root.style.setProperty('--menu-email-text', '#333333');   
     } else {
-        // Revert to theme's default or global default
         root.style.setProperty('--menu-username-text', themeToApply['menu-username-text'] || DEFAULT_THEME['menu-username-text']);
         root.style.setProperty('--menu-email-text', themeToApply['menu-email-text'] || DEFAULT_THEME['menu-email-text']);
+    }
+
+    // --- Fireworks Logic ---
+    const fwContainer = document.getElementById('fireworks-container');
+    if (fwContainer) {
+        if (themeToApply.name === 'The New Year') {
+            fwContainer.style.opacity = '1';
+            // Start fireworks if not already running
+            if (!fireworksInstance && typeof Fireworks !== 'undefined') {
+                 fireworksInstance = new Fireworks.default(fwContainer, {
+                     autoresize: true,
+                     opacity: 1.0,
+                     acceleration: 1.05,
+                     friction: 0.97,
+                     gravity: 1.5,
+                     particles: 50,
+                     traceLength: 3,
+                     traceSpeed: 10,
+                     explosion: 5,
+                     intensity: 5,
+                     flickering: 50,
+                     lineStyle: 'round',
+                     rocketsPoint: { min: 50, max: 50 }
+                });
+                fireworksInstance.start();
+            } else if (fireworksInstance) {
+                fireworksInstance.start();
+            }
+        } else {
+            fwContainer.style.opacity = '0';
+            if (fireworksInstance) {
+                fireworksInstance.stop();
+            }
+        }
     }
 
     const logoImg = document.getElementById('navbar-logo');
@@ -105,24 +140,17 @@ window.applyTheme = (theme) => {
             logoImg.src = newLogoSrc;
         }
 
-        // --- NEW: Logo Tinting Logic ---
-const noFilterThemes = ['Dark', 'Light', 'Christmas'];
+        // --- Logo Tinting Logic ---
+        const noFilterThemes = ['Dark', 'Light', 'Christmas'];
 
-if (noFilterThemes.includes(themeToApply.name)) {
-    // Reset styles for themes that don't need tinting
-    logoImg.style.filter = ''; 
-    logoImg.style.transform = '';
-} else {
-    // 1. Get the highlight color from the theme (e.g., the tab text color)
-    // You can choose 'navbar-border' or 'tab-active-text' depending on preference
-    const tintColor = themeToApply['tab-active-text'] || '#ffffff';
-
-    // 2. Create a colored shadow 100px to the right, and move the actual image 100px to the left
-    // This hides the white image and shows only the colored shadow
-    logoImg.style.filter = `drop-shadow(100px 0 0 ${tintColor})`;
-    logoImg.style.transform = 'translateX(-100px)';
-}
-// --- END NEW: Logo Tinting Logic ---
+        if (noFilterThemes.includes(themeToApply.name)) {
+            logoImg.style.filter = ''; 
+            logoImg.style.transform = '';
+        } else {
+            const tintColor = themeToApply['tab-active-text'] || '#ffffff';
+            logoImg.style.filter = `drop-shadow(100px 0 0 ${tintColor})`;
+            logoImg.style.transform = 'translateX(-100px)';
+        }
     }
 };
 
@@ -182,36 +210,28 @@ let db;
         
         const cleanPath = (path) => {
             try {
-                // If it's a relative path, resolve it against origin
                 const resolved = new URL(path, window.location.origin).pathname.toLowerCase();
-                // Normalize index.html
                 if (resolved.endsWith('/index.html')) return resolved.substring(0, resolved.lastIndexOf('/')) + '/';
                 if (resolved.length > 1 && resolved.endsWith('/')) return resolved.slice(0, -1);
                 return resolved;
             } catch (e) {
-                return path; // Fallback for invalid URLs
+                return path; 
             }
         };
 
         const currentCanonical = cleanPath(currentPathname);
-        
-        // 1. Check primary URL
         const tabCanonical = cleanPath(tabUrl);
         if (currentCanonical === tabCanonical) return true;
 
-        // 2. Check suffix matching (existing logic)
         const tabPathSuffix = new URL(tabUrl, window.location.origin).pathname.toLowerCase();
         const tabSuffixClean = tabPathSuffix.startsWith('/') ? tabPathSuffix.substring(1) : tabPathSuffix;
-        // Avoid aggressive suffix matching for root/short paths
         if (tabSuffixClean.length > 3 && currentPathname.endsWith(tabSuffixClean)) return true;
 
-        // 3. Check Aliases (NEW)
         if (aliases && Array.isArray(aliases)) {
             for (const alias of aliases) {
                 const aliasCanonical = cleanPath(alias);
                 if (currentCanonical === aliasCanonical) return true;
                 
-                // Also check alias suffixes if needed, though exact path matching is safer
                 const aliasPathSuffix = new URL(alias, window.location.origin).pathname.toLowerCase();
                  const aliasSuffixClean = aliasPathSuffix.startsWith('/') ? aliasPathSuffix.substring(1) : aliasPathSuffix;
                 if (aliasSuffixClean.length > 3 && currentPathname.endsWith(aliasSuffixClean)) return true;
@@ -232,20 +252,23 @@ let db;
 
         const container = document.getElementById('navbar-container');
         const logoPath = DEFAULT_THEME['logo-src']; 
+        
+        // --- Added Fireworks Container ---
         container.innerHTML = `
             <header class="auth-navbar">
+                <div id="fireworks-container"></div>
                 <nav>
-                    <a href="/" class="flex items-center space-x-2 flex-shrink-0 overflow-hidden relative">
+                    <a href="/" class="flex items-center space-x-2 flex-shrink-0 overflow-hidden relative" style="z-index: 20;">
                         <img src="${logoPath}" alt="4SP Logo" class="h-10 w-auto" id="navbar-logo">
                     </a>
-                    <div class="tab-wrapper">
+                    <div class="tab-wrapper" style="z-index: 20;">
                         <div class="tab-scroll-container flex justify-center items-center overflow-hidden">
                             <div class="nav-tab-placeholder"></div>
                             <div class="nav-tab-placeholder hidden sm:block"></div>
                             <div class="nav-tab-placeholder hidden md:block"></div>
                         </div>
                     </div>
-                    <div id="auth-controls-wrapper" class="flex items-center gap-3 flex-shrink-0">
+                    <div id="auth-controls-wrapper" class="flex items-center gap-3 flex-shrink-0" style="z-index: 20;">
                         <div class="auth-toggle-placeholder"></div>
                     </div>
                 </nav>
@@ -257,6 +280,8 @@ let db;
 
         let pages = {};
         await loadCSS("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css");
+        // Load Fireworks JS
+        await loadScript("https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js");
         
         try {
             const response = await fetch(PAGE_CONFIG_URL);
@@ -285,24 +310,37 @@ let db;
             body { padding-top: 64px; }
             .auth-navbar {
                 position: fixed; top: 0; left: 0; 
-                /* UPDATED: transform-origin ensures scaling happens from top-left corner */
                 transform-origin: top left;
                 z-index: 1000;
-                background: var(--navbar-bg, #000000);
-                border-bottom: 1px solid var(--navbar-border, #1f2937);
+                background: var(--navbar-bg);
+                border-bottom: 1px solid var(--navbar-border);
                 height: 64px;
                 transition: background-color 0.3s ease, border-color 0.3s ease;
-                /* Width is handled dynamically by applyCounterZoom now */
                 width: 100%; 
+                overflow: hidden; /* Ensure fireworks don't spill */
             }
-            .auth-navbar nav { padding: 0 1rem; height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; position: relative; }
+            /* Fireworks Container Style */
+            #fireworks-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1; /* Below content but above background */
+                opacity: 0;
+                transition: opacity 0.5s ease;
+            }
+            .auth-navbar nav { padding: 0 1rem; height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; position: relative; z-index: 10; }
             .initial-avatar {
                 background: var(--avatar-gradient);
                 font-family: sans-serif; text-transform: uppercase; display: flex; align-items: center; justify-content: center; color: white;
             }
+            /* Updated Auth Toggle Style: Rounded Rectangle */
             #auth-toggle {
                 border-color: var(--avatar-border);
                 transition: border-color 0.3s ease;
+                border-radius: 12px; /* Matches tabs */
             }
 
             /* Auth Dropdown Menu Styles */
@@ -336,6 +374,7 @@ let db;
             .logged-out-auth-toggle { 
                 background: var(--logged-out-icon-bg); border: 1px solid var(--logged-out-icon-border); 
                 transition: background-color 0.3s ease, border-color 0.3s ease;
+                border-radius: 12px; /* Matches tabs */
             }
             .logged-out-auth-toggle i { color: var(--logged-out-icon-color); transition: color 0.3s ease; }
 
@@ -352,6 +391,8 @@ let db;
                 scrollbar-width: none; -ms-overflow-style: none; 
                 padding-bottom: 5px; margin-bottom: -5px; scroll-behavior: smooth;
                 max-width: 100%; padding-left: 16px; padding-right: 16px; 
+                /* Force Center Alignment Logic is handled in renderNavbar via JS, but default to center here */
+                justify-content: center;
             }
             .tab-scroll-container::-webkit-scrollbar { display: none; }
             .scroll-glide-button {
@@ -565,7 +606,7 @@ let db;
 
             return `
                 <div id="pin-area-wrapper" class="relative flex-shrink-0 flex items-center">
-                    <a href="${pinButtonUrl}" id="pin-button" class="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-gray-700 transition" title="${pinButtonTitle}">
+                    <a href="${pinButtonUrl}" id="pin-button" class="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-gray-700 transition" title="${pinButtonTitle}" style="border-radius: 12px;">
                         <i id="pin-button-icon" class="${pinButtonIcon}"></i>
                     </a>
                     <div id="pin-context-menu" class="auth-menu-container closed" style="width: 12rem;">
@@ -644,7 +685,7 @@ let db;
 
             const loggedOutView = `
                 <div id="auth-button-container" class="relative flex-shrink-0 flex items-center">
-                    <button id="auth-toggle" class="w-10 h-10 rounded-full border flex items-center justify-center hover:bg-gray-700 transition logged-out-auth-toggle">
+                    <button id="auth-toggle" class="w-10 h-10 border flex items-center justify-center hover:bg-gray-700 transition logged-out-auth-toggle">
                         <i class="fa-solid fa-user"></i>
                     </button>
                     <div id="auth-menu-container" class="auth-menu-container closed" style="width: 12rem;">
@@ -727,7 +768,7 @@ let db;
                 
                 return `
                     <div id="auth-button-container" class="relative flex-shrink-0 flex items-center">
-                        <button id="auth-toggle" class="w-10 h-10 rounded-full border border-gray-600 overflow-hidden">
+                        <button id="auth-toggle" class="w-10 h-10 border border-gray-600 overflow-hidden" style="border-radius: 12px;">
                             ${avatarHtml}
                         </button>
                         <div id="auth-menu-container" class="auth-menu-container closed">
@@ -936,27 +977,42 @@ let db;
             } catch (e) { savedTheme = null; }
             window.applyTheme(savedTheme || DEFAULT_THEME); 
 
-            // Initial check
-            setTimeout(() => {
-                updateScrollGilders();
-                
-                // Ensure Active Tab Visibility (Scroll if under gradient)
+            if (currentScrollLeft > 0) {
+                const savedScroll = currentScrollLeft;
+                requestAnimationFrame(() => {
+                    if (tabContainer) tabContainer.scrollLeft = savedScroll;
+                    currentScrollLeft = 0; 
+                    requestAnimationFrame(() => {
+                        updateScrollGilders();
+                    });
+                });
+            } else if (!hasScrolledToActiveTab) { 
                 const activeTab = document.querySelector('.nav-tab.active');
                 if (activeTab && tabContainer) {
-                    const containerRect = tabContainer.getBoundingClientRect();
-                    const tabRect = activeTab.getBoundingClientRect();
-                    const gradientWidth = 70; // Gradient width
+                    const centerOffset = (tabContainer.offsetWidth - activeTab.offsetWidth) / 2;
+                    const idealCenterScroll = activeTab.offsetLeft - centerOffset;
+                    const maxScroll = tabContainer.scrollWidth - tabContainer.offsetWidth;
+                    const extraRoomOnRight = maxScroll - idealCenterScroll;
+                    let scrollTarget;
 
-                    // Check Left Edge
-                    if (tabRect.left < containerRect.left + gradientWidth) {
-                        tabContainer.scrollBy({ left: tabRect.left - containerRect.left - gradientWidth - 20, behavior: 'smooth' });
+                    if (idealCenterScroll > 0 && extraRoomOnRight < centerOffset) {
+                        scrollTarget = maxScroll + 50;
+                    } else {
+                        scrollTarget = Math.max(0, idealCenterScroll);
                     }
-                    // Check Right Edge
-                    else if (tabRect.right > containerRect.right - gradientWidth) {
-                         tabContainer.scrollBy({ left: tabRect.right - containerRect.right + gradientWidth + 20, behavior: 'smooth' });
-                    }
+                    requestAnimationFrame(() => {
+                        tabContainer.scrollLeft = scrollTarget;
+                        requestAnimationFrame(() => {
+                            updateScrollGilders();
+                        });
+                    });
+                    hasScrolledToActiveTab = true; 
+                } else if (tabContainer) {
+                    requestAnimationFrame(() => {
+                        updateScrollGilders();
+                    });
                 }
-            }, 50);
+            }
             
             checkMarquees();
         };
