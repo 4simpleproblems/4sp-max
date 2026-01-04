@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LEVIUM</title>
     
-    <script src="/uv/uv.bundle.js"></script>
-    <script src="/uv/uv.config.js"></script>
-    <script src="/baremux/index.js"></script>
+    <script src="/LEVIUM/uv/uv.bundle.js"></script>
+    <script src="/LEVIUM/uv/uv.config.js"></script>
+    <script src="/LEVIUM/baremux/index.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,9 +317,9 @@
         };
 
         // --- Configuration ---
-        const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+        const connection = new BareMux.BareMuxConnection("/LEVIUM/baremux/worker.js");
         const wispUrl = "wss://wisp.rhw.one/";
-        connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+        connection.setTransport("/LEVIUM/libcurl/index.mjs", [{ websocket: wispUrl }]);
 
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => navigator.serviceWorker.register("/uv/sw.js"));
