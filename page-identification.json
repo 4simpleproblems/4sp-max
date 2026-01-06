@@ -51,7 +51,7 @@
         "adminOnly": true
     },
     "velium": {
-        "name": "VELIUM",
+        "name": "Velium",
         "icon": "fa-solid fa-music",
         "url": "../VELIUM/index.html"
     },
