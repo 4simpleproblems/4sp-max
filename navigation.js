@@ -413,7 +413,7 @@ let db;
                 padding: 0.5rem 1rem; 
                 color: var(--tab-text, #9ca3af); 
                 font-size: 0.875rem; font-weight: 400; 
-                border-radius: 12px; /* Updated to 12px */
+                border-radius: 14px; /* Updated to 14px */
                 text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
                 border: 1px solid transparent; transition: all 0.2s; cursor: pointer;
                 flex-shrink: 0; 
@@ -446,7 +446,7 @@ let db;
             #auth-toggle {
                 border-color: var(--avatar-border);
                 transition: border-color 0.3s ease;
-                border-radius: 12px; /* Updated to 12px */
+                border-radius: 14px; /* Updated to 14px */
                 border-width: 1px; /* Explicit 1px */
                 width: 40px; height: 40px;
                 display: flex; align-items: center; justify-content: center;
@@ -494,11 +494,12 @@ let db;
                 background: var(--tab-hover-bg, rgba(79, 70, 229, 0.05)); /* Default background color */
                 border-radius: 1rem; 
                 transition: all 0.2s ease; cursor: pointer;
-                border: 1px solid var(--menu-border, #333); /* Visible border */
+                /* FIXED: Border color now matches the background color */
+                border: 1px solid var(--tab-hover-bg, rgba(79, 70, 229, 0.05));
                 margin-bottom: 0; 
             }
             .auth-menu-link:hover, .auth-menu-button:hover { 
-                background-color: var(--tab-hover-bg, rgba(79, 70, 229, 0.05)); /* Keep background (or active color if preferred) */
+                background-color: var(--tab-hover-bg, rgba(79, 70, 229, 0.05)); 
                 border-color: var(--tab-active-border, #4f46e5);
                 color: var(--menu-item-hover-text, #ffffff);
                 transform: translateY(-2px) scale(1.02);
@@ -507,7 +508,7 @@ let db;
             .logged-out-auth-toggle { 
                 background: var(--logged-out-icon-bg, #010101); border: 1px solid var(--logged-out-icon-border, #374151); 
                 transition: background-color 0.3s ease, border-color 0.3s ease;
-                border-radius: 12px; /* Updated to 12px */
+                border-radius: 14px; /* Updated to 14px */
             }
             .logged-out-auth-toggle i { color: var(--logged-out-icon-color, #DADADA); transition: color 0.3s ease; }
 
@@ -520,7 +521,7 @@ let db;
             #pin-button { 
                 border-color: var(--pin-btn-border, #4b5563); transition: background-color 0.2s, border-color 0.3s ease; 
                 display: flex; align-items: center; justify-content: center; 
-                border-radius: 12px; /* Updated to 12px */
+                border-radius: 14px; /* Updated to 14px */
                 border-width: 1px; /* Explicit 1px */
                 width: 40px; height: 40px;
             }
@@ -545,8 +546,6 @@ let db;
         `;
         document.head.appendChild(style);
     };
-
-    // --- REMOVED: applyCounterZoom function definition ---
 
     const initializeApp = (pages, firebaseConfig) => {
         if (!document.getElementById('navbar-container')) {
@@ -673,7 +672,7 @@ let db;
 
             return `
                 <div id="pin-area-wrapper" class="relative flex-shrink-0 flex items-center">
-                    <a href="${pinButtonUrl}" id="pin-button" class="w-10 h-10 border flex items-center justify-center hover:bg-gray-700 transition" title="${pinButtonTitle}" style="border-radius: 12px; border-width: 1px;">
+                    <a href="${pinButtonUrl}" id="pin-button" class="w-10 h-10 border flex items-center justify-center hover:bg-gray-700 transition" title="${pinButtonTitle}" style="border-radius: 14px; border-width: 1px;">
                         <i id="pin-button-icon" class="${pinButtonIcon}"></i>
                     </a>
                     <div id="pin-context-menu" class="auth-menu-container closed" style="width: 12rem;">
@@ -789,12 +788,9 @@ let db;
                 let avatarHtml = '';
                 const pfpType = userData?.pfpType || 'google'; 
 
-                // Use style="border-radius: 12px;" for inner content to fit in 14px container
-                const innerRadiusStyle = 'style="border-radius: 12px;"';
-                const innerRadiusClass = ''; // removing rounded-full
-
+                // FIX: Combined styles to ensure background colors render correctly
                 if (pfpType === 'custom' && userData?.customPfp) {
-                    avatarHtml = `<img src="${userData.customPfp}" class="w-full h-full object-cover" ${innerRadiusStyle} alt="Profile">`;
+                    avatarHtml = `<img src="${userData.customPfp}" class="w-full h-full object-cover" style="border-radius: 12px;" alt="Profile">`;
                 } else if (pfpType === 'mibi' && userData?.mibiConfig) {
                     const { eyes, mouths, hats, bgColor, rotation, size, offsetX, offsetY } = userData.mibiConfig;
                     const scale = (size || 100) / 100;
@@ -803,7 +799,7 @@ let db;
                     const y = offsetY || 0;
                     
                     avatarHtml = `
-                        <div class="w-full h-full relative overflow-hidden" ${innerRadiusStyle} style="background-color: ${bgColor || '#3B82F6'}; border-radius: 12px;">
+                        <div class="w-full h-full relative overflow-hidden" style="background-color: ${bgColor || '#3B82F6'}; border-radius: 12px;">
                              <div class="absolute inset-0 w-full h-full" style="transform: translate(${x}%, ${y}%) rotate(${rot}deg) scale(${scale}); transform-origin: center;">
                                  <img src="/mibi-avatars/head.png" class="absolute inset-0 w-full h-full object-contain">
                                  ${eyes ? `<img src="/mibi-avatars/eyes/${eyes}" class="absolute inset-0 w-full h-full object-contain">` : ''}
@@ -816,19 +812,19 @@ let db;
                     const bg = userData?.pfpLetterBg || DEFAULT_THEME['avatar-gradient'];
                     const textColor = getLetterAvatarTextColor(bg); 
                     const fontSizeClass = initial.length >= 3 ? 'text-xs' : (initial.length === 2 ? 'text-sm' : 'text-base'); 
-                    avatarHtml = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" ${innerRadiusStyle} style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
+                    avatarHtml = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
                 } else {
                     const googleProvider = user.providerData.find(p => p.providerId === 'google.com');
                     const googlePhoto = googleProvider ? googleProvider.photoURL : null;
                     const displayPhoto = googlePhoto || user.photoURL;
 
                     if (displayPhoto) {
-                        avatarHtml = `<img src="${displayPhoto}" class="w-full h-full object-cover" ${innerRadiusStyle} alt="Profile">`;
+                        avatarHtml = `<img src="${displayPhoto}" class="w-full h-full object-cover" style="border-radius: 12px;" alt="Profile">`;
                     } else {
                         const bg = DEFAULT_THEME['avatar-gradient'];
                         const textColor = getLetterAvatarTextColor(bg);
                         const fontSizeClass = initial.length >= 3 ? 'text-xs' : (initial.length === 2 ? 'text-sm' : 'text-base');
-                        avatarHtml = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" ${innerRadiusStyle} style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
+                        avatarHtml = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
                     }
                 }
                 
@@ -1261,11 +1257,8 @@ let db;
                     const initial = (currentUserData.letterAvatarText) ? currentUserData.letterAvatarText : username.charAt(0).toUpperCase();
                     let newContent = '';
                     
-                    // Use style="border-radius: 12px;" for inner content to fit in 14px container
-                    const innerRadiusStyle = 'style="border-radius: 12px;"';
-
                     if (currentUserData.pfpType === 'custom' && currentUserData.customPfp) {
-                        newContent = `<img src="${currentUserData.customPfp}" class="w-full h-full object-cover" ${innerRadiusStyle} alt="Profile">`;
+                        newContent = `<img src="${currentUserData.customPfp}" class="w-full h-full object-cover" style="border-radius: 12px;" alt="Profile">`;
                     } else if (currentUserData.pfpType === 'mibi' && currentUserData.mibiConfig) {
                         const { eyes, mouths, hats, bgColor, rotation, size, offsetX, offsetY } = currentUserData.mibiConfig;
                         const scale = (size || 100) / 100;
@@ -1274,7 +1267,7 @@ let db;
                         const y = offsetY || 0;
 
                         newContent = `
-                            <div class="w-full h-full relative overflow-hidden" ${innerRadiusStyle} style="background-color: ${bgColor || '#3B82F6'}; border-radius: 12px;">
+                            <div class="w-full h-full relative overflow-hidden" style="background-color: ${bgColor || '#3B82F6'}; border-radius: 12px;">
                                  <div class="absolute inset-0 w-full h-full" style="transform: translate(${x}%, ${y}%) rotate(${rot}deg) scale(${scale}); transform-origin: center;">
                                      <img src="/mibi-avatars/head.png" class="absolute inset-0 w-full h-full object-contain">
                                      ${eyes ? `<img src="/mibi-avatars/eyes/${eyes}" class="absolute inset-0 w-full h-full object-contain">` : ''}
@@ -1287,19 +1280,19 @@ let db;
                         const bg = currentUserData.letterAvatarColor || DEFAULT_THEME['avatar-gradient'];
                         const textColor = getLetterAvatarTextColor(bg);
                         const fontSizeClass = initial.length >= 3 ? 'text-xs' : (initial.length === 2 ? 'text-sm' : 'text-base');
-                        newContent = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" ${innerRadiusStyle} style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
+                        newContent = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
                     } else {
                         const googleProvider = currentUser?.providerData.find(p => p.providerId === 'google.com');
                         const googlePhoto = googleProvider ? googleProvider.photoURL : null;
                         const displayPhoto = googlePhoto || currentUser?.photoURL;
 
                         if (displayPhoto) {
-                            newContent = `<img src="${displayPhoto}" class="w-full h-full object-cover" ${innerRadiusStyle} alt="Profile">`;
+                            newContent = `<img src="${displayPhoto}" class="w-full h-full object-cover" style="border-radius: 12px;" alt="Profile">`;
                         } else {
                             const bg = DEFAULT_THEME['avatar-gradient'];
                             const textColor = getLetterAvatarTextColor(bg);
                             const fontSizeClass = initial.length >= 3 ? 'text-xs' : (initial.length === 2 ? 'text-sm' : 'text-base');
-                            newContent = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" ${innerRadiusStyle} style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
+                            newContent = `<div class="initial-avatar w-full h-full font-semibold ${fontSizeClass}" style="background: ${bg}; color: ${textColor}; border-radius: 12px;">${initial}</div>`;
                         }
                     }
 
