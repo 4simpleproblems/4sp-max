@@ -269,6 +269,7 @@ let db;
         }
         
         injectStyles();
+        const container = document.getElementById('navbar-container');
         const logoPath = '/images/logo.png'; 
         
         // --- Structure ---
