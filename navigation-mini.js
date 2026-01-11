@@ -665,6 +665,7 @@ let db;
 
         
         const getPinButtonHtml = () => {
+            if (!currentUser) return '';
             const pinnedPageKey = localStorage.getItem(PINNED_PAGE_KEY);
             const isPinButtonHidden = localStorage.getItem(PIN_BUTTON_HIDDEN_KEY) === 'true';
             const currentPageKey = getCurrentPageKey();
@@ -771,7 +772,7 @@ let db;
                     <button id="auth-toggle" class="w-10 h-10 border flex items-center justify-center hover:bg-gray-700 transition logged-out-auth-toggle">
                         <i class="fa-solid fa-user"></i>
                     </button>
-                    <div id="auth-menu-container" class="auth-menu-container closed" style="width: 12rem;">
+                    <div id="auth-menu-container" class="auth-menu-container closed" style="width: 16rem;">
                         <a href="/authentication.html" class="auth-menu-link">
                             <i class="fa-solid fa-lock w-4"></i>
                             Authenticate
