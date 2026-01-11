@@ -236,11 +236,24 @@
         
         /* --- Game Viewer Modal --- */
         #zoneViewer { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            display: none; position: fixed; 
+            top: 64px; /* Clearance for navbar */
+            left: 0; width: 100%; 
+            height: calc(100% - 64px); 
             background-color: #000; z-index: 5000; flex-direction: column; 
             opacity: 0;
         }
         #zoneViewer.active { display: flex; opacity: 1; }
+
+        /* Custom Fullscreen Mode */
+        #zoneViewer.custom-fullscreen {
+            top: 0 !important;
+            height: 100% !important;
+            z-index: 10000 !important; /* Above navbar (9999) */
+        }
+        #zoneViewer.custom-fullscreen .zone-header {
+            display: none !important;
+        }
 
         #zoneViewer .zone-header {
             background-color: #0a0a0a;
@@ -1305,13 +1318,21 @@
 
             // --- FULLSCREEN BUTTON LISTENER ---
             document.getElementById('fullscreenBtnZone').addEventListener('click', () => {
-                const zoneFrame = document.getElementById('zoneFrame');
-                if (zoneFrame && zoneFrame.requestFullscreen) {
-                    zoneFrame.requestFullscreen();
-                } else if (zoneFrame && zoneFrame.webkitRequestFullscreen) {
-                    zoneFrame.webkitRequestFullscreen();
-                } else if (zoneFrame && zoneFrame.msRequestFullscreen) {
-                    zoneFrame.msRequestFullscreen();
+                const zoneViewer = document.getElementById('zoneViewer');
+                zoneViewer.classList.add('custom-fullscreen');
+                
+                if (window.showNotification) {
+                    window.showNotification('Press ESC to exit fullscreen', 'fa-solid fa-expand', 'info');
+                }
+            });
+
+            // Global ESC listener for custom fullscreen
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const zoneViewer = document.getElementById('zoneViewer');
+                    if (zoneViewer && zoneViewer.classList.contains('custom-fullscreen')) {
+                        zoneViewer.classList.remove('custom-fullscreen');
+                    }
                 }
             });
 

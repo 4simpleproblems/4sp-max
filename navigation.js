@@ -500,10 +500,19 @@ let db;
                 70% { transform: translateY(2px) scale(1.01); }
                 100% { opacity: 1; transform: translateY(0) scale(1); }
             }
+            @keyframes menu-pop-out {
+                0% { opacity: 1; transform: translateY(0) scale(1); }
+                100% { opacity: 0; transform: translateY(-10px) scale(0.95); }
+            }
 
             .auth-menu-container.open { 
                 display: flex !important; 
                 animation: menu-pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            }
+            .auth-menu-container.closing {
+                display: flex !important;
+                animation: menu-pop-out 0.3s ease-in forwards;
+                pointer-events: none;
             }
             .auth-menu-container.closed { opacity: 0; pointer-events: none; transform: translateY(-10px) scale(0.95); display: none !important; }
 
@@ -926,11 +935,31 @@ let db;
             if (toggleButton && menu) {
                 toggleButton.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    menu.classList.toggle('closed');
-                    menu.classList.toggle('open');
-                    document.getElementById('pin-context-menu')?.classList.add('closed');
-                    document.getElementById('pin-context-menu')?.classList.remove('open');
-                    if (menu.classList.contains('open')) checkMarquees();
+                    
+                    // Close Pin Menu if open
+                    const pinMenu = document.getElementById('pin-context-menu');
+                    if (pinMenu && pinMenu.classList.contains('open')) {
+                        pinMenu.classList.remove('open');
+                        pinMenu.classList.add('closing');
+                        pinMenu.addEventListener('animationend', () => {
+                            pinMenu.classList.remove('closing');
+                            pinMenu.classList.add('closed');
+                        }, { once: true });
+                    }
+
+                    if (menu.classList.contains('open')) {
+                        menu.classList.remove('open');
+                        menu.classList.add('closing');
+                        menu.addEventListener('animationend', () => {
+                            menu.classList.remove('closing');
+                            menu.classList.add('closed');
+                        }, { once: true });
+                    } else {
+                        menu.classList.remove('closed');
+                        menu.classList.remove('closing');
+                        menu.classList.add('open');
+                        checkMarquees();
+                    }
                 });
             }
 
@@ -1195,10 +1224,29 @@ let db;
 
                 pinButton.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
-                    pinContextMenu.classList.toggle('closed');
-                    pinContextMenu.classList.toggle('open');
-                    document.getElementById('auth-menu-container')?.classList.add('closed');
-                    document.getElementById('auth-menu-container')?.classList.remove('open');
+                    
+                    const authMenu = document.getElementById('auth-menu-container');
+                    if (authMenu && authMenu.classList.contains('open')) {
+                        authMenu.classList.remove('open');
+                        authMenu.classList.add('closing');
+                        authMenu.addEventListener('animationend', () => {
+                            authMenu.classList.remove('closing');
+                            authMenu.classList.add('closed');
+                        }, { once: true });
+                    }
+
+                    if (pinContextMenu.classList.contains('open')) {
+                        pinContextMenu.classList.remove('open');
+                        pinContextMenu.classList.add('closing');
+                        pinContextMenu.addEventListener('animationend', () => {
+                            pinContextMenu.classList.remove('closing');
+                            pinContextMenu.classList.add('closed');
+                        }, { once: true });
+                    } else {
+                        pinContextMenu.classList.remove('closed');
+                        pinContextMenu.classList.remove('closing');
+                        pinContextMenu.classList.add('open');
+                    }
                 });
             }
 
@@ -1209,8 +1257,16 @@ let db;
                         localStorage.setItem(PINNED_PAGE_KEY, currentPageKey);
                         updatePinButtonArea(); 
                     }
-                    pinContextMenu.classList.add('closed');
-                    pinContextMenu.classList.remove('open');
+                    // Animation logic handled by updatePinButtonArea usually destroys elements,
+                    // but if pinContextMenu persists or if we just want to close it:
+                    if (pinContextMenu && pinContextMenu.parentNode) {
+                         pinContextMenu.classList.remove('open');
+                         pinContextMenu.classList.add('closing');
+                         pinContextMenu.addEventListener('animationend', () => {
+                             pinContextMenu.classList.remove('closing');
+                             pinContextMenu.classList.add('closed');
+                         }, { once: true });
+                    }
                 });
             }
             if (removePinButton) {
@@ -1265,8 +1321,12 @@ let db;
                     
                     if (menu && menu.classList.contains('open')) {
                         if (!menu.contains(e.target) && (toggleButton && !toggleButton.contains(e.target))) {
-                            menu.classList.add('closed');
                             menu.classList.remove('open');
+                            menu.classList.add('closing');
+                            menu.addEventListener('animationend', () => {
+                                menu.classList.remove('closing');
+                                menu.classList.add('closed');
+                            }, { once: true });
                         }
                     }
                     
@@ -1275,8 +1335,12 @@ let db;
 
                     if (pinContextMenu && pinContextMenu.classList.contains('open')) {
                         if (!pinContextMenu.contains(e.target) && (pinButton && !pinButton.contains(e.target))) {
-                            pinContextMenu.classList.add('closed');
                             pinContextMenu.classList.remove('open');
+                            pinContextMenu.classList.add('closing');
+                            pinContextMenu.addEventListener('animationend', () => {
+                                pinContextMenu.classList.remove('closing');
+                                pinContextMenu.classList.add('closed');
+                            }, { once: true });
                         }
                     }
                 });
