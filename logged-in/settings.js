@@ -1022,7 +1022,7 @@
                                 <button class="pfp-mode-btn active btn-toolbar-style" data-mode="google">Google PFP</button>
                                 <button class="pfp-mode-btn btn-toolbar-style" data-mode="letter">Letter Avatar</button>
                                 <button class="pfp-mode-btn btn-toolbar-style" data-mode="mibi">Mibi Avatar</button>
-                                <button class="pfp-mode-btn btn-toolbar-style" data-mode="upload">Upload Image</button>
+                                <button class="pfp-mode-btn btn-toolbar-style" data-mode="custom">Upload Image</button>
                             </div>
 
                             <!-- Letter Avatar Options -->
