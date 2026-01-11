@@ -47,13 +47,13 @@
     "levium": {
         "name": "Levium",
         "icon": "fa-solid fa-globe",
-        "url": "../LEVIUM/levium.html",
+        "url": "../logged-in/levium.html",
         "adminOnly": true
     },
     "velium": {
         "name": "Velium",
         "icon": "fa-solid fa-music",
-        "url": "../VELIUM/index.html"
+        "url": "../logged-in/velium.html"
     },
     "securly-tester": {
         "name": "Securly Tester",
