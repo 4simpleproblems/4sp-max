@@ -698,7 +698,7 @@
         function sd_getBaseURLForPage(page) {
             // Updated to point to WORKER_ROOT for numbered pages, GAMES_BASE_URL for default
             if (page > 1) return `${WORKER_ROOT}strongdog${page}/`;
-            return `${WORKER_ROOT}STRONGDOG/`; // Assumes default strongdog is at root/STRONGDOG? Or inside GAMES?
+            return `${WORKER_ROOT}GAMES/`; // Assumes default strongdog is at root/STRONGDOG? Or inside GAMES?
             // Re-reading logic: "stuff like ../DOOM/ will stay in GAMES directory but strongdog# directories exit"
             // Let's assume default STRONGDOG is adjacent to strongdog2 etc. at root level based on prior naming conventions
         }
