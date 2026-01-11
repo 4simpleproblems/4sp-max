@@ -72,7 +72,7 @@ let fireworksInstance = null; // Store fireworks instance globally
 window.applyTheme = (theme) => {
     const root = document.documentElement;
     if (!root) return;
-    const themeToApply = theme && typeof theme === 'object' ? theme : DEFAULT_THEME;
+    const themeToApply = DEFAULT_THEME; // Force Default (Dark) Theme
     
     // Determine if it's a light theme
     const isLightTheme = lightThemeNames.includes(themeToApply.name);
@@ -275,15 +275,7 @@ let db;
                 <img src="${logoPath}" alt="4SP Logo" class="navbar-logo" id="navbar-logo">
             </a>
             
-            <div class="tab-wrapper" style="z-index: 20;">
-                <button id="glide-left" class="scroll-glide-button hidden"><i class="fa-solid fa-chevron-left"></i></button>
-                <div class="tab-scroll-container" id="tabs-container">
-                    <div class="nav-tab-placeholder"></div>
-                    <div class="nav-tab-placeholder hidden sm:block"></div>
-                    <div class="nav-tab-placeholder hidden md:block"></div>
-                </div>
-                <button id="glide-right" class="scroll-glide-button hidden"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
+            <!-- Tabs removed for mini navigation -->
 
             <div id="auth-controls-wrapper" class="auth-controls-wrapper" style="z-index: 20;">
                 <div class="auth-toggle-placeholder"></div>
@@ -587,14 +579,8 @@ let db;
         
         injectStyles();
         
-        let savedTheme;
-        try {
-            savedTheme = JSON.parse(localStorage.getItem(THEME_STORAGE_KEY));
-        } catch (e) {
-            savedTheme = null;
-            console.warn("Could not parse saved theme from Local Storage.");
-        }
-        window.applyTheme(savedTheme || DEFAULT_THEME); 
+        // Theme Syncing Removed - Force Default
+        window.applyTheme(DEFAULT_THEME); 
 
         const app = firebase.initializeApp(firebaseConfig);
         auth = firebase.auth();
@@ -1027,86 +1013,24 @@ let db;
             const logoPath = DEFAULT_THEME['logo-src']; 
             if (navbarLogo) navbarLogo.src = logoPath;
             
-            // Determine the single active page key first
-            const activePageKey = getCurrentPageKey();
-
-            const tabsHtml = Object.entries(pages || {})
-                .filter(([, page]) => !(page.adminOnly && !isPrivilegedUser)) 
-                .map(([key, page]) => { // Get key and page from entry
-                    const isActive = (key === activePageKey); // Compare with the single activePageKey
-                    const activeClass = isActive ? 'active' : '';
-                    const iconClasses = getIconClass(page.icon);
-                    return `<a href="${page.url}" class="nav-tab ${activeClass}"><i class="${iconClasses} mr-2"></i>${page.name}</a>`;
-                }).join('');
+            // Tabs Removed in Mini Navigation
 
             const authControlsHtml = getAuthControlsHtml();
 
-            // Only update innerHTML if tabContainer exists (it should with new structure)
-            if (tabContainer) {
-                tabContainer.innerHTML = tabsHtml;
-            }
+            // Tabs container removed
 
             if (authControlsWrapper) {
                 authControlsWrapper.innerHTML = authControlsHtml;
             }
             
-            const tabCount = tabContainer ? tabContainer.querySelectorAll('.nav-tab').length : 0;
-
-            if (tabCount <= 9) {
-                if(tabContainer) {
-                    tabContainer.style.justifyContent = 'center';
-                }
-            } else {
-                if(tabContainer) {
-                    tabContainer.style.justifyContent = 'flex-start';
-                }
-            }
+            // Tab scroll logic removed
 
             setupEventListeners(user);
 
-            let savedTheme;
-            try {
-                savedTheme = JSON.parse(localStorage.getItem(THEME_STORAGE_KEY));
-            } catch (e) { savedTheme = null; }
-            window.applyTheme(savedTheme || DEFAULT_THEME); 
+            // Theme Syncing Removed - Force Default
+            window.applyTheme(DEFAULT_THEME); 
 
-            if (currentScrollLeft > 0) {
-                const savedScroll = currentScrollLeft;
-                requestAnimationFrame(() => {
-                    if (tabContainer) tabContainer.scrollLeft = savedScroll;
-                    currentScrollLeft = 0; 
-                    requestAnimationFrame(() => {
-                        updateScrollGilders();
-                    });
-                });
-            } else if (!hasScrolledToActiveTab) { 
-                const activeTab = document.querySelector('.nav-tab.active');
-                if (activeTab && tabContainer) {
-                    const centerOffset = (tabContainer.offsetWidth - activeTab.offsetWidth) / 2;
-                    const idealCenterScroll = activeTab.offsetLeft - centerOffset;
-                    const maxScroll = tabContainer.scrollWidth - tabContainer.offsetWidth;
-                    const extraRoomOnRight = maxScroll - idealCenterScroll;
-                    let scrollTarget;
-
-                    if (idealCenterScroll > 0 && extraRoomOnRight < centerOffset) {
-                        scrollTarget = maxScroll + 50;
-                    } else {
-                        scrollTarget = Math.max(0, idealCenterScroll);
-                    }
-                    requestAnimationFrame(() => {
-                        tabContainer.scrollLeft = scrollTarget;
-                        requestAnimationFrame(() => {
-                            updateScrollGilders();
-                        });
-                    });
-                    hasScrolledToActiveTab = true; 
-                } else if (tabContainer) {
-                    requestAnimationFrame(() => {
-                        updateScrollGilders();
-                    });
-                }
-            }
-            
+            // Scroll logic removed
             checkMarquees();
         };
 
