@@ -422,10 +422,8 @@
     </div>
     
     <div id="zoneViewer" aria-modal="true" role="dialog">
-        <!-- Floating Exit Button for Custom Fullscreen -->
-        <button id="floatingExitBtn" class="hidden absolute top-4 right-4 z-[10001] bg-red-600/80 hover:bg-red-600 text-white px-4 py-2 rounded-full font-bold shadow-lg transition-all backdrop-blur-md border border-white/20">
-            <i class="fa-solid fa-compress mr-2"></i>Exit Fullscreen
-        </button>
+        <!-- Invisible Overlay for Input Tracking -->
+        <div id="fullscreenInputOverlay" class="hidden absolute inset-0 z-[10001] bg-transparent"></div>
 
         <div class="zone-header">
              <div class="zone-title">
@@ -1326,31 +1324,20 @@
             // --- FULLSCREEN BUTTON LISTENER ---
             let escPressCount = 0;
             let escResetTimer = null;
-            const floatingExitBtn = document.getElementById('floatingExitBtn');
-
-            const exitCustomFullscreen = () => {
-                const zoneViewer = document.getElementById('zoneViewer');
-                if (zoneViewer) {
-                    zoneViewer.classList.remove('custom-fullscreen');
-                    floatingExitBtn.classList.add('hidden');
-                    if (window.showNotification) window.showNotification('Exited Fullscreen', 'fa-solid fa-compress', 'info');
-                }
-            };
-
-            floatingExitBtn.addEventListener('click', exitCustomFullscreen);
+            const inputOverlay = document.getElementById('fullscreenInputOverlay');
 
             document.getElementById('fullscreenBtnZone').addEventListener('click', () => {
                 const zoneViewer = document.getElementById('zoneViewer');
                 zoneViewer.classList.add('custom-fullscreen');
-                floatingExitBtn.classList.remove('hidden');
+                inputOverlay.classList.remove('hidden'); // Enable overlay
                 
                 if (window.showNotification) {
-                    window.showNotification('Press ESC 3 times or use the Exit button', 'fa-solid fa-expand', 'info');
+                    window.showNotification('Press ESC 3 times fast to exit fullscreen', 'fa-solid fa-expand', 'info');
                 }
             });
 
             // Global ESC listener for custom fullscreen
-            document.addEventListener('keydown', (e) => {
+            const handleEscLogic = (e) => {
                 if (e.key === 'Escape') {
                     const zoneViewer = document.getElementById('zoneViewer');
                     if (zoneViewer && zoneViewer.classList.contains('custom-fullscreen')) {
@@ -1361,15 +1348,32 @@
                         }, 1000); // 1 second window
 
                         if (escPressCount >= 3) {
-                            exitCustomFullscreen();
+                            zoneViewer.classList.remove('custom-fullscreen');
+                            inputOverlay.classList.add('hidden'); // Disable overlay
                             escPressCount = 0;
+                            if (window.showNotification) window.showNotification('Exited Fullscreen', 'fa-solid fa-compress', 'info');
                         } else {
                             const remaining = 3 - escPressCount;
                             if (window.showNotification) window.showNotification(`Press ESC ${remaining} more time${remaining > 1 ? 's' : ''} to exit`, 'fa-solid fa-expand', 'warning');
                         }
                     }
                 }
-            });
+            };
+
+            document.addEventListener('keydown', handleEscLogic);
+            
+            // Also attach to overlay to ensure it catches events if focused
+            inputOverlay.addEventListener('keydown', handleEscLogic);
+            
+            // Allow clicks to pass through to iframe (pointer-events hack or focus management)
+            // Since we can't block the game, we keep pointer-events: none on the class via Tailwind if needed,
+            // but the user wants it to TRACK inputs. A transparent div blocks inputs by default.
+            // If we want game to work, we MUST let clicks through.
+            // BUT if we let clicks through, the overlay loses focus.
+            // This is the Catch-22.
+            // We will set pointer-events to none style on the element inline to ensure game is playable,
+            // relying on the parent document listener.
+            inputOverlay.style.pointerEvents = 'none';
 
             creditsBtn.addEventListener('click', () => { creditsModal.style.display = 'flex'; creditsContent.innerHTML = categories.map(cat => CREDITS_DATA[cat] ? `<div class="p-4 border border-brand-border rounded-lg"><h4 class="font-bold mb-1">${cat}</h4><p class="text-sm text-gray-400">${CREDITS_DATA[cat].credit}</p></div>` : '').join(''); });
             closeCreditsBtn.addEventListener('click', () => creditsModal.style.display = 'none');
