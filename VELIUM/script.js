@@ -9,6 +9,7 @@ let currentResults = [];
 let searchType = 'song';
 let lastQuery = '';
 let isPlaying = false;
+let isLoading = false;
 let itemToAdd = null;
 let currentPlaylistId = null; 
 let isDraggingSlider = false; 
@@ -118,6 +119,9 @@ async function initApp() {
 
         [audioPlayer, audioPlayer2].forEach(p => {
             if (!p) return;
+            p.addEventListener('waiting', () => { if (p.id === activePlayerId) { isLoading = true; updatePlayBtn(); } });
+            p.addEventListener('playing', () => { if (p.id === activePlayerId) { isLoading = false; isPlaying = true; updatePlayBtn(); } });
+            p.addEventListener('canplay', () => { if (p.id === activePlayerId) { isLoading = false; updatePlayBtn(); } });
             p.addEventListener('timeupdate', () => { if (p.id === activePlayerId) updateProgress(); });
             p.addEventListener('loadedmetadata', () => {
                 if (p.id === activePlayerId) {
@@ -470,6 +474,10 @@ function playSong(item, index = -1, queue = []) {
     if (playerImg) playerImg.src = getImageUrl(item);
     updatePlayerLikeIcon();
     if (downloadBtn) downloadBtn.onclick = (e) => { e.preventDefault(); showToast(`Downloading...`); downloadResource(downloadUrl, `${songName}.mp3`); };
+    
+    isLoading = true;
+    updatePlayBtn();
+
     active.src = downloadUrl; 
     active.load(); // Ensure resource loading starts
     active.volume = (volumeSlider ? volumeSlider.value : 1);
@@ -492,7 +500,15 @@ function playSong(item, index = -1, queue = []) {
 }
 
 function togglePlay() { const p = getActivePlayer(); if(p && p.paused) p.play(); else if(p) p.pause(); }
-function updatePlayBtn() { if(playPauseBtn) playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause-circle"></i>' : '<i class="fas fa-play-circle"></i>'; }
+function updatePlayBtn() { 
+    if(playPauseBtn) {
+        if (isLoading) {
+            playPauseBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin-fast text-2xl"></i>';
+        } else {
+            playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause-circle"></i>' : '<i class="fas fa-play-circle"></i>';
+        }
+    }
+}
 function updateProgress() {
     const active = getActivePlayer(); if (!active) return;
     const { currentTime, duration } = active; if (isNaN(duration)) return;
