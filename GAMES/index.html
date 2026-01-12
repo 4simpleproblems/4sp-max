@@ -424,6 +424,10 @@
     <div id="zoneViewer" aria-modal="true" role="dialog">
         <!-- Invisible Overlay for Input Tracking -->
         <div id="fullscreenInputOverlay" class="hidden absolute inset-0 z-[10001] bg-transparent"></div>
+        <!-- Mouse Trap for Focus Regaining -->
+        <div id="fullscreenMouseTrap" class="hidden absolute top-0 left-0 w-full h-4 z-[20005] bg-transparent"></div>
+        <!-- Hidden Input for Focus -->
+        <input type="text" id="focusHelper" class="fixed -top-full left-0 opacity-0 pointer-events-none" tabindex="-1">
 
         <div class="zone-header">
              <div class="zone-title">
@@ -1325,14 +1329,44 @@
             let escPressCount = 0;
             let escResetTimer = null;
             const inputOverlay = document.getElementById('fullscreenInputOverlay');
+            const mouseTrap = document.getElementById('fullscreenMouseTrap');
+            const focusHelper = document.getElementById('focusHelper');
 
-            document.getElementById('fullscreenBtnZone').addEventListener('click', () => {
+            const enterCustomFullscreen = () => {
                 const zoneViewer = document.getElementById('zoneViewer');
                 zoneViewer.classList.add('custom-fullscreen');
-                inputOverlay.classList.remove('hidden'); // Enable overlay
+                inputOverlay.classList.remove('hidden');
+                mouseTrap.classList.remove('hidden');
+                focusHelper.focus(); // Try to grab focus initially
                 
                 if (window.showNotification) {
                     window.showNotification('Press ESC 3 times fast to exit fullscreen', 'fa-solid fa-expand', 'info');
+                }
+            };
+
+            const exitCustomFullscreen = () => {
+                const zoneViewer = document.getElementById('zoneViewer');
+                zoneViewer.classList.remove('custom-fullscreen');
+                inputOverlay.classList.add('hidden');
+                mouseTrap.classList.add('hidden');
+                escPressCount = 0;
+                if (window.showNotification) window.showNotification('Exited Fullscreen', 'fa-solid fa-compress', 'info');
+            };
+
+            document.getElementById('fullscreenBtnZone').addEventListener('click', enterCustomFullscreen);
+
+            // Mouse Trap: Hovering top of screen regains focus to parent
+            mouseTrap.addEventListener('mouseenter', () => {
+                focusHelper.focus();
+            });
+
+            // Pointer Lock Fallback: If lock breaks (ESC), regain focus
+            document.addEventListener('pointerlockchange', () => {
+                const zoneViewer = document.getElementById('zoneViewer');
+                if (!document.pointerLockElement && zoneViewer && zoneViewer.classList.contains('custom-fullscreen')) {
+                    focusHelper.focus();
+                    // We can also count this as one press!
+                    handleEscLogic({ key: 'Escape' });
                 }
             });
 
@@ -1345,13 +1379,10 @@
                         if (escResetTimer) clearTimeout(escResetTimer);
                         escResetTimer = setTimeout(() => {
                             escPressCount = 0;
-                        }, 1000); // 1 second window
+                        }, 800); // 800ms window
 
                         if (escPressCount >= 3) {
-                            zoneViewer.classList.remove('custom-fullscreen');
-                            inputOverlay.classList.add('hidden'); // Disable overlay
-                            escPressCount = 0;
-                            if (window.showNotification) window.showNotification('Exited Fullscreen', 'fa-solid fa-compress', 'info');
+                            exitCustomFullscreen();
                         } else {
                             const remaining = 3 - escPressCount;
                             if (window.showNotification) window.showNotification(`Press ESC ${remaining} more time${remaining > 1 ? 's' : ''} to exit`, 'fa-solid fa-expand', 'warning');
@@ -1361,18 +1392,9 @@
             };
 
             document.addEventListener('keydown', handleEscLogic);
+            inputOverlay.addEventListener('keydown', handleEscLogic); // Redundant if pointer-events: none, but safe
             
-            // Also attach to overlay to ensure it catches events if focused
-            inputOverlay.addEventListener('keydown', handleEscLogic);
-            
-            // Allow clicks to pass through to iframe (pointer-events hack or focus management)
-            // Since we can't block the game, we keep pointer-events: none on the class via Tailwind if needed,
-            // but the user wants it to TRACK inputs. A transparent div blocks inputs by default.
-            // If we want game to work, we MUST let clicks through.
-            // BUT if we let clicks through, the overlay loses focus.
-            // This is the Catch-22.
-            // We will set pointer-events to none style on the element inline to ensure game is playable,
-            // relying on the parent document listener.
+            // Allow clicks to pass through to iframe
             inputOverlay.style.pointerEvents = 'none';
 
             creditsBtn.addEventListener('click', () => { creditsModal.style.display = 'flex'; creditsContent.innerHTML = categories.map(cat => CREDITS_DATA[cat] ? `<div class="p-4 border border-brand-border rounded-lg"><h4 class="font-bold mb-1">${cat}</h4><p class="text-sm text-gray-400">${CREDITS_DATA[cat].credit}</p></div>` : '').join(''); });
