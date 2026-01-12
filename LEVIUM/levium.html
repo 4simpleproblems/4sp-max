@@ -25,7 +25,7 @@
             --accent: #4f46e5;
             --text-main: #e5e7eb;
             --text-muted: #d1d5db;
-            --radius: 0.75rem; /* 12px to match notes.html */
+            --radius: 1rem; /* Increased from 0.75rem for more rounded look */
             --control-size: 42px;
         }
 
@@ -569,7 +569,7 @@
                             
                             if (sugs && sugs.length) {
                                 // Map the array strings into clickable divs
-                                list.innerHTML = sugs.map(s => `<div>${s}</div>`).join('');
+                                list.innerHTML = sugs.map(s => '<div>' + s + '</div>').join('');
                                 list.style.display = 'block';
                                 
                                 list.querySelectorAll('div').forEach(d => {
