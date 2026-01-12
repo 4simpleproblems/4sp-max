@@ -18,9 +18,9 @@
                 extend: {
                     colors: {
                         'deep-black': '#040404',
-                        'card-dark': '#111111',
+                        'card-dark': '#0d0d0d', /* Matches notes.html editor bg */
                         'accent-indigo': '#4f46e5',
-                        'brand-border': '#252525',
+                        'brand-border': '#333333', /* Matches notes.html border */
                     },
                     fontFamily: {
                         sans: ['Geist', 'sans-serif'],
@@ -34,9 +34,13 @@
         body { 
             font-family: 'Geist', sans-serif; 
             background-color: #040404; 
-            color: #d1d5db; 
+            color: #c0c0c0; /* Matches notes.html text color */
             font-weight: 300; 
             padding-bottom: 120px; /* Space for player */
+        }
+
+        h1, h2, h3, .font-bold, .font-semibold, strong {
+            font-weight: 400 !important; /* Thin styling consistency */
         }
 
         /* --- Global Scrollbar --- */
@@ -45,34 +49,27 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #444; }
 
-        /* --- Toolbar Button Style (Match 4SP DV) --- */
+        /* --- Toolbar Button Style (Matches notes.html) --- */
         .btn-toolbar-style {
-            background: #0a0a0a;
+            background: #000000;
             border: 1px solid #333;
-            border-radius: 16px;
+            border-radius: 0.75rem; /* 12px */
             color: #d1d5db;
-            padding: 0.75rem 1.25rem;
+            padding: 0.5rem 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            position: relative;
         }
         .btn-toolbar-style:hover {
+            background-color: #000000;
             border-color: #fff;
-            color: #fff;
-            transform: scale(1.02) translateY(-1px);
-            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
+            color: #ffffff;
             z-index: 50;
-        }
-        .btn-toolbar-style:active {
-            transform: scale(0.98);
-            transition: transform 0.05s ease-out !important;
         }
         .btn-toolbar-style.active {
             background-color: rgba(79, 70, 229, 0.1);
@@ -80,9 +77,32 @@
             color: #4f46e5;
         }
 
+        .btn-primary-override {
+            background-color: rgba(79, 70, 229, 0.1);
+            border: 1px solid #4f46e5;
+            color: #4f46e5;
+        }
+        .btn-primary-override:hover {
+            background-color: rgba(79, 70, 229, 0.15);
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .btn-danger-override {
+            background-color: rgba(220, 38, 38, 0.1);
+            border: 1px solid #dc2626;
+            color: #dc2626;
+        }
+        .btn-danger-override:hover {
+            background-color: rgba(220, 38, 38, 0.15);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
         /* --- Search Bar --- */
         #search-container {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 9999px; /* Rounder search bar */
         }
         #search-container:focus-within {
             transform: translateY(-2px);
@@ -90,59 +110,56 @@
             border-color: #4f46e5;
         }
 
-        /* --- Player Bar (Fixed Dark Style) --- */
+        /* --- Player Bar --- */
         #player-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
             height: 90px;
-            background-color: #000000;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            background-color: #040404; /* Matches body bg */
+            border-top: 1px solid #333;
             backdrop-filter: blur(20px);
             z-index: 100;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            transition: background-color 0.5s ease;
         }
 
         .player-info { display: flex; align-items: center; gap: 1rem; width: 300px; }
         .player-info img { 
             width: 56px; height: 56px; 
-            border-radius: 0.5rem; 
-            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.75rem; /* More rounded image */
+            border: 1px solid #333;
             object-fit: cover;
         }
         .player-text { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        .player-title { color: white; font-size: 0.95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        .player-artist { color: rgba(255,255,255,0.7); font-size: 0.75rem; }
+        .player-title { color: #fff; font-size: 0.95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-artist { color: #9ca3af; font-size: 0.75rem; }
 
         .custom-player-controls {
             flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; max-width: 600px;
         }
         .control-buttons { display: flex; gap: 2rem; align-items: center; }
-        .player-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 1.2rem; cursor: pointer; transition: all 0.2s; }
+        .player-btn { background: none; border: none; color: #9ca3af; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; }
         .player-btn:hover { color: white; transform: scale(1.1); }
         .play-btn { color: white; font-size: 2.5rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
         .play-btn:hover { transform: scale(1.1); }
 
-        .progress-container { width: 100%; display: flex; align-items: center; gap: 1rem; color: rgba(255,255,255,0.7); font-size: 0.75rem; }
+        .progress-container { width: 100%; display: flex; align-items: center; gap: 1rem; color: #9ca3af; font-size: 0.75rem; }
         .progress-bar {
-            flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;
+            flex: 1; height: 4px; background: #333; border-radius: 2px;
             -webkit-appearance: none; outline: none; cursor: pointer;
         }
-        /* Thumb always visible */
         .progress-bar::-webkit-slider-thumb {
             -webkit-appearance: none; width: 12px; height: 12px; background: white; border-radius: 50%; opacity: 1; transition: transform 0.2s;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         .progress-container:hover .progress-bar::-webkit-slider-thumb { transform: scale(1.2); }
 
-        .volume-controls { display: flex; align-items: center; gap: 1rem; width: 200px; justify-content: flex-end; color: rgba(255,255,255,0.6); }
-        .volume-slider { width: 80px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; -webkit-appearance: none; outline: none; }
-        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: rgba(255,255,255,0.8); border-radius: 50%; }
+        .volume-controls { display: flex; align-items: center; gap: 1rem; width: 200px; justify-content: flex-end; color: #9ca3af; }
+        .volume-slider { width: 80px; height: 4px; background: #333; border-radius: 2px; -webkit-appearance: none; outline: none; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: #d1d5db; border-radius: 50%; }
 
-        /* --- Modals (Match 4SP DV Settings) --- */
+        /* --- Modals (Styled like logged-in pages) --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85);
             backdrop-filter: blur(5px); z-index: 200;
@@ -152,84 +169,56 @@
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-content {
-            background: #000; border: 1px solid #333;
-            border-radius: 18px; 
+            background: #0d0d0d; 
+            border: 1px solid #333;
+            border-radius: 1.5rem; /* More rounded modals */
             width: 90%; max-width: 450px;
-            transform: scale(0.95); transition: transform 0.2s;
             overflow: hidden;
             display: flex; flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .modal-overlay.active .modal-content { transform: scale(1); }
 
         .modal-header {
-            padding: 1.5rem; border-bottom: 1px solid #333;
-            background: #000; display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem; border-bottom: 1px solid #333;
+            background: #040404; display: flex; justify-content: space-between; align-items: center;
         }
-        .modal-body { padding: 1.5rem; background: #0a0a0a; display: flex; flex-direction: column; gap: 1rem; }
+        .modal-body { padding: 1.5rem; background: #0d0d0d; display: flex; flex-direction: column; gap: 1rem; }
 
         .modal-input {
-            width: 100%; background: #111; border: 1px solid #252525;
-            color: white; padding: 0.75rem; border-radius: 16px;
+            width: 100%; background: #111; border: 1px solid #333;
+            color: #c0c0c0; padding: 0.75rem; border-radius: 0.75rem;
             outline: none; transition: all 0.2s;
         }
-        .modal-input:focus { border-color: #4f46e5; transform: scale(1.01); }
-
-        .modal-btn {
-            width: 100%; padding: 0.75rem 1.25rem; border-radius: 16px;
-            font-weight: 500; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-align: center; font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        }
-        .modal-btn:hover { transform: scale(1.02) translateY(-1px); }
-        .modal-btn:active { transform: scale(0.98); transition: transform 0.05s ease-out !important; }
-
-        .btn-primary { background: rgba(79, 70, 229, 0.1); color: #4f46e5; border: 1px solid #4f46e5; }
-        .btn-primary:hover { background: rgba(79, 70, 229, 0.15); border-color: #6366f1; color: #6366f1; }
-        
-        .btn-secondary { background: #0a0a0a; color: #d1d5db; border: 1px solid #333; }
-        .btn-secondary:hover { border-color: #fff; color: white; }
-        
-        .btn-danger { background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1px solid #dc2626; }
-        .btn-danger:hover { background: rgba(220, 38, 38, 0.15); border-color: #ef4444; color: #ef4444; }
+        .modal-input:focus { border-color: #555; }
 
         .close-btn-round {
-            width: 2.5rem; height: 2.5rem; border-radius: 16px;
-            background: #0a0a0a; border: 1px solid #333; color: #d1d5db;
+            width: 2rem; height: 2rem; border-radius: 0.5rem;
+            background: transparent; border: 1px solid transparent; color: #9ca3af;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: all 0.2s;
         }
-        .close-btn-round:hover { border-color: #fff; color: #fff; transform: scale(1.05); }
+        .close-btn-round:hover { color: #fff; background: #222; }
 
-        /* Cropper */
-        #cropper-modal-content { max-width: 600px; }
-        #cropperCanvasContainer {
-            position: relative; margin: 0 auto; overflow: hidden; max-height: 60vh; border: 1px dashed #333; border-radius: 8px;
+        /* --- Library Drawer --- */
+        #library-drawer {
+            background: #040404;
+            border-left: 1px solid #333;
         }
-        canvas { display: block; max-width: 100%; }
-
-        /* --- Library Drawer List Items --- */
         .compact-list-item {
-            border-radius: 16px; 
-            margin-bottom: 2px;
+            border-radius: 0.75rem; /* More rounded list items */
+            margin-bottom: 4px;
             padding: 0.5rem; 
             transition: background-color 0.2s;
             cursor: pointer;
+            border: 1px solid transparent;
         }
-        .compact-list-item:hover { background-color: #1a1a1a; }
+        .compact-list-item:hover { background-color: #111; border-color: #333; }
 
         /* --- Notifications --- */
         #notification-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 1000; pointer-events: none; }
         .notification-toast { background-color: #0a0a0a; border: 1px solid #333; border-radius: 14px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
         .notification-toast.show { transform: translateX(0); opacity: 1; }
         .notification-toast.show:hover { transform: scale(1.05) translateX(-5px); background-color: #151515; border-color: #555; box-shadow: 0 8px 25px rgba(0,0,0,0.7); }
-        .notification-icon { font-size: 1.1rem; }
-        .notification-icon.success { color: #4ade80; }
-        .notification-icon.info { color: #60a5fa; }
-        .notification-icon.warning { color: #fbbf24; }
-
-        /* --- Animations --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
         
         .loader { display: flex; justify-content: center; align-items: center; height: 200px; color: #4f46e5; }
         .hidden { display: none !important; }
@@ -238,7 +227,7 @@
 <body class="min-h-screen">
 
     <!-- Top Navigation / Toolbar -->
-    <header class="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-md z-40 border-b border-brand-border h-16 flex items-center justify-between px-6">
+    <header class="fixed top-0 left-0 right-0 bg-[#040404]/90 backdrop-blur-md z-40 border-b border-[#333] h-16 flex items-center justify-between px-6">
         <div class="flex items-center gap-4">
             <h1 class="text-xl text-white tracking-widest font-bold mr-4">VELIUM</h1>
             
@@ -257,17 +246,17 @@
         </div>
 
         <div class="flex items-center gap-3">
-             <button onclick="openCreatePlaylistModal()" class="btn-toolbar-style" title="New Playlist">
+             <button onclick="openCreatePlaylistModal()" class="btn-toolbar-style btn-primary-override" title="New Playlist">
                 <i class="fas fa-plus"></i> New Playlist
             </button>
              <button id="view-library-btn" class="btn-toolbar-style" title="My Library" onclick="document.getElementById('library-drawer').classList.toggle('translate-x-full')">
                 <i class="fas fa-layer-group"></i> Library
             </button>
              <div class="relative">
-                <button id="settings-btn" class="btn-toolbar-style !px-3" title="Settings" onclick="toggleSettingsMenu()">
+                <button id="settings-btn" class="btn-toolbar-style !px-3 !rounded-none" title="Settings" onclick="toggleSettingsMenu()">
                     <i class="fas fa-gear"></i>
                 </button>
-                <div id="settings-dropdown" class="absolute right-0 top-full mt-2 w-64 bg-[#0a0a0a] border border-[#333] rounded-2xl shadow-xl p-4 hidden z-50 transform origin-top-right transition-all duration-200">
+                <div id="settings-dropdown" class="absolute right-0 top-full mt-2 w-64 bg-[#0a0a0a] border border-[#333] rounded-xl shadow-xl p-4 hidden z-50 transform origin-top-right transition-all duration-200">
                     <h3 class="text-white font-bold mb-3 text-sm uppercase tracking-wider border-b border-[#333] pb-2">Playback</h3>
                     
                     <div class="flex flex-col gap-3">
@@ -297,7 +286,7 @@
         
         <!-- Search Hero -->
         <div class="max-w-3xl mx-auto mb-12">
-            <div id="search-container" class="relative flex items-center bg-[#111] border border-[#333] rounded-2xl p-2 group transition-all">
+            <div id="search-container" class="relative flex items-center bg-[#0d0d0d] border border-[#333] rounded-xl p-2 group transition-all">
                 <i class="fas fa-search text-gray-500 ml-4 text-lg"></i>
                 <input type="text" id="search-box" placeholder="Search for songs, artists..." 
                        class="w-full bg-transparent border-none outline-none text-white px-4 py-3 text-lg placeholder-gray-600 font-light">
@@ -322,10 +311,10 @@
     </main>
 
     <!-- Library Drawer (Right Side) -->
-    <aside id="library-drawer" class="fixed top-0 right-0 h-full w-80 bg-[#0a0a0a] border-l border-[#252525] z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col pt-20">
-        <div class="px-6 pb-4 border-b border-[#252525] flex justify-between items-center">
+    <aside id="library-drawer" class="fixed top-0 right-0 h-full w-80 bg-[#040404] border-l border-[#333] z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col pt-20">
+        <div class="px-6 pb-4 border-b border-[#333] flex justify-between items-center">
             <h2 class="text-xl text-white font-medium">Your Library</h2>
-            <button onclick="document.getElementById('library-drawer').classList.add('translate-x-full')" class="text-gray-400 hover:text-white">
+            <button onclick="document.getElementById('library-drawer').classList.add('translate-x-full')" class="close-btn-round">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -379,7 +368,9 @@
             <div class="modal-body">
                 <p class="text-gray-400 text-sm">Give your new playlist a name.</p>
                 <input type="text" id="new-playlist-name" class="modal-input" placeholder="My Awesome Playlist">
-                <button onclick="confirmCreatePlaylist()" class="modal-btn btn-primary mt-2">Create</button>
+                <div class="flex justify-end mt-2">
+                    <button onclick="confirmCreatePlaylist()" class="btn-toolbar-style btn-primary-override">Create</button>
+                </div>
             </div>
         </div>
     </div>
@@ -402,8 +393,8 @@
                 <input type="file" id="playlist-cover-input" accept="image/*" class="hidden">
 
                 <div class="flex gap-2 mt-6">
-                    <button onclick="savePlaylistChanges()" class="modal-btn btn-primary flex-1">Save Changes</button>
-                    <button onclick="deletePlaylist()" class="modal-btn btn-danger flex-1">Delete</button>
+                    <button onclick="savePlaylistChanges()" class="btn-toolbar-style btn-primary-override flex-1">Save Changes</button>
+                    <button onclick="deletePlaylist()" class="btn-toolbar-style btn-danger-override flex-1">Delete</button>
                 </div>
             </div>
         </div>
@@ -417,14 +408,14 @@
                 <button onclick="closeCropper()" class="close-btn-round"><i class="fas fa-xmark"></i></button>
             </div>
             
-            <div class="p-6 bg-[#0a0a0a]">
+            <div class="p-6 bg-[#0d0d0d]">
                 <p class="text-xs text-gray-500 text-center mb-4">Drag to move. Scroll to resize.</p>
-                <div id="cropperCanvasContainer" class="bg-black flex justify-center items-center shadow-inner">
+                <div id="cropperCanvasContainer" class="bg-black flex justify-center items-center shadow-inner rounded-lg border border-[#333]">
                     <canvas id="cropperCanvas"></canvas>
                 </div>
                 
                 <div class="flex justify-end gap-2 mt-6">
-                    <button onclick="submitCrop()" class="modal-btn btn-primary w-auto px-8">Apply Crop</button>
+                    <button onclick="submitCrop()" class="btn-toolbar-style btn-primary-override">Apply Crop</button>
                 </div>
             </div>
         </div>
