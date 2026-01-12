@@ -979,8 +979,8 @@
             zoneFrame.setAttribute('sandbox', sandboxRules);
 
             // --- REVISED LOGIC FOR LOADING GAMES WITH RETRY ---
-            // GN-Math and StrongdogXP use content injection to bypass CDN code-display issues
-            const isStandardURLGame = game.category === 'Others';
+            // GN-Math uses content injection. StrongdogXP and Others use standard loading.
+            const isStandardURLGame = game.category === 'Others' || game.category === 'StrongdogXP';
             
             const attemptLoad = async (retriesLeft) => {
                 try {
