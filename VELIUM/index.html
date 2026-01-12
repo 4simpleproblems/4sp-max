@@ -470,6 +470,11 @@
     window.showToast = function(msg) {
         window.showNotification(msg, 'fa-solid fa-bell', 'info');
     };
+    
+    // Override alert to use notification
+    window.alert = function(message) {
+        window.showNotification(message, 'fa-solid fa-bell', 'info');
+    };
     </script>
 </body>
 </html>
