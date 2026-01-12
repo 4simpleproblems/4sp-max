@@ -238,6 +238,7 @@ async function handleSearch() {
     currentPlaylistId = null;
     const query = searchBox ? searchBox.value.trim() : '';
     if (!query) return;
+    if (searchBox) searchBox.blur(); // Remove focus
     lastQuery = query;
     contentArea.innerHTML = '<div class="loader"><i class="fas fa-circle-notch fa-spin fa-3x"></i></div>';
     contentArea.className = GRID_CLASS; 
@@ -264,10 +265,22 @@ function renderResults(results) {
     results.forEach((item, idx) => {
         const card = document.createElement('div');
         card.className = 'zone-item bg-[#111] rounded-3xl border border-[#252525] overflow-hidden relative group cursor-pointer';
+        
+        // Generate unique ID for matching
+        const trackUrl = item.song?.url || item.url;
+        const uniqueId = item.id || trackUrl || (item.song?.name + (item.author?.name || ''));
+        const safeId = btoa(String(uniqueId)).substring(0, 16).replace(/[/+=]/g, '');
+        card.dataset.safeId = safeId;
+
         const imgUrl = getImageUrl(item), name = item.song?.name || item.name || 'Unknown', sub = item.author?.name || item.primaryArtists || '';
-        card.innerHTML = `<div class="relative w-full aspect-square"><img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"><button class="play-overlay-btn absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30 backdrop-blur-sm"><i class="fas fa-play text-4xl text-white drop-shadow-xl hover:scale-110 transition-transform"></i></button><div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 pointer-events-none"></div><div class="absolute bottom-0 left-0 right-0 p-4 pointer-events-none"><h3 class="text-white font-bold truncate text-lg drop-shadow-md">${name}</h3><p class="text-gray-400 text-sm truncate">${sub}</p></div><button class="absolute top-2 right-2 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 fav-btn" title="Like"><i class="far fa-heart"></i></button><button class="absolute top-2 left-2 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 add-btn" title="Add to Playlist"><i class="fas fa-plus"></i></button></div>`;
+        
+        // Check like status
+        const isLiked = library.likedSongs.some(s => (s.id && s.id === item.id) || (trackUrl && (s.song?.url || s.url) === trackUrl));
+        const heartClass = isLiked ? 'fas text-red-500' : 'far';
+
+        card.innerHTML = `<div class="relative w-full aspect-square"><img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"><button class="play-overlay-btn absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30 backdrop-blur-sm"><i class="fas fa-play text-4xl text-white drop-shadow-xl hover:scale-110 transition-transform"></i></button><div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 pointer-events-none"></div><div class="absolute bottom-0 left-0 right-0 p-4 pointer-events-none"><h3 class="text-white font-bold truncate text-lg drop-shadow-md">${name}</h3><p class="text-gray-400 text-sm truncate">${sub}</p></div><button class="absolute top-2 right-2 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 fav-btn" title="Like"><i class="${heartClass} fa-heart"></i></button><button class="absolute top-2 left-2 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 add-btn" title="Add to Playlist"><i class="fas fa-plus"></i></button></div>`;
         card.addEventListener('click', () => playSong(item, idx, results));
-        card.querySelector('.fav-btn').addEventListener('click', (e) => { e.stopPropagation(); toggleLike(item); const i = e.currentTarget.querySelector('i'); i.classList.toggle('far'); i.classList.toggle('fas'); i.classList.toggle('text-red-500'); });
+        card.querySelector('.fav-btn').addEventListener('click', (e) => { e.stopPropagation(); toggleLike(item); });
         card.querySelector('.add-btn').addEventListener('click', (e) => { e.stopPropagation(); addToPlaylist(item); });
         contentArea.appendChild(card);
     });
@@ -347,10 +360,37 @@ async function toggleLike(item) {
         if (trackUrl && sUrl === trackUrl) return true;
         return false;
     });
-    if (index > -1) { library.likedSongs.splice(index, 1); showToast("Removed"); }
-    else { let cleanItem = { ...item }; if (!cleanItem.downloadUrl && !cleanItem.url && cleanItem.song?.url) cleanItem.url = cleanItem.song.url; library.likedSongs.unshift(cleanItem); showToast("Liked"); }
+    let isLiked = false;
+    if (index > -1) { library.likedSongs.splice(index, 1); showToast("Removed"); isLiked = false; }
+    else { let cleanItem = { ...item }; if (!cleanItem.downloadUrl && !cleanItem.url && cleanItem.song?.url) cleanItem.url = cleanItem.song.url; library.likedSongs.unshift(cleanItem); showToast("Liked"); isLiked = true; }
     await saveLibrary(); renderLibrary(); updatePlayerLikeIcon();
+    
+    // Sync UI
+    updateAllVisibleLikeButtons(item, isLiked);
+    
     if (mainHeader && mainHeader.textContent === "Liked Songs") openLikedSongs();
+}
+
+function updateAllVisibleLikeButtons(item, isLiked) {
+    const trackUrl = item.song?.url || item.url;
+    const uniqueId = item.id || trackUrl || (item.song?.name + (item.author?.name || ''));
+    const safeId = btoa(String(uniqueId)).substring(0, 16).replace(/[/+=]/g, '');
+
+    // Update Grid Cards (using dataset.safeId)
+    const card = document.querySelector(`.zone-item[data-safe-id="${safeId}"]`);
+    if (card) {
+        const icon = card.querySelector('.fav-btn i');
+        if (icon) {
+            icon.className = isLiked ? 'fas fa-heart text-red-500' : 'far fa-heart';
+        }
+    }
+
+    // Update List Rows (using ID like-...)
+    const rowBtn = document.getElementById(`like-${safeId}`);
+    if (rowBtn) {
+        rowBtn.className = `w-8 h-8 rounded-full border border-[#333] flex items-center justify-center ${isLiked?'text-red-500 border-red-500':'text-gray-400 hover:text-white hover:border-white'}`;
+        rowBtn.innerHTML = `<i class="${isLiked?'fas':'far'} fa-heart"></i>`;
+    }
 }
 
 function addToPlaylist(item) {
