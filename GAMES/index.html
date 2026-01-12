@@ -1349,6 +1349,32 @@
                 }
             };
 
+            const enterCustomFullscreen = () => {
+                const zoneViewer = document.getElementById('zoneViewer');
+                const zoneFrame = document.getElementById('zoneFrame');
+                zoneViewer.classList.add('custom-fullscreen');
+                
+                // Allow the game to receive clicks, but the window will still see the keys
+                inputOverlay.classList.remove('hidden');
+                inputOverlay.style.pointerEvents = 'none'; 
+                
+                zoneFrame.focus(); // Shift focus to the game immediately
+                
+                if (window.showNotification) {
+                    window.showNotification('Fullscreen Active: Triple ESC to exit', 'fa-solid fa-expand', 'info');
+                }
+            };
+
+            const exitCustomFullscreen = () => {
+                const zoneViewer = document.getElementById('zoneViewer');
+                zoneViewer.classList.remove('custom-fullscreen');
+                inputOverlay.classList.add('hidden');
+                escPressCount = 0;
+                if (window.showNotification) window.showNotification('Exited Fullscreen', 'fa-solid fa-compress', 'info');
+            };
+
+            document.getElementById('fullscreenBtnZone').addEventListener('click', enterCustomFullscreen);
+
             const handleGlobalKey = (e) => {
                 const zoneViewer = document.getElementById('zoneViewer');
                 if (!zoneViewer || !zoneViewer.classList.contains('custom-fullscreen')) return;
