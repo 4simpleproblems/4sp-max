@@ -476,8 +476,8 @@
         const GN_ZONES_URL = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
         const GN_COVER_URL_BASE = "https://cdn.jsdelivr.net/gh/gn-math/covers@main";
         
-        // FIXED: Use raw.githack.com for HTML to prevent "showing code" issue
-        const GN_HTML_URL_BASE = "https://raw.githack.com/gn-math/html/main";
+        // UPDATED: Use cdn.jsdelivr.net for GN-Math and handle content injection
+        const GN_HTML_URL_BASE = "https://cdn.jsdelivr.net/npm/gn-math.github.io-main@latest/html-main";
         
         const WORKER_ROOT = "https://dv-service-lfs.4simpleproblems.workers.dev/";
         const GAMES_BASE_URL = "https://dv-service-lfs.4simpleproblems.workers.dev/GAMES/";
@@ -886,6 +886,12 @@
         // --- Game Viewer Logic ---
         async function openZone(game) {
             if (!game || !game.url) return;
+
+            // Auto-replace legacy GN-Math URLs
+            if (game.category === 'GN-Math' && game.url.includes('raw.githack.com/gn-math/html/main/')) {
+                game.url = game.url.replace('raw.githack.com/gn-math/html/main/', 'cdn.jsdelivr.net/npm/gn-math.github.io-main@latest/html-main/');
+            }
+
             updateURL(categories[currentCategoryIndex], game.id || null);
             
             const zoneViewer = document.getElementById('zoneViewer');
@@ -973,7 +979,8 @@
             zoneFrame.setAttribute('sandbox', sandboxRules);
 
             // --- REVISED LOGIC FOR LOADING GAMES WITH RETRY ---
-            const isStandardURLGame = game.category === 'StrongdogXP' || game.category === 'Others' || game.category === 'GN-Math';
+            // GN-Math and StrongdogXP use content injection to bypass CDN code-display issues
+            const isStandardURLGame = game.category === 'Others';
             
             const attemptLoad = async (retriesLeft) => {
                 try {
