@@ -12,11 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../navigation.js"></script>
-    <script src="../url-changer.js"></script>
     
-    <script src="../analytics.js"></script>
-
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -236,24 +232,11 @@
         
         /* --- Game Viewer Modal --- */
         #zoneViewer { 
-            display: none; position: fixed; 
-            top: 64px; /* Clearance for navbar */
-            left: 0; width: 100%; 
-            height: calc(100% - 64px); 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background-color: #000; z-index: 5000; flex-direction: column; 
             opacity: 0;
         }
         #zoneViewer.active { display: flex; opacity: 1; }
-
-        /* Custom Fullscreen Mode */
-        #zoneViewer.custom-fullscreen {
-            top: 0 !important;
-            height: 100% !important;
-            z-index: 10000 !important; /* Above navbar (9999) */
-        }
-        #zoneViewer.custom-fullscreen .zone-header {
-            display: none !important;
-        }
 
         #zoneViewer .zone-header {
             background-color: #0a0a0a;
@@ -422,9 +405,6 @@
     </div>
     
     <div id="zoneViewer" aria-modal="true" role="dialog">
-        <!-- Input Tracking Overlay (Captures focus, forwards keys) -->
-        <div id="fullscreenInputOverlay" class="hidden absolute inset-0 z-[10001] bg-transparent cursor-none"></div>
-        
         <div class="zone-header">
              <div class="zone-title">
                 <h2 id="zoneNameEl">Game Title</h2>
@@ -435,7 +415,7 @@
                 <button id="closeBtnZone" title="Close"><i class="fas fa-times"></i></button>
              </div>
         </div>
-        <iframe id="zoneFrame" title="Game Content" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"></iframe>
+        <iframe id="zoneFrame" title="Game Content" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"></iframe>
     </div>
 
     <div id="creditsModal" class="fixed top-0 left-0 w-full h-full bg-black/70 backdrop-blur-lg z-[6000] items-center justify-center p-4" style="display: none;">
@@ -570,9 +550,12 @@
             let hash = `#${encodeURIComponent(category.replace(/\s+/g, '-'))}`;
             if (gameId) hash += `?id=${gameId}`;
             try {
-                history.replaceState(null, null, hash);
+                // Safely attempt to replace state if the environment allows it
+                if (window.history && typeof window.history.replaceState === 'function') {
+                    history.replaceState(null, null, hash);
+                }
             } catch(e) {
-                console.warn('History API not supported in this environment');
+                // Ignoring errors in restricted environments (like file:// or sandbox)
             }
         }
 
@@ -907,6 +890,12 @@
             const downloadBtn = document.getElementById('downloadBtnZone');
             const controls = zoneViewer.querySelector('.zone-controls');
 
+            // --- CRITICAL FIX: SHOW VIEWER FIRST ---
+            // Setting display: flex BEFORE loading content ensures the iframe has physical dimensions.
+            // This prevents "Undefined viewport" errors in WebGL games that check window.innerWidth/Height on load.
+            zoneViewer.style.opacity = '0'; // Keep hidden visually but active in DOM
+            zoneViewer.style.display = 'flex';
+
             // --- Custom 404 Page Helper ---
             const show404 = (errorMsg = "Game content unavailable.") => {
                 // Ensure frame is cleared
@@ -935,8 +924,10 @@
                     </html>
                 `);
                 doc.close();
+                // Ensure visibility if show404 is called directly
                 zoneViewer.style.display = "flex";
                 zoneViewer.classList.add('active', 'animate-fade-in');
+                zoneViewer.style.opacity = '1';
             };
 
             // Setup Download Button (Specific to Eaglercraft)
@@ -968,15 +959,14 @@
             };
             controls.prepend(favBtn);
 
-            // FIX: Show viewer immediately (opacity 0) to ensure layout/viewport is ready for WebGL
-            zoneViewer.style.display = 'flex';
-
             zoneNameEl.textContent = game.name;
             zoneFrame.src = 'about:blank';
             
-            const sandboxRules = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
+            // Fixed Allow attribute syntax to prevent warnings and enable features properly
+            // Removed allowfullscreen as "allow='fullscreen'" takes precedence
+            zoneFrame.setAttribute('allow', 'autoplay; fullscreen; pointer-lock; clipboard-write');
+            const sandboxRules = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups';
             zoneFrame.setAttribute('sandbox', sandboxRules);
-            zoneFrame.setAttribute('allow', 'fullscreen; autoplay; clipboard-write');
 
             // --- REVISED LOGIC FOR LOADING GAMES WITH RETRY ---
             const isStandardURLGame = game.category === 'StrongdogXP' || game.category === 'Others' || game.category === 'GN-Math';
@@ -1018,8 +1008,10 @@
                         doc.close();
                     }
 
+                    // Reveal the viewer fully after content load starts
                     zoneViewer.classList.remove('animate-fade-out');
                     zoneViewer.classList.add('active', 'animate-fade-in');
+                    zoneViewer.style.opacity = '1';
 
                 } catch (e) {
                     console.warn(`Load failed for ${game.name}. Retries left: ${retriesLeft}`, e);
@@ -1044,6 +1036,7 @@
             setTimeout(() => {
                 zoneViewer.style.display = "none";
                 zoneViewer.classList.remove('active', 'animate-fade-out');
+                zoneViewer.style.opacity = '0'; // Reset opacity
                 if (zoneFrame) {
                     zoneFrame.src = 'about:blank';
                 }
@@ -1322,97 +1315,16 @@
             document.getElementById('closeBtnZone').addEventListener('click', closeZoneViewer);
 
             // --- FULLSCREEN BUTTON LISTENER ---
-            let escPressCount = 0;
-            let escResetTimer = null;
-            const inputOverlay = document.getElementById('fullscreenInputOverlay');
-
-            // --- Key Forwarding Logic (Same-Origin Only) ---
-            const forwardKeyEvent = (e) => {
-                const iframe = document.getElementById('zoneFrame');
-                if (!iframe) return;
-                
-                try {
-                    // Check if same-origin
-                    if (iframe.contentWindow.document) {
-                        const target = iframe.contentWindow.document.activeElement || iframe.contentWindow.document.body;
-                        const newEvent = new KeyboardEvent(e.type, {
-                            key: e.key, code: e.code, keyCode: e.keyCode, charCode: e.charCode,
-                            view: iframe.contentWindow, bubbles: true, cancelable: true, composed: true,
-                            ctrlKey: e.ctrlKey, shiftKey: e.shiftKey, altKey: e.altKey, metaKey: e.metaKey,
-                            repeat: e.repeat, location: e.location
-                        });
-                        target.dispatchEvent(newEvent);
-                    }
-                } catch (err) {
-                    // Cross-origin: Cannot forward events
-                    iframe.focus();
-                }
-            };
-
-            const enterCustomFullscreen = () => {
-                const zoneViewer = document.getElementById('zoneViewer');
+            document.getElementById('fullscreenBtnZone').addEventListener('click', () => {
                 const zoneFrame = document.getElementById('zoneFrame');
-                zoneViewer.classList.add('custom-fullscreen');
-                
-                // Allow the game to receive clicks, but the window will still see the keys
-                inputOverlay.classList.remove('hidden');
-                inputOverlay.style.pointerEvents = 'none'; 
-                
-                zoneFrame.focus(); // Shift focus to the game immediately
-                
-                if (window.showNotification) {
-                    window.showNotification('Fullscreen Active: Triple ESC to exit', 'fa-solid fa-expand', 'info');
+                if (zoneFrame && zoneFrame.requestFullscreen) {
+                    zoneFrame.requestFullscreen();
+                } else if (zoneFrame && zoneFrame.webkitRequestFullscreen) {
+                    zoneFrame.webkitRequestFullscreen();
+                } else if (zoneFrame && zoneFrame.msRequestFullscreen) {
+                    zoneFrame.msRequestFullscreen();
                 }
-            };
-
-            const exitCustomFullscreen = () => {
-                const zoneViewer = document.getElementById('zoneViewer');
-                zoneViewer.classList.remove('custom-fullscreen');
-                inputOverlay.classList.add('hidden');
-                escPressCount = 0;
-                if (window.showNotification) window.showNotification('Exited Fullscreen', 'fa-solid fa-compress', 'info');
-            };
-
-            document.getElementById('fullscreenBtnZone').addEventListener('click', enterCustomFullscreen);
-
-            const handleGlobalKey = (e) => {
-                const zoneViewer = document.getElementById('zoneViewer');
-                if (!zoneViewer || !zoneViewer.classList.contains('custom-fullscreen')) return;
-
-                if (e.key === 'Escape') {
-                    if (e.type === 'keydown') {
-                        escPressCount++;
-                        if (escResetTimer) clearTimeout(escResetTimer);
-                        escResetTimer = setTimeout(() => { escPressCount = 0; }, 1000);
-
-                        if (escPressCount >= 3) {
-                            // Triple escape reached: Exit and DON'T forward the 3rd one
-                            exitCustomFullscreen();
-                            e.preventDefault();
-                            return;
-                        } else {
-                            // Not the 3rd press yet: Show notification AND forward to game
-                            const remaining = 3 - escPressCount;
-                            if (window.showNotification) window.showNotification(`Press ESC ${remaining} more time${remaining > 1 ? 's' : ''} to exit`, 'fa-solid fa-expand', 'warning');
-                            forwardKeyEvent(e);
-                        }
-                    } else if (e.type === 'keyup') {
-                        // Always forward the release of the key
-                        forwardKeyEvent(e);
-                    }
-                } else {
-                    // Forward all other keys normally
-                    forwardKeyEvent(e);
-                }
-            };
-
-            document.addEventListener('keydown', handleGlobalKey, true); // Use capture phase
-            document.addEventListener('keyup', handleGlobalKey, true);
-            
-            // Keep overlay passive to allow game interaction
-            inputOverlay.style.pointerEvents = 'none';
-            // Click listener removed as it interferes with game
-
+            });
 
             creditsBtn.addEventListener('click', () => { creditsModal.style.display = 'flex'; creditsContent.innerHTML = categories.map(cat => CREDITS_DATA[cat] ? `<div class="p-4 border border-brand-border rounded-lg"><h4 class="font-bold mb-1">${cat}</h4><p class="text-sm text-gray-400">${CREDITS_DATA[cat].credit}</p></div>` : '').join(''); });
             closeCreditsBtn.addEventListener('click', () => creditsModal.style.display = 'none');
