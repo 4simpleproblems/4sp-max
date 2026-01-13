@@ -458,6 +458,13 @@ function getDownloadUrl(item) {
             } else {
                 // If it's a page URL, try Argon downloader (might be unstable)
                 url = `${API_BASE}/api/download?track_url=${encodeURIComponent(p)}`; 
+                
+                // If the ORIGINAL source URL (p) is SoundCloud, we MUST proxy the Argon call
+                // because Argon will redirect to sndcdn.com, which is blocked.
+                // Wrapping the Argon URL in corsproxy.io allows the proxy to follow the redirect server-side.
+                if (p.includes('soundcloud.com') || p.includes('sndcdn.com')) {
+                    url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                }
             }
         } 
     }
@@ -465,9 +472,13 @@ function getDownloadUrl(item) {
     // 3. Fallback for 'media_url' (some APIs)
     if (!url && item.media_url) url = item.media_url;
 
-    // Proxy Logic for SoundCloud or blocked domains
+    // Final check: if the RESULTING url is known to be blocked, proxy it.
+    // (This catches direct links that weren't caught above)
     if (url && (url.includes('soundcloud.com') || url.includes('sndcdn.com'))) {
-        url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+        // Avoid double proxying
+        if (!url.includes('corsproxy.io')) {
+            url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+        }
     }
 
     return url;
