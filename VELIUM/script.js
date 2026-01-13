@@ -497,15 +497,53 @@ function playSong(item, index = -1, queue = []) {
     if (playerArtist) playerArtist.textContent = item.author?.name || item.primaryArtists || '';
     if (playerImg) playerImg.src = getImageUrl(item);
     updatePlayerLikeIcon();
+    
+    // Defer download button click until we have a final URL if it's dynamic
+    // But for now, assume getDownloadUrl returns something usable or proxyable
     if (downloadBtn) downloadBtn.onclick = (e) => { e.preventDefault(); showToast(`Downloading...`); downloadResource(downloadUrl, `${songName}.mp3`); };
     
     isLoading = true;
     updatePlayBtn();
 
-    active.src = downloadUrl; 
-    active.load(); // Ensure resource loading starts
-    active.volume = (volumeSlider ? volumeSlider.value : 1);
-    
+    // Async function to resolve final URL if needed
+    const resolveAndPlay = async () => {
+        let finalUrl = downloadUrl;
+        
+        // If it's an Argon API call, we need to fetch the JSON first
+        if (finalUrl.includes('/api/download') && finalUrl.includes('argon')) {
+            try {
+                // If it's SoundCloud source, we wrap the API call in proxy to handle the redirect/response safely
+                if (finalUrl.includes('corsproxy.io')) {
+                    // It's already wrapped (from getDownloadUrl logic), fetch it
+                    const r = await fetch(finalUrl);
+                    if (!r.ok) throw new Error("Argon API Proxy Error");
+                    const data = await r.json();
+                    if (data.url) finalUrl = data.url;
+                } else {
+                    const r = await fetch(finalUrl);
+                    if (!r.ok) throw new Error("Argon API Error");
+                    const data = await r.json();
+                    if (data.url) finalUrl = data.url;
+                }
+            } catch (err) {
+                console.error("Failed to resolve Argon URL", err);
+                // Fallback: try using the URL as is (maybe it was direct?)
+            }
+        }
+
+        // Final proxy check for the resolved URL (e.g. if Argon returned a raw sndcdn link)
+        if (finalUrl && (finalUrl.includes('soundcloud.com') || finalUrl.includes('sndcdn.com'))) {
+            if (!finalUrl.includes('corsproxy.io')) {
+                finalUrl = 'https://corsproxy.io/?' + encodeURIComponent(finalUrl);
+            }
+        }
+
+        active.src = finalUrl;
+        active.load();
+        active.volume = (volumeSlider ? volumeSlider.value : 1);
+        attemptPlay();
+    };
+
     // Capture ID for retry logic check
     const thisTrackId = item.id || item.song?.url || item.url;
 
@@ -533,7 +571,8 @@ function playSong(item, index = -1, queue = []) {
             }, 1000);
         });
     };
-    attemptPlay();
+
+    resolveAndPlay(); // Start the async resolution/play process
 
     if (playerBar) { playerBar.classList.remove('hidden'); playerBar.style.display = 'flex'; }
 }
