@@ -1000,8 +1000,7 @@
                                 if (title.includes("CDN files") || title.includes("Index of") || title.includes("Directory listing") || (doc.body && doc.body.textContent.includes("4sp-dv CDN files"))) {
                                      console.warn("Directory listing detected. Aborting.");
                                      closeZoneViewer();
-                                     // Refresh the page to clear any weird state
-                                     setTimeout(() => window.location.reload(), 100);
+                                     // Previously reloaded page, now just closes viewer
                                      return;
                                 }
                             } catch (e) {

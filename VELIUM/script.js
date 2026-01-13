@@ -465,6 +465,11 @@ function getDownloadUrl(item) {
     // 3. Fallback for 'media_url' (some APIs)
     if (!url && item.media_url) url = item.media_url;
 
+    // Proxy Logic for SoundCloud or blocked domains
+    if (url && (url.includes('soundcloud.com') || url.includes('sndcdn.com'))) {
+        url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    }
+
     return url;
 }
 
