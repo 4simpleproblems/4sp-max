@@ -63,14 +63,7 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User is signed in, check admin status
-                const isAdmin = await checkAdminStatus(user.uid);
-                if (isAdmin) {
-                    pageContent.style.display = 'flex'; // Show content for admins
-                } else {
-                    // Not an admin, redirect to dashboard
-                    window.location.href = '../logged-in/dashboard.html';
-                }
+                pageContent.style.display = 'flex'; // Show content for everyone logged in
             } else {
                 // User is signed out, redirect to authentication page
                 window.location.href = '../authentication.html';
