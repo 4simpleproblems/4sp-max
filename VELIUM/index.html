@@ -11,6 +11,61 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- VERN_SYSTEM Proxy Scripts (Local) -->
+    <link rel="preload" href="/4sp-max/VELIUM/uv/uv.bundle.js" as="script">
+    <link rel="preload" href="/4sp-max/VELIUM/baremux/index.js" as="script">
+    <link rel="preload" href="/4sp-max/VELIUM/baremux/worker.js" as="worker">
+    <link rel="preload" href="/4sp-max/VELIUM/uv/sw.js" as="worker">
+
+    <script src="/4sp-max/VELIUM/uv/uv.bundle.js"></script>
+    <script>
+        const basePath = "/4sp-max/VELIUM/uv/";
+        self.__uv$config = {
+            prefix: basePath + "service/",
+            encodeUrl: Ultraviolet.codec.xor.encode,
+            decodeUrl: Ultraviolet.codec.xor.decode,
+            handler: basePath + "uv.handler.js",
+            client: basePath + "uv.client.js",
+            bundle: basePath + "uv.bundle.js",
+            config: basePath + "uv.config.js",
+            sw: basePath + "uv.sw.js",
+            stockSW: basePath + "sw.js",
+        };
+    </script>
+    <script src="/4sp-max/VELIUM/baremux/index.js"></script>
+    <script>
+        // Immediate Initialization of VERN_SYSTEM Proxy
+        (async () => {
+            if ("serviceWorker" in navigator) {
+                try {
+                    // Register Root SW
+                    const reg = await navigator.serviceWorker.register("/4sp-max/VELIUM/sw.js", {
+                        scope: "/4sp-max/VELIUM/"
+                    });
+                    console.log("VERN_SYSTEM SW Registered");
+
+                    // Reload if controller changes (SW activated)
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!navigator.serviceWorker.controller) return;
+                        console.log("SW Activated, reloading...");
+                        window.location.reload();
+                    });
+
+                } catch (e) {
+                    console.error("SW Register Failed", e);
+                }
+            }
+            try {
+                const connection = new BareMux.BareMuxConnection("/4sp-max/VELIUM/baremux/worker.js");
+                const wispUrl = "wss://wisp.rhw.one/";
+                connection.setTransport("/4sp-max/VELIUM/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                console.log("BareMux Initialized");
+            } catch (e) {
+                console.error("BareMux Init Failed", e);
+            }
+        })();
+    </script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',

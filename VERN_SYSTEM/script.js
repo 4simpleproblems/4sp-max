@@ -2,20 +2,6 @@ const API_BASE = "https://argon.global.ssl.fastly.net";
 const API_SAAVN = "https://jiosaavn-api-privatecvc2.vercel.app";
 const LYRICS_API_BASE = "https://lyrics.lewdhutao.my.eu.org/v2/musixmatch/lyrics";
 
-function getProxyUrl(url) {
-    if (window.__uv$config && window.__uv$config.prefix && window.__uv$config.encodeUrl) {
-        return window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
-    }
-    // Fallback if config isn't ready but we know the structure
-    // We need Ultraviolet for encoding. If that's missing, we are stuck.
-    if (window.Ultraviolet && window.Ultraviolet.codec && window.Ultraviolet.codec.xor) {
-         return "/4sp-max/VELIUM/uv/service/" + window.Ultraviolet.codec.xor.encode(url);
-    }
-    
-    console.warn("UV/Ultraviolet not loaded, returning original URL");
-    return url;
-}
-
 // State
 let library = { likedSongs: [], playlists: [] };
 let currentTrack = null;
@@ -263,8 +249,8 @@ async function handleSearch() {
     mainHeader.textContent = `Results for "${query}"`;
     try {
         let aq = query; if (searchType !== 'song') aq += ` ${searchType}`;
-        const ap = fetch(getProxyUrl(`${API_BASE}/api/search?query=${encodeURIComponent(aq)}&limit=20`)).then(r => r.ok ? r.json() : { collection: [] }).catch(() => ({ collection: [] }));
-        const sp = fetch(getProxyUrl(`${API_SAAVN}/search/${searchType}s?query=${encodeURIComponent(query)}`)).then(r => r.ok ? r.json() : { data: [] }).catch(() => ({ data: [] }));
+        const ap = fetch(`${API_BASE}/api/search?query=${encodeURIComponent(aq)}&limit=20`).then(r => r.ok ? r.json() : { collection: [] }).catch(() => ({ collection: [] }));
+        const sp = fetch(`${API_SAAVN}/search/${searchType}s?query=${encodeURIComponent(query)}`).then(r => r.ok ? r.json() : { data: [] }).catch(() => ({ data: [] }));
         const [ar, sr] = await Promise.all([ap, sp]);
         let combined = [];
         // Prioritize Saavn (Official) results
@@ -475,9 +461,9 @@ function getDownloadUrl(item) {
                 
                 // If the ORIGINAL source URL (p) is SoundCloud, we MUST proxy the Argon call
                 // because Argon will redirect to sndcdn.com, which is blocked.
-                // Wrapping the Argon URL in proxy allows the proxy to follow the redirect server-side.
+                // Wrapping the Argon URL in corsproxy.io allows the proxy to follow the redirect server-side.
                 if (p.includes('soundcloud.com') || p.includes('sndcdn.com')) {
-                    url = getProxyUrl(url);
+                    url = 'https://corsproxy.io/?' + encodeURIComponent(url);
                 }
             }
         } 
@@ -490,8 +476,8 @@ function getDownloadUrl(item) {
     // (This catches direct links that weren't caught above)
     if (url && (url.includes('soundcloud.com') || url.includes('sndcdn.com'))) {
         // Avoid double proxying
-        if (!url.includes('/service/')) {
-            url = getProxyUrl(url);
+        if (!url.includes('corsproxy.io')) {
+            url = 'https://corsproxy.io/?' + encodeURIComponent(url);
         }
     }
 
@@ -527,7 +513,7 @@ function playSong(item, index = -1, queue = []) {
         if (finalUrl.includes('/api/download') && finalUrl.includes('argon')) {
             try {
                 // If it's SoundCloud source, we wrap the API call in proxy to handle the redirect/response safely
-                if (finalUrl.includes('/service/')) {
+                if (finalUrl.includes('corsproxy.io')) {
                     // It's already wrapped (from getDownloadUrl logic), fetch it
                     const r = await fetch(finalUrl);
                     if (!r.ok) throw new Error("Argon API Proxy Error");
@@ -547,8 +533,8 @@ function playSong(item, index = -1, queue = []) {
 
         // Final proxy check for the resolved URL (e.g. if Argon returned a raw sndcdn link)
         if (finalUrl && (finalUrl.includes('soundcloud.com') || finalUrl.includes('sndcdn.com'))) {
-            if (!finalUrl.includes('/service/')) {
-                finalUrl = getProxyUrl(finalUrl);
+            if (!finalUrl.includes('corsproxy.io')) {
+                finalUrl = 'https://corsproxy.io/?' + encodeURIComponent(finalUrl);
             }
         }
 
@@ -639,20 +625,7 @@ function handleSongEnd(player) { if (player.id === activePlayerId && !isCrossfad
 function playNextSong() { if (queueIndex > -1 && queueIndex < playQueue.length - 1) playSong(playQueue[queueIndex + 1], queueIndex + 1, playQueue); }
 
 // --- Helpers ---
-function getImageUrl(item) { 
-    let url = '';
-    if (item.song && item.song.img) { 
-        let i = item.song.img.big || item.song.img.small; 
-        url = i.startsWith('/api/') ? API_BASE + i : i; 
-    } else if (item.image) { 
-        if (Array.isArray(item.image)) url = item.image[item.image.length - 1].link; 
-        else if (typeof item.image === 'string') url = item.image; 
-    }
-    
-    if (url) return getProxyUrl(url);
-    
-    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; 
-}
+function getImageUrl(item) { if (item.song && item.song.img) { let i = item.song.img.big || item.song.img.small; return i.startsWith('/api/') ? API_BASE + i : i; } if (item.image) { if (Array.isArray(item.image)) return item.image[item.image.length - 1].link; else if (typeof item.image === 'string') return item.image; } return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }
 function formatTime(v) { if (typeof v === 'object' && v !== null) { const s = v.hours * 3600 + v.minutes * 60 + v.seconds; return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`; } const m = Math.floor(v / 60) || 0, s = Math.floor(v % 60) || 0; return `${m}:${s < 10 ? '0' : ''}${s}`; }
 function formatNumber(n) { if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M'; if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K'; return n; }
 async function downloadResource(url, filename) {
@@ -665,7 +638,7 @@ async function downloadResource(url, filename) {
     } catch (e) {
         console.warn("Direct download failed, trying proxy...");
         try {
-            const proxyUrl = getProxyUrl(url);
+            const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
             const r = await fetch(proxyUrl);
             if (!r.ok) throw new Error("Proxy fetch failed");
             const b = await r.blob();
