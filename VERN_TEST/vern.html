@@ -10,9 +10,30 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-    <script src="uv/uv.bundle.js" defer></script>
-    <script src="uv/uv.config.js" defer></script>
-    <script src="baremux/index.js" defer></script>
+    <!-- Aggressive Preloading -->
+    <link rel="preload" href="/VERN_TEST/uv/uv.bundle.js" as="script">
+    <link rel="preload" href="/VERN_TEST/baremux/index.js" as="script">
+    <link rel="preload" href="/VERN_TEST/baremux/worker.js" as="worker">
+    <link rel="preload" href="/VERN_TEST/uv/sw.js" as="worker">
+
+    <!-- Sync Loading for Critical Proxy Scripts -->
+    <script src="uv/uv.bundle.js"></script>
+    <!-- Inline Config for Speed -->
+    <script>
+        const basePath = "/VERN_TEST/uv/";
+        self.__uv$config = {
+            prefix: basePath + "service/",
+            encodeUrl: Ultraviolet.codec.xor.encode,
+            decodeUrl: Ultraviolet.codec.xor.decode,
+            handler: basePath + "uv.handler.js",
+            client: basePath + "uv.client.js",
+            bundle: basePath + "uv.bundle.js",
+            config: basePath + "uv.config.js",
+            sw: basePath + "uv.sw.js",
+            stockSW: basePath + "sw.js",
+        };
+    </script>
+    <script src="baremux/index.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -353,21 +374,29 @@
         };
 
         // --- Configuration ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const connection = new BareMux.BareMuxConnection("/VERN_TEST/baremux/worker.js");
-            const wispUrl = "wss://wisp.rhw.one/";
-            connection.setTransport("/VERN_TEST/libcurl/index.mjs", [{ websocket: wispUrl }]);
-        });
-
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                if (__uv$config) {
-                    navigator.serviceWorker.register(__uv$config.stockSW, {
+        // Immediate Initialization
+        (async () => {
+            if ("serviceWorker" in navigator) {
+                // Register SW immediately, don't wait for window load
+                try {
+                    await navigator.serviceWorker.register(__uv$config.stockSW, {
                         scope: __uv$config.prefix
                     });
+                    console.log("SW Registered Fast");
+                } catch (e) {
+                    console.error("SW Register Failed", e);
                 }
-            });
-        }
+            }
+
+            // Init BareMux
+            try {
+                const connection = new BareMux.BareMuxConnection("/VERN_TEST/baremux/worker.js");
+                const wispUrl = "wss://wisp.rhw.one/";
+                connection.setTransport("/VERN_TEST/libcurl/index.mjs", [{ websocket: wispUrl }]);
+            } catch (e) {
+                console.error("BareMux Init Failed", e);
+            }
+        })();
 
         // --- State ---
         let bTabs = [];
