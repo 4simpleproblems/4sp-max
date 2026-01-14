@@ -5,17 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VERN</title>
     
-    <script src="uv/uv.bundle.js"></script>
-    <script src="uv/uv.config.js"></script>
-    <script src="baremux/index.js"></script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Aggressive Preloading -->
+    <link rel="preload" href="/VERN/uv/uv.bundle.js" as="script">
+    <link rel="preload" href="/VERN/baremux/index.js" as="script">
+    <link rel="preload" href="/VERN/baremux/worker.js" as="worker">
+    <link rel="preload" href="/VERN/uv/sw.js" as="worker">
+
+    <!-- Sync Loading for Critical Proxy Scripts -->
+    <script src="uv/uv.bundle.js"></script>
+    <!-- Inline Config for Speed -->
+    <script>
+        const basePath = "/VERN/uv/";
+        self.__uv$config = {
+            prefix: basePath + "service/",
+            encodeUrl: Ultraviolet.codec.xor.encode,
+            decodeUrl: Ultraviolet.codec.xor.decode,
+            handler: basePath + "uv.handler.js",
+            client: basePath + "uv.client.js",
+            bundle: basePath + "uv.bundle.js",
+            config: basePath + "uv.config.js",
+            sw: basePath + "uv.sw.js",
+            stockSW: basePath + "sw.js",
+        };
+    </script>
+    <script src="baremux/index.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        /* ... existing styles ... */
         :root {
             --bg-color: #040404;
             --toolbar-bg: #000000;
@@ -349,17 +374,29 @@
         };
 
         // --- Configuration ---
-        const connection = new BareMux.BareMuxConnection("/VERN/baremux/worker.js");
-        const wispUrl = "wss://wisp.rhw.one/";
-        connection.setTransport("/VERN/libcurl/index.mjs", [{ websocket: wispUrl }]);
+        // Immediate Initialization
+        (async () => {
+            if ("serviceWorker" in navigator) {
+                // Register SW immediately, don't wait for window load
+                try {
+                    await navigator.serviceWorker.register(__uv$config.stockSW, {
+                        scope: __uv$config.prefix
+                    });
+                    console.log("SW Registered Fast");
+                } catch (e) {
+                    console.error("SW Register Failed", e);
+                }
+            }
 
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register(__uv$config.stockSW, {
-                    scope: __uv$config.prefix
-                });
-            });
-        }
+            // Init BareMux
+            try {
+                const connection = new BareMux.BareMuxConnection("/VERN/baremux/worker.js");
+                const wispUrl = "wss://wisp.rhw.one/";
+                connection.setTransport("/VERN/libcurl/index.mjs", [{ websocket: wispUrl }]);
+            } catch (e) {
+                console.error("BareMux Init Failed", e);
+            }
+        })();
 
         // --- State ---
         let bTabs = [];
@@ -827,8 +864,8 @@
         }
 
     </script>    <!-- DB and Script -->
-    <script src="db.js"></script>
-    <script src="script.js"></script>
+    <script src="db.js" defer></script>
+    <script src="script.js" defer></script>
 
     <div id="notification-container"></div>
     <script>

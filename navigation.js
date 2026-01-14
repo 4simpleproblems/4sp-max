@@ -308,7 +308,6 @@ let db;
             console.error("Failed to load page identification config:", error);
             pages = { 
                 'home': { name: "Home", url: "../index.html", icon: "fa-solid fa-house" },
-                'test_vern': { name: "Test Vern", url: "../VERN_TEST/vern.html", icon: "fa-solid fa-vial", adminOnly: true }
             };
         }
 

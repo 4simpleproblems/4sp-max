@@ -50,12 +50,6 @@
         "url": "../VERN/vern.html",
         "adminOnly": true
     },
-    "test_vern": {
-        "name": "Test Vern",
-        "icon": "fa-solid fa-vial",
-        "url": "../VERN_TEST/vern.html",
-        "adminOnly": true
-    },
     "velium": {
         "name": "Velium",
         "icon": "fa-solid fa-music",
