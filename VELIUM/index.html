@@ -361,7 +361,7 @@
         <div class="max-w-3xl mx-auto mb-12">
             <div id="search-container" class="relative flex items-center bg-[#0d0d0d] border border-[#333] rounded-xl p-2 group transition-all">
                 <i class="fas fa-search text-gray-500 ml-4 text-lg"></i>
-                <input type="text" id="search-box" placeholder="Search for songs, artists..." 
+                <input type="text" id="search-box" placeholder="Search songs (add artist for precision)" 
                        class="w-full bg-transparent border-none outline-none text-white px-4 py-3 text-lg placeholder-gray-600 font-light">
                 <button onclick="handleSearch()" class="btn-toolbar-style active px-8">Search</button>
             </div>
@@ -509,12 +509,68 @@
         </div>
     </div>
 
+    <!-- Disclaimer Modal (System Update) -->
+    <div id="system-update-overlay" class="fixed inset-0 bg-black/80 z-[8000] transition-opacity duration-300 opacity-0 flex items-center justify-center p-4 hidden">
+        <div class="bg-card-dark text-white rounded-[2rem] border border-gray-700 shadow-2xl backdrop-blur-md w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-6 sm:p-8 overflow-y-auto custom-scrollbar">
+                <h3 class="text-2xl font-bold mb-4 text-center text-accent-indigo">System Architecture Update</h3>
+                <p class="text-sm text-gray-400 mb-6 text-center">Protocol Switch: VERN Implementation</p>
+                
+                <div class="space-y-4 text-gray-300 text-sm sm:text-base leading-relaxed">
+                    <p>
+                        <i class="fas fa-network-wired text-blue-400 mr-2"></i>
+                        <strong>Proxy Migration:</strong> The system has migrated from the legacy <code>corsproxy.io</code> dependency to a custom-built, high-performance middleware based on the <strong>VERN</strong> architecture.
+                    </p>
+                    <p>
+                        <i class="fas fa-microchip text-red-400 mr-2"></i>
+                        <strong>Service Worker Interception:</strong> Data retrieval for audio, image, and metadata assets now utilizes local Service Worker interception. This enables real-time <strong>request rewriting</strong> and header manipulation directly within the client environment, bypassing standard CORS restrictions without external latency.
+                    </p>
+                    <p>
+                        <i class="fas fa-bolt text-yellow-400 mr-2"></i>
+                        <strong>Performance Optimization:</strong> Instead of relying on a public, shared service like <code>corsproxy.io</code>, we are now processing requests privately inside our own controlled environment via the <strong>UV (Ultraviolet)</strong> protocol. This internal routing eliminates public gateway bottlenecks, ensuring significantly faster data retrieval and improved stability.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-800 bg-black/20 flex justify-end">
+                <button id="system-update-btn" class="btn-toolbar-style btn-primary-override px-6">
+                    I understand
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- DB and Script -->
     <script src="db.js"></script>
     <script src="script.js"></script>
 
     <div id="notification-container"></div>
     <script>
+    // --- Disclaimer Logic ---
+    const DISCLAIMER_KEY = 'velium_proxy_update_ack';
+    const disclaimerOverlay = document.getElementById('system-update-overlay');
+    const disclaimerBtn = document.getElementById('system-update-btn');
+
+    if (localStorage.getItem(DISCLAIMER_KEY) !== 'true') {
+        disclaimerOverlay.classList.remove('hidden');
+        disclaimerOverlay.style.display = 'flex';
+        // Trigger reflow for transition
+        requestAnimationFrame(() => {
+            disclaimerOverlay.classList.remove('opacity-0');
+            disclaimerOverlay.classList.add('opacity-100');
+        });
+        
+        disclaimerBtn.onclick = () => {
+            localStorage.setItem(DISCLAIMER_KEY, 'true');
+            disclaimerOverlay.classList.remove('opacity-100');
+            disclaimerOverlay.classList.add('opacity-0');
+            setTimeout(() => {
+                disclaimerOverlay.classList.add('hidden');
+                disclaimerOverlay.style.display = 'none';
+            }, 300);
+        };
+    }
+
     // --- Sound & Notification Logic ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let isMuted = false;

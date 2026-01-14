@@ -883,6 +883,25 @@
             return card;
         }
 
+        // --- Helper for Download ---
+        async function downloadResource(url, filename) {
+            try {
+                const r = await fetch(url);
+                if (!r.ok) throw new Error("Fetch failed");
+                const b = await r.blob();
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(b);
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            } catch (e) {
+                console.error(e);
+                alert("Download failed.");
+            }
+        }
+
         // --- Game Viewer Logic ---
         async function openZone(game) {
             if (!game || !game.url) return;
@@ -941,14 +960,18 @@
             };
 
             // Setup Download Button (Specific to Eaglercraft)
-            if (game.baseGameId === 'other-eaglercraft' || game.id === 'other-eaglercraft') {
-                downloadBtn.href = game.url;
-                downloadBtn.download = game.name.replace(/ /g, '_') + '.html';
-                downloadBtn.removeAttribute('target');
+            const isEagler = game.baseGameId === 'other-eaglercraft' || game.id === 'other-eaglercraft' || (game.id && game.id.startsWith('other-eaglercraft'));
+            if (isEagler) {
+                downloadBtn.href = "#"; 
+                downloadBtn.onclick = (e) => {
+                    e.preventDefault();
+                    downloadResource(game.url, game.name.replace(/ /g, '_') + '.html');
+                };
                 downloadBtn.classList.remove('hidden');
             } else {
                 downloadBtn.classList.add('hidden');
                 downloadBtn.href = '#';
+                downloadBtn.onclick = null;
                 downloadBtn.removeAttribute('download');
             }
 
@@ -980,7 +1003,8 @@
 
             // --- REVISED LOGIC FOR LOADING GAMES WITH RETRY ---
             // GN-Math uses content injection. StrongdogXP and Others use standard loading.
-            const isStandardURLGame = game.category === 'Others' || game.category === 'StrongdogXP';
+            // EXCEPTION: Eaglercraft uses injection to ensure keyboard focus/input works correctly as a "local" file.
+            const isStandardURLGame = (game.category === 'Others' && !isEagler) || game.category === 'StrongdogXP';
             
             const attemptLoad = async (retriesLeft) => {
                 try {
@@ -1003,6 +1027,8 @@
                                      // Previously reloaded page, now just closes viewer
                                      return;
                                 }
+                                zoneFrame.contentWindow.focus();
+                                zoneFrame.focus();
                             } catch (e) {
                                 // Cross-origin might block access. If it's a cross-origin game that loads fine, this error is expected and ignored.
                             }
@@ -1016,6 +1042,12 @@
                         doc.open();
                         doc.write(html);
                         doc.close();
+                        
+                        // Force focus for injected games
+                        setTimeout(() => {
+                            if (zoneFrame.contentWindow) zoneFrame.contentWindow.focus();
+                            zoneFrame.focus();
+                        }, 100);
                     }
 
                     // Reveal the viewer fully after content load starts
