@@ -13,35 +13,30 @@
     <script src="../navigation.js"></script>
 
     <!-- VERN Proxy Scripts -->
-    <script src="./uv/uv.bundle.js"></script>
+    <script src="/logged-in/uv/uv.bundle.js"></script>
     <script>
-        // Dynamically determine base path
-        const pathPrefix = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        const absoluteBasePath = window.location.origin + pathPrefix + "uv/";
-
+        const basePath = "/logged-in/uv/";
         self.__uv$config = {
-            prefix: absoluteBasePath + "service/",
+            prefix: basePath + "service/",
             encodeUrl: Ultraviolet.codec.xor.encode,
             decodeUrl: Ultraviolet.codec.xor.decode,
-            handler: absoluteBasePath + "uv.handler.js",
-            client: absoluteBasePath + "uv.client.js",
-            bundle: absoluteBasePath + "uv.bundle.js",
-            config: absoluteBasePath + "uv.config.js",
-            sw: absoluteBasePath + "uv.sw.js",
-            stockSW: absoluteBasePath + "sw.js",
+            handler: basePath + "uv.handler.js",
+            client: basePath + "uv.client.js",
+            bundle: basePath + "uv.bundle.js",
+            config: basePath + "uv.config.js",
+            sw: basePath + "uv.sw.js",
+            stockSW: basePath + "sw.js",
         };
     </script>
-    <script src="./baremux/index.js"></script>
+    <script src="/logged-in/baremux/index.js"></script>
     <script>
         (async () => {
             if ("serviceWorker" in navigator) {
                 try {
-                    // Register SW with absolute path
-                    const swUrl = window.location.origin + pathPrefix + "sw.js";
-                    await navigator.serviceWorker.register(swUrl, {
-                        scope: pathPrefix
+                    await navigator.serviceWorker.register("/logged-in/sw.js", {
+                        scope: "/logged-in/"
                     });
-                    console.log("VERN SW Registered at", swUrl);
+                    console.log("VERN SW Registered");
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         if (!navigator.serviceWorker.controller) return;
                         window.location.reload();
@@ -51,9 +46,9 @@
                 }
             }
             try {
-                const connection = new BareMux.BareMuxConnection("./baremux/worker.js");
-                const wispUrl = "wss://wisp.mercurywork.shop/";
-                connection.setTransport("./libcurl/index.mjs", [{ websocket: wispUrl }]);
+                const connection = new BareMux.BareMuxConnection("/logged-in/baremux/worker.js");
+                const wispUrl = "wss://wisp.rhw.one/";
+                connection.setTransport("/logged-in/libcurl/index.mjs", [{ websocket: wispUrl }]);
                 console.log("BareMux Initialized");
             } catch (e) {
                 console.error("BareMux Init Failed", e);
@@ -61,9 +56,12 @@
         })();
 
         function getProxyUrl(url) {
-            // Use the config we just set up
-            if (self.__uv$config) {
-                return self.__uv$config.prefix + self.__uv$config.encodeUrl(url);
+            if (window.__uv$config && window.__uv$config.prefix && window.__uv$config.encodeUrl) {
+                return window.__uv$config.prefix + window.Ultraviolet.codec.xor.encode(url);
+            }
+            // Fallback
+            if (window.Ultraviolet && window.Ultraviolet.codec && window.Ultraviolet.codec.xor) {
+                 return "/logged-in/uv/service/" + window.Ultraviolet.codec.xor.encode(url);
             }
             return url;
         }

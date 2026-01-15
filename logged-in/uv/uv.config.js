@@ -1,8 +1,6 @@
 (() => {
-    // Dynamically determine base path relative to the worker location
-    const swPath = self.location.pathname;
-    const rootPath = swPath.substring(0, swPath.lastIndexOf('/') + 1);
-    const basePath = rootPath + "uv/";
+    // Root-relative path for logged-in directory
+    const basePath = "/logged-in/uv/";
 
     self.__uv$config = {
         prefix: basePath + "service/",

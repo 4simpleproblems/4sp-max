@@ -1,9 +1,6 @@
-const swPath = self.location.pathname;
-const rootPath = swPath.substring(0, swPath.lastIndexOf('/') + 1);
-
-importScripts(rootPath + 'uv/uv.bundle.js');
-importScripts(rootPath + 'uv/uv.config.js');
-importScripts(__uv$config.sw || rootPath + 'uv/uv.sw.js');
+importScripts('/logged-in/uv/uv.bundle.js');
+importScripts('/logged-in/uv/uv.config.js');
+importScripts(__uv$config.sw || '/logged-in/uv/uv.sw.js');
 
 const uv = new UVServiceWorker();
 
