@@ -470,11 +470,11 @@
                     return normalizedKey;
                 }
             }
-            return window.location.host + window.location.pathname.replace(///$/, "");
+            return window.location.host + window.location.pathname.replace(/\/$/, "");
         }
         
         function normalizeDomainKey(str) {
-            return str.replace(/^https?:\/\//, "").replace(///$/, "");
+            return str.replace(/^https?:\/\//, "").replace(/\/$/, "");
         }
         
         function replaceDomainsInData(dataObj, currentDomain) {
