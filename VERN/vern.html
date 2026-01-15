@@ -552,22 +552,18 @@
             <head>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
             <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+            <link rel="icon" href="/images/logo.png">
             <style>
                 body { background: #040404; color: #e5e7eb; font-family: 'Geist', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; position: relative; }
-                .container { width: 100%; max-width: 600px; padding: 20px; display: flex; flex-direction: column; gap: 40px; z-index: 10; }
+                .container { width: 100%; max-width: 600px; padding: 20px; display: flex; flex-direction: column; gap: 30px; z-index: 10; align-items: center; }
                 
-                /* Logo / Branding - Moved to bottom right */
-                .brand-fixed { 
-                    position: fixed; bottom: 20px; right: 20px; 
-                    display: flex; align-items: center; gap: 10px; 
-                    opacity: 0.5; transition: opacity 0.3s;
-                    z-index: 5;
+                /* Logo / Branding - Centered above search */
+                .brand-center { 
+                    display: flex; align-items: center; justify-content: center; gap: 15px; 
+                    margin-bottom: 10px;
                 }
-                .brand-fixed:hover { opacity: 1; }
-                .brand-fixed img { width: 32px; height: 32px; filter: grayscale(100%); transition: filter 0.3s; }
-                .brand-fixed:hover img { filter: grayscale(0%); }
-                .brand-fixed h1 { font-size: 1.2rem; font-weight: 500; letter-spacing: 1px; margin: 0; color: #555; }
-                .brand-fixed:hover h1 { color: #fff; }
+                .brand-center img { width: 48px; height: 48px; }
+                .brand-center h1 { font-size: 3rem; font-weight: 300; letter-spacing: 2px; margin: 0; color: #fff; font-style: italic; }
 
                 .search-box { position: relative; width: 100%; }
                 input { 
@@ -604,13 +600,12 @@
             </style>
             </head>
             <body>
-                <div class="brand-fixed">
-                    <!-- Placeholder logo or generic icon if file not present, assuming logo.png exists in parent -->
-                    <img src="/images/logo.png" alt="Logo"> 
-                    <h1>VERN</h1>
-                </div>
-
                 <div class="container">
+                    <div class="brand-center">
+                        <img src="/images/logo.png" alt="Logo"> 
+                        <h1>VERN</h1>
+                    </div>
+
                     <div class="search-box">
                         <form onsubmit="event.preventDefault(); window.parent.nav(this.querySelector('input').value)">
                             <input type="text" id="s-input" placeholder="Search or type a URL..." autocomplete="off">
@@ -696,8 +691,8 @@
             tabEl.title = "New Tab";
             // Show title next to icon
             tabEl.innerHTML = `
-                <i class="fas fa-compass tab-icon" id="def-fav-${nTab.id}"></i>
-                <img id="fav-${nTab.id}" src="" style="display:none">
+                <i class="fas fa-compass tab-icon" id="def-fav-${nTab.id}" style="display:none"></i>
+                <img id="fav-${nTab.id}" src="/images/logo.png" style="display:block">
                 <span class="tab-title">New Tab</span>
             `;
             
@@ -774,8 +769,12 @@
                 frame.src = "";
                 frame.srcdoc = getHomepageHTML();
                 if (tabEl) {
-                     tabEl.querySelector('img').style.display = 'none';
-                     tabEl.querySelector('.tab-icon').style.display = 'inline-block';
+                     const img = tabEl.querySelector('img');
+                     const icon = tabEl.querySelector('.tab-icon');
+                     img.src = '/images/logo.png';
+                     img.style.display = 'block';
+                     icon.style.display = 'none';
+                     
                      tabEl.title = "New Tab";
                      tabEl.querySelector('.tab-title').textContent = "New Tab";
                 }
