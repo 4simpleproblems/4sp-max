@@ -12,6 +12,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../navigation.js"></script>
 
+    <!-- VERN Proxy Scripts -->
+    <script src="/4sp-max/logged-in/uv/uv.bundle.js"></script>
+    <script>
+        const basePath = "/4sp-max/logged-in/uv/";
+        self.__uv$config = {
+            prefix: basePath + "service/",
+            encodeUrl: Ultraviolet.codec.xor.encode,
+            decodeUrl: Ultraviolet.codec.xor.decode,
+            handler: basePath + "uv.handler.js",
+            client: basePath + "uv.client.js",
+            bundle: basePath + "uv.bundle.js",
+            config: basePath + "uv.config.js",
+            sw: basePath + "uv.sw.js",
+            stockSW: basePath + "sw.js",
+        };
+    </script>
+    <script src="/4sp-max/logged-in/baremux/index.js"></script>
+    <script>
+        (async () => {
+            if ("serviceWorker" in navigator) {
+                try {
+                    await navigator.serviceWorker.register("/4sp-max/logged-in/sw.js", {
+                        scope: "/4sp-max/logged-in/"
+                    });
+                    console.log("VERN SW Registered");
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!navigator.serviceWorker.controller) return;
+                        window.location.reload();
+                    });
+                } catch (e) {
+                    console.error("SW Register Failed", e);
+                }
+            }
+            try {
+                const connection = new BareMux.BareMuxConnection("/4sp-max/logged-in/baremux/worker.js");
+                const wispUrl = "wss://wisp.rhw.one/";
+                connection.setTransport("/4sp-max/logged-in/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                console.log("BareMux Initialized");
+            } catch (e) {
+                console.error("BareMux Init Failed", e);
+            }
+        })();
+
+        function getProxyUrl(url) {
+            if (window.__uv$config && window.__uv$config.prefix && window.__uv$config.encodeUrl) {
+                return window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+            }
+            // Fallback
+            if (window.Ultraviolet && window.Ultraviolet.codec && window.Ultraviolet.codec.xor) {
+                 return "/4sp-max/logged-in/uv/service/" + window.Ultraviolet.codec.xor.encode(url);
+            }
+            return url;
+        }
+    </script>
+
     <style>
         body { 
             font-family: 'Geist', sans-serif; 
@@ -169,7 +224,6 @@
         const resultBox = document.getElementById('result-box');
         
         const SECURLY_SERVER = 'https://useast-www.securly.com';
-        const CORS_PROXY = 'https://corsproxy.io/?'; 
 
         // --- AUTH DETECTION ---
         function detectUser() {
@@ -234,7 +288,7 @@
 
                 const securlyUrl = `${SECURLY_SERVER}/crextn/broker?useremail=${encodeURIComponent(userEmail)}&reason=crextn&host=${encodeURIComponent(hostname)}&url=${btoa(targetUrl)}&msg=&ver=2.97.13&cu=${encodeURIComponent(SECURLY_SERVER + "/crextn")}&uf=1&cf=1`;
                 
-                const proxyUrl = CORS_PROXY + encodeURIComponent(securlyUrl);
+                const proxyUrl = getProxyUrl(securlyUrl);
 
                 const response = await fetch(proxyUrl);
                 const text = await response.text();
