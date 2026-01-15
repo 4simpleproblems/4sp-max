@@ -1065,7 +1065,7 @@
                                             
                                             <!-- LEFT: Live Preview -->
                                             <div id="mac-preview-wrapper" class="w-1/2 flex flex-col items-center justify-center bg-[#0a0a0a] p-8 border-r border-[#333] transition-all duration-500 ease-in-out z-10">
-                                                <div class="relative h-64 md:h-80 aspect-square rounded-full overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
+                                                <div class="relative h-64 md:h-80 aspect-square rounded-2xl overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
                                                     <!-- Background (Static) -->
                                                     <div id="mac-preview-bg" class="absolute inset-0 w-full h-full transition-colors duration-300"></div>
                                                     
@@ -1147,7 +1147,7 @@
                             <div id="pfpCustomSettings" class="hidden mt-2">
                                 <div class="flex items-center gap-4">
                                     <!-- Preview -->
-                                    <div class="w-16 h-16 rounded-full overflow-hidden border border-gray-600 flex-shrink-0 bg-black relative">
+                                    <div class="w-16 h-16 rounded-xl overflow-hidden border border-gray-600 flex-shrink-0 bg-black relative">
                                         <img id="customPfpPreview" src="" class="w-full h-full object-cover" style="display: none;">
                                         <div id="customPfpPlaceholder" class="w-full h-full flex items-center justify-center text-gray-600">
                                             <i class="fa-solid fa-user"></i>
@@ -3765,25 +3765,44 @@ const performAccountDeletion = async (credential) => {
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
                     ctx.beginPath();
                     ctx.rect(0, 0, w, h);
-                    // Cut hole
-                    ctx.arc(cropState.x, cropState.y, cropState.radius, 0, 2 * Math.PI, true);
                     ctx.fill();
+                    
+                    // Cut hole (Rounded Rect)
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.beginPath();
+                    
+                    const r = cropState.radius;
+                    const size = r * 2;
+                    const cornerRadius = size * 0.15;
+                    
+                    if (ctx.roundRect) {
+                        ctx.roundRect(cropState.x - r, cropState.y - r, size, size, cornerRadius);
+                    } else {
+                        ctx.rect(cropState.x - r, cropState.y - r, size, size);
+                    }
+                    ctx.fill();
+                    
+                    ctx.globalCompositeOperation = 'source-over';
                     
                     // Draw dashed border
                     ctx.strokeStyle = '#fff';
                     ctx.lineWidth = 2;
-                    ctx.setLineDash([6, 4]); // Dashed pattern
+                    ctx.setLineDash([6, 4]);
                     ctx.beginPath();
-                    ctx.arc(cropState.x, cropState.y, cropState.radius, 0, 2 * Math.PI);
+                    if (ctx.roundRect) {
+                        ctx.roundRect(cropState.x - r, cropState.y - r, size, size, cornerRadius);
+                    } else {
+                        ctx.rect(cropState.x - r, cropState.y - r, size, size);
+                    }
                     ctx.stroke();
-                    ctx.setLineDash([]); // Reset
+                    ctx.setLineDash([]);
                 };
 
                 // Interaction Handlers
                 const handleStart = (x, y) => {
-                    const dx = x - cropState.x;
-                    const dy = y - cropState.y;
-                    if (dx*dx + dy*dy < cropState.radius * cropState.radius) {
+                    const r = cropState.radius;
+                    if (x >= cropState.x - r && x <= cropState.x + r &&
+                        y >= cropState.y - r && y <= cropState.y + r) {
                         isDragging = true;
                         dragStart = { x, y };
                     }
