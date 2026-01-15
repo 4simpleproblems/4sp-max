@@ -798,27 +798,26 @@
             'StrongdogXP': { 
                 desc: "The powerhouse behind the core game collection. Providing a vast library of classic and modern web games, StrongdogXP ensures stability and quality for the 4SP Games Hub.",
                 links: [
-                    { type: 'github', url: "https://github.com/jman1593/", label: "GitHub" }
+                    { type: 'github', url: "https://github.com/jman1593/", label: "GitHub" },
+                    { type: 'discord', url: "https://discord.com/invite/strongdog", label: "Discord" }
                 ],
-                logo: "./images/credits/strongdog_logo.png"
+                logo: "./images/credits/strongdog_logo.png",
+                color: "#FF8C00"
             },
             'GN-Math': { 
                 desc: "A dedicated community focused on unblocked gaming solutions. The GN-Math infrastructure powers our external game loading system, bypassing many common network restrictions.",
                 links: [
                     { type: 'github', url: "https://github.com/gn-math/", label: "GitHub" },
-                    { type: 'discord', url: "https://discord.gg/gn-math", label: "Discord" }
+                    { type: 'discord', url: "https://discord.com/invite/gn-math", label: "Discord" }
                 ],
-                logo: "./images/credits/gn_logo.png"
-            },
-            'Gameboy Games': { 
-                desc: "Preserving handheld history. This collection aggregates high-quality ROMs and emulators from various public archives to bring the classic Gameboy experience to the web.",
-                links: [],
-                logo: "./images/credits/gameboy_logo.png"
+                logo: "./images/credits/gn_logo.png",
+                color: "#FD2E59"
             },
             'Others': { 
                 desc: "A tribute to the open-source community. This section features projects like Eaglercraft, JS-DOS, and Doom, developed by talented individuals who believe in accessible software for everyone.",
                 links: [],
-                logo: "./images/credits/opensource_logo.png"
+                logo: "./images/credits/opensource_logo.png",
+                color: "#d1d5db"
             }
         };
 
@@ -1742,7 +1741,7 @@
                     let linksHtml = '';
                     if (data.links.length > 0) {
                         linksHtml = `<div class="credit-links">` + data.links.map(l => `
-                            <a href="${l.url}" target="_blank" class="credit-btn btn-${l.type}">
+                            <a href="${l.url}" target="_blank" class="credit-btn" style="border-color: ${data.color}; color: ${data.color}; background: ${data.color}1a;">
                                 <i class="fa-brands fa-${l.type}"></i> ${l.label}
                             </a>
                         `).join('') + `</div>`;
@@ -1751,8 +1750,8 @@
                     section.innerHTML = `
                         <div class="credit-content-grid">
                             <div class="credit-text-col">
-                                <h2 class="credit-title ${categoryColors[key] || 'text-white'}">${key}</h2>
-                                <p class="credit-desc">${data.desc}</p>
+                                <h2 class="credit-title" style="background: ${data.color}; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${key}</h2>
+                                <p class="credit-desc" style="border-left: 2px solid ${data.color}; padding-left: 1rem;">${data.desc}</p>
                                 ${linksHtml}
                             </div>
                             <div class="credit-img-col">
