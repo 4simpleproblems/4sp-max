@@ -3940,57 +3940,36 @@ const performAccountDeletion = async (credential) => {
                 }
 
                 // --- NEW: Sorting Logic ---
-                const orderedThemeNames = ['Dark', 'Light', 'Christmas'];
+                const orderedThemeNames = ['Dark', 'Light', 'Christmas', 'The New Year'];
                 const sortedThemes = [];
+                let remainingThemes = [];
 
-                // Add themes in the specified order first
+                // 1. Extract explicit order
                 orderedThemeNames.forEach(name => {
                     const theme = themes.find(t => t.name === name);
-                    if (theme) {
-                        sortedThemes.push(theme);
-                        themes = themes.filter(t => t.name !== name); // Remove from original list
-                    }
+                    if (theme) sortedThemes.push(theme);
                 });
 
-                // Sort remaining themes by Rainbow Color then Type
+                // 2. Separate remaining
+                remainingThemes = themes.filter(t => !orderedThemeNames.includes(t.name));
+                
+                const darkThemes = remainingThemes.filter(t => !lightThemeNames.includes(t.name));
+                const lightThemes = remainingThemes.filter(t => lightThemeNames.includes(t.name));
+
+                // 3. Sort subgroups (Rainbow/Alphabetical)
                 const colorMap = {
-                    'Crimson': 1, 'Fire': 1,
-                    'Orange': 2, 'Sunset': 2, 'Rust': 2, 'Ember': 2, 'Copper': 2,
-                    'Gold': 3,
-                    'Green': 4, 'Forest': 4, 'Matrix': 4,
-                    'Mint': 5,
-                    'Ocean': 6, 'Deep Blue': 6,
-                    'Purple': 7, 'Royal': 7, 'Haze': 7, 'Lavender': 7,
-                    'Pink': 8, 'Coral': 8, 'Rose Gold': 8,
+                    'Crimson': 1, 'Fire': 1, 'Orange': 2, 'Sunset': 2, 'Rust': 2, 'Ember': 2, 'Copper': 2, 'Gold': 3,
+                    'Green': 4, 'Forest': 4, 'Matrix': 4, 'Mint': 5, 'Ocean': 6, 'Deep Blue': 6,
+                    'Purple': 7, 'Royal': 7, 'Haze': 7, 'Lavender': 7, 'Pink': 8, 'Coral': 8, 'Rose Gold': 8,
                     'Clanker': 9, 'Monochrome': 9, 'Silver': 9, 'Slate': 9
                 };
+                const sortFn = (a, b) => (colorMap[a.name] || 100) - (colorMap[b.name] || 100) || a.name.localeCompare(b.name);
                 
-                // Helper to determine type (Dark=0, Light=1 for sorting)
-                // Light themes use logo-dark.png
-                const getThemeType = (t) => (t['logo-src'] && t['logo-src'].includes('logo-dark.png')) ? 1 : 0;
+                darkThemes.sort(sortFn);
+                lightThemes.sort(sortFn);
 
-                themes.sort((a, b) => {
-                    const colorA = colorMap[a.name] || 100; // Default to end if unknown
-                    const colorB = colorMap[b.name] || 100;
-                    
-                    if (colorA !== colorB) {
-                        return colorA - colorB;
-                    }
-                    
-                    // If same color, sort by type
-                    const typeA = getThemeType(a);
-                    const typeB = getThemeType(b);
-                    
-                    if (typeA !== typeB) {
-                        return typeA - typeB; // Dark first, then Light
-                    }
-                    
-                    // If same color and type, alphabetical
-                    return a.name.localeCompare(b.name);
-                });
-
-                // Combine them
-                themes = [...sortedThemes, ...themes];
+                // 4. Combine
+                themes = [...sortedThemes, ...darkThemes, ...lightThemes];
                 // --- END NEW: Sorting Logic ---
                 
                 // 2. Get currently saved theme to set the active state
@@ -4023,7 +4002,8 @@ const performAccountDeletion = async (credential) => {
                     // Use active tab colors for the button style to match navigation.js look
                     const activeText = theme['tab-active-text'] || '#4f46e5';
                     const activeBorder = theme['tab-active-border'] || '#4f46e5';
-                    const activeBg = theme['tab-active-bg'] || 'rgba(79, 70, 229, 0.1)';
+                    // MODIFICATION: Use navbar-bg for background to show light/dark correctly
+                    const activeBg = theme['navbar-bg'] || '#000000'; 
                     
                     // Hover states
                     const hoverText = theme['tab-active-hover-text'] || activeText;
