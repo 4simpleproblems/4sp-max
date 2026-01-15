@@ -13,9 +13,9 @@
     <script src="../navigation.js"></script>
 
     <!-- VERN Proxy Scripts -->
-    <script src="/4sp-max/logged-in/uv/uv.bundle.js"></script>
+    <script src="./uv/uv.bundle.js"></script>
     <script>
-        const basePath = "/4sp-max/logged-in/uv/";
+        const basePath = "./uv/";
         self.__uv$config = {
             prefix: basePath + "service/",
             encodeUrl: Ultraviolet.codec.xor.encode,
@@ -28,13 +28,13 @@
             stockSW: basePath + "sw.js",
         };
     </script>
-    <script src="/4sp-max/logged-in/baremux/index.js"></script>
+    <script src="./baremux/index.js"></script>
     <script>
         (async () => {
             if ("serviceWorker" in navigator) {
                 try {
-                    await navigator.serviceWorker.register("/4sp-max/logged-in/sw.js", {
-                        scope: "/4sp-max/logged-in/"
+                    await navigator.serviceWorker.register("./sw.js", {
+                        scope: "./"
                     });
                     console.log("VERN SW Registered");
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -46,9 +46,9 @@
                 }
             }
             try {
-                const connection = new BareMux.BareMuxConnection("/4sp-max/logged-in/baremux/worker.js");
+                const connection = new BareMux.BareMuxConnection("./baremux/worker.js");
                 const wispUrl = "wss://wisp.rhw.one/";
-                connection.setTransport("/4sp-max/logged-in/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                connection.setTransport("./libcurl/index.mjs", [{ websocket: wispUrl }]);
                 console.log("BareMux Initialized");
             } catch (e) {
                 console.error("BareMux Init Failed", e);
@@ -61,7 +61,7 @@
             }
             // Fallback
             if (window.Ultraviolet && window.Ultraviolet.codec && window.Ultraviolet.codec.xor) {
-                 return "/4sp-max/logged-in/uv/service/" + window.Ultraviolet.codec.xor.encode(url);
+                 return "./uv/service/" + window.Ultraviolet.codec.xor.encode(url);
             }
             return url;
         }

@@ -1,5 +1,6 @@
 (() => {
-    const basePath = "/4sp-max/logged-in/uv/";
+    // Relative path for logged-in directory
+    const basePath = "./uv/";
 
     self.__uv$config = {
         prefix: basePath + "service/",
