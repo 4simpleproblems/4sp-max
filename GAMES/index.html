@@ -967,7 +967,7 @@
             };
 
             // Setup Download Button (Specific to Eaglercraft)
-            const isEagler = game.baseGameId === 'other-eaglercraft' || game.id === 'other-eaglercraft' || (game.id && game.id.startsWith('other-eaglercraft'));
+            const isEagler = game.baseGameId === 'other-eaglercraft' || game.id === 'other-eaglercraft' || (game.id && String(game.id).startsWith('other-eaglercraft'));
             if (isEagler) {
                 downloadBtn.href = "#"; 
                 downloadBtn.onclick = (e) => {
