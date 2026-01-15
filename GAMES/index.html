@@ -655,7 +655,7 @@
                         if (g.versions) {
                             const ver = g.versions.find(v => String(v.favoriteId) === strGameId);
                             if (ver) {
-                                gameData = { ...g, id: ver.favoriteId, name: `${game.name} - ${ver.name}`, url: ver.url, versions: undefined };
+                                gameData = { ...g, id: ver.favoriteId, name: `${g.name} - ${ver.name}`, url: ver.url, versions: undefined };
                                 return true;
                             }
                         }
