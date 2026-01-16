@@ -3,6 +3,8 @@
 4SP Max is the advanced version of 4SP.  
 It adds features that require dynamic hosting and introduces a new UI style.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/4simpleproblems-v5/4sp-max/)
+
 ## What is 4SP?
 4SP is a web-based games and tools platform built to work on restricted networks, including schools.
 
