@@ -64,11 +64,7 @@
             background-color: #0d0d0d;
         }
 
-        .provider-icon {
-            width: 1.25rem;
-            height: 1.25rem;
-            object-fit: contain;
-        }
+        .provider-icon { width: 1.25rem; height: 1.25rem; object-fit: contain; }
 
         /* --- Action Buttons --- */
         .action-btn {
@@ -80,113 +76,62 @@
             margin-right: 0.5rem;
             border: 1px solid transparent;
         }
-        .btn-block {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.2);
-        }
+        .btn-block { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
         .btn-block:hover { background-color: rgba(239, 68, 68, 0.2); }
         
-        .btn-unblock {
-            background-color: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-            border-color: rgba(34, 197, 94, 0.2);
-        }
+        .btn-unblock { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; border-color: rgba(34, 197, 94, 0.2); }
         .btn-unblock:hover { background-color: rgba(34, 197, 94, 0.2); }
 
-        .btn-admin {
-            background-color: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-            border-color: rgba(59, 130, 246, 0.2);
-        }
+        .btn-admin { background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.2); }
         .btn-admin:hover { background-color: rgba(59, 130, 246, 0.2); }
 
-        .btn-remove-admin {
-            background-color: rgba(234, 179, 8, 0.1);
-            color: #eab308;
-            border-color: rgba(234, 179, 8, 0.2);
-        }
+        .btn-remove-admin { background-color: rgba(234, 179, 8, 0.1); color: #eab308; border-color: rgba(234, 179, 8, 0.2); }
         .btn-remove-admin:hover { background-color: rgba(234, 179, 8, 0.2); }
+
+        .btn-create { background-color: rgba(16, 185, 129, 0.1); color: #10b981; border-color: rgba(16, 185, 129, 0.2); }
+        .btn-create:hover { background-color: rgba(16, 185, 129, 0.2); }
+
+        .btn-delete { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+        .btn-delete:hover { background-color: rgba(239, 68, 68, 0.2); }
 
         /* --- Modals --- */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal-content {
-            background: #0d0d0d;
-            border: 1px solid #333;
-            padding: 2rem;
-            border-radius: 1rem;
-            max-width: 500px;
-            width: 90%;
+            background: #0d0d0d; border: 1px solid #333; padding: 2rem;
+            border-radius: 1rem; max-width: 500px; width: 90%;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         /* --- Dashboard Elements --- */
         .chart-container {
-            background-color: #0d0d0d;
-            border: 1px solid #1a1a1a;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            height: 300px;
-            margin-bottom: 2rem;
+            background-color: #0d0d0d; border: 1px solid #1a1a1a;
+            border-radius: 0.75rem; padding: 1rem; height: 300px; margin-bottom: 2rem;
         }
         
         .preset-chip {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 1rem;
-            color: #9ca3af;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
+            display: inline-block; padding: 0.25rem 0.75rem; background: #1a1a1a;
+            border: 1px solid #333; border-radius: 1rem; color: #9ca3af;
+            font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
         }
-        .preset-chip:hover {
-            background: #2a2a2a;
-            color: white;
-            border-color: #555;
-        }
+        .preset-chip:hover { background: #2a2a2a; color: white; border-color: #555; }
 
         .tab-btn {
-            background: transparent;
-            color: #707070;
-            padding: 0.75rem 1.5rem;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            font-weight: 500;
+            background: transparent; color: #707070; padding: 0.75rem 1.5rem;
+            border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;
         }
         .tab-btn:hover { color: #ccc; }
-        .tab-btn.active {
-            color: white;
-            border-bottom-color: #3b82f6;
-        }
+        .tab-btn.active { color: white; border-bottom-color: #3b82f6; }
         
         .stat-card {
-            background: #0d0d0d;
-            border: 1px solid #1a1a1a;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: border-color 0.2s;
+            background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 0.75rem;
+            padding: 1.5rem; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: border-color 0.2s;
         }
         .stat-card:hover { border-color: #333; }
 
@@ -198,8 +143,7 @@
         }
         .live-indicator {
             width: 8px; height: 8px; background: #22c55e; border-radius: 50%;
-            display: inline-block; margin-right: 6px;
-            animation: pulse-green 2s infinite;
+            display: inline-block; margin-right: 6px; animation: pulse-green 2s infinite;
         }
     </style>
 </head>
@@ -222,7 +166,7 @@
         </header>
 
         <div id="tab-users" class="tab-content">
-            <div id="sync-stats-card" class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl p-4 mb-6 flex justify-between items-center">
+            <div id="sync-stats-card" class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl p-4 mb-6 flex flex-wrap gap-4 justify-between items-center">
                 <div class="flex gap-8">
                     <div class="flex flex-col">
                         <span class="text-gray-500 text-xs uppercase tracking-widest">Auth Users</span>
@@ -393,27 +337,60 @@
                 </div>
             </div>
 
-            <div class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl overflow-hidden">
-                <div class="p-4 border-b border-[#1a1a1a] bg-[#0a0a0a]">
-                    <h3 class="text-white text-lg">Data Integrity Check</h3>
-                    <p class="text-sm text-gray-500">Scans for Firestore documents that don't match Auth records schema.</p>
-                </div>
-                <div class="p-4">
-                    <div id="integrity-status" class="text-sm text-gray-400 mb-4">Scanning...</div>
-                    <div class="overflow-x-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <div class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl overflow-hidden flex flex-col h-[500px]">
+                    <div class="p-4 border-b border-[#1a1a1a] bg-[#0a0a0a] flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white text-lg flex items-center gap-2">
+                                Missing Firestore Profiles
+                                <span id="count-missing-profile" class="text-xs bg-red-900/30 text-red-400 px-2 py-0.5 rounded border border-red-500/20">0</span>
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-1">Users exist in Auth, but have no DB document.</p>
+                        </div>
+                    </div>
+                    <div class="overflow-y-auto flex-1 p-0">
                         <table class="analytics-table">
-                            <thead>
+                            <thead class="sticky top-0 bg-[#0d0d0d] z-10 shadow-md">
                                 <tr>
-                                    <th>Document ID</th>
-                                    <th>Issue Type</th>
-                                    <th>Details</th>
+                                    <th>Auth UID</th>
+                                    <th>Email / Provider</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="integrity-table-body"></tbody>
+                            <tbody id="missing-profile-body">
+                                <tr><td colspan="3" class="text-center text-gray-600 py-8">Scanning...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
+
+                <div class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl overflow-hidden flex flex-col h-[500px]">
+                    <div class="p-4 border-b border-[#1a1a1a] bg-[#0a0a0a] flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white text-lg flex items-center gap-2">
+                                Orphaned User Documents
+                                <span id="count-orphaned-doc" class="text-xs bg-orange-900/30 text-orange-400 px-2 py-0.5 rounded border border-orange-500/20">0</span>
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-1">Document exists, but Auth user is deleted/missing.</p>
+                        </div>
+                    </div>
+                    <div class="overflow-y-auto flex-1 p-0">
+                        <table class="analytics-table">
+                            <thead class="sticky top-0 bg-[#0d0d0d] z-10 shadow-md">
+                                <tr>
+                                    <th>Document ID</th>
+                                    <th>Username / Data</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orphaned-doc-body">
+                                <tr><td colspan="3" class="text-center text-gray-600 py-8">Scanning...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -497,8 +474,11 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
-        let allUsers = [];
-        let missingAuthUsers = [];
+        let allUsers = [];      // From Firestore
+        let allAuthUsers = [];  // From Cloud Function
+        let missingAuthUsers = []; // Auth exists, Doc missing
+        let orphanedDocs = [];     // Doc exists, Auth missing
+        
         let allSessions = [];
         let admins = new Set();
         let bannedUsers = new Set();
@@ -530,7 +510,7 @@
                     if (adminDoc.exists() || isSuperAdmin) {
                         // Start Real-time Listeners
                         subscribeToData();
-                        loadTrafficData(); // Traffic can remain fetch-based for performance
+                        loadTrafficData(); 
                     } else {
                         window.location.href = '../logged-in/dashboard.html';
                     }
@@ -552,10 +532,12 @@
                     const tabId = btn.dataset.tab;
                     document.getElementById(`tab-${tabId}`).classList.remove('hidden');
                     
-                    // Re-render charts if hidden/shown
+                    // Re-render charts/tables if hidden/shown
                     if(tabId === 'users') renderChart(allUsers);
-                    if(tabId === 'health' && allSessions.length > 0) {
-                         // Logic handled in loadTrafficData
+                    if(tabId === 'health') {
+                        // The health charts (Browser/OS) are rendered in loadTrafficData
+                        // But we might need to refresh the comparison tables
+                        refreshSyncTables(); 
                     }
                 });
             });
@@ -566,14 +548,14 @@
             unsubscribeBans = onSnapshot(collection(db, 'bans'), (snapshot) => {
                 bannedUsers = new Set(snapshot.docs.map(d => d.id));
                 document.getElementById('total-banned-count').textContent = bannedUsers.size;
-                renderTable(getFilteredUsers()); // Re-render table to update status
+                renderTable(getFilteredUsers());
             });
 
             // 2. Listen for ADMINS
             unsubscribeAdmins = onSnapshot(collection(db, 'admins'), (snapshot) => {
                 admins = new Set(snapshot.docs.map(d => d.id));
                 document.getElementById('total-admins-count').textContent = admins.size;
-                renderTable(getFilteredUsers()); // Re-render table to update roles
+                renderTable(getFilteredUsers()); 
             });
 
             // 3. Listen for USERS (Real-time Signup Feed)
@@ -592,33 +574,40 @@
                 renderTable(getFilteredUsers());
                 renderChart(allUsers);
                 
-                // Also run auth check whenever users update
-                checkAuthSync();
-                runIntegrityCheck(); 
+                // Refresh Sync Data (Both Tabs)
+                refreshAuthData();
             }, (error) => {
                 console.error("Error subscribing to users:", error);
                 document.getElementById('loading-users').textContent = "Error loading live data: " + error.message;
             });
         };
 
-        const checkAuthSync = async () => {
-            const syncCard = document.getElementById('sync-stats-card');
-            const syncBtn = document.getElementById('mass-sync-btn');
+        // Fetches Auth users from Cloud Function and updates BOTH tabs
+        const refreshAuthData = async () => {
             const authCountEl = document.getElementById('auth-user-count');
             const dbCountEl = document.getElementById('db-user-count');
             const missingCountEl = document.getElementById('missing-user-count');
+            const syncBtn = document.getElementById('mass-sync-btn');
 
-            if (!syncCard) return;
+            if (!authCountEl) return;
 
             try {
+                // Fetch only if we haven't recently, or force refresh logic here
+                // For now, fetch every time users update to keep in sync
                 const getAuthUsers = httpsCallable(functions, 'getAuthUsers');
                 const result = await getAuthUsers();
-                const authUsers = result.data;
+                allAuthUsers = result.data; 
                 
+                // 1. Calculate Missing Profiles (Auth exists, Doc missing)
                 const dbUserIds = new Set(allUsers.map(u => u.id));
-                missingAuthUsers = authUsers.filter(u => !dbUserIds.has(u.uid));
+                missingAuthUsers = allAuthUsers.filter(u => !dbUserIds.has(u.uid));
 
-                authCountEl.textContent = authUsers.length;
+                // 2. Calculate Orphaned Docs (Doc exists, Auth missing)
+                const authUserIds = new Set(allAuthUsers.map(u => u.uid));
+                orphanedDocs = allUsers.filter(u => !authUserIds.has(u.id));
+
+                // 3. Update Sync Card (Users Tab)
+                authCountEl.textContent = allAuthUsers.length;
                 dbCountEl.textContent = allUsers.length;
                 missingCountEl.textContent = missingAuthUsers.length;
 
@@ -629,12 +618,113 @@
                     syncBtn.classList.add('hidden');
                 }
 
+                // 4. Update Health Tab Tables
+                refreshSyncTables();
+
             } catch (error) {
                 console.error("Failed to fetch auth users:", error);
                 authCountEl.textContent = "Error";
             }
         };
 
+        const refreshSyncTables = () => {
+            // -- Table 1: Missing Profiles --
+            const missingBody = document.getElementById('missing-profile-body');
+            document.getElementById('count-missing-profile').textContent = missingAuthUsers.length;
+            
+            if (missingAuthUsers.length === 0) {
+                missingBody.innerHTML = '<tr><td colspan="3" class="text-center text-gray-600 py-8">All Auth users have valid profiles.</td></tr>';
+            } else {
+                missingBody.innerHTML = missingAuthUsers.map(u => {
+                    const provider = (u.providerData && u.providerData.length > 0) ? u.providerData[0].providerId : 'unknown';
+                    return `
+                    <tr>
+                        <td class="font-mono text-xs text-gray-500">${u.uid}</td>
+                        <td class="text-sm text-gray-300">
+                            <div class="flex flex-col">
+                                <span>${u.email || 'No Email'}</span>
+                                <span class="text-xs text-gray-600">${provider}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="action-btn btn-create" data-action="create-missing" data-uid="${u.uid}">
+                                <i class="fa-solid fa-plus"></i> Create
+                            </button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // -- Table 2: Orphaned Docs --
+            const orphanedBody = document.getElementById('orphaned-doc-body');
+            document.getElementById('count-orphaned-doc').textContent = orphanedDocs.length;
+
+            if (orphanedDocs.length === 0) {
+                orphanedBody.innerHTML = '<tr><td colspan="3" class="text-center text-gray-600 py-8">All documents are linked to active users.</td></tr>';
+            } else {
+                orphanedBody.innerHTML = orphanedDocs.map(u => `
+                    <tr>
+                        <td class="font-mono text-xs text-gray-500">${u.id}</td>
+                        <td class="text-sm text-gray-300">
+                            <div class="flex flex-col">
+                                <span class="text-orange-300">${u.username || 'Unknown'}</span>
+                                <span class="text-xs text-gray-600">Created: ${formatDate(u.createdAt)}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="action-btn btn-delete" data-action="delete-orphan" data-uid="${u.id}">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Attach listeners to new buttons
+            document.querySelectorAll('.btn-create[data-action="create-missing"]').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const uid = e.currentTarget.dataset.uid;
+                    const u = missingAuthUsers.find(x => x.uid === uid);
+                    if(u) createSingleUser(u);
+                });
+            });
+
+            document.querySelectorAll('.btn-delete[data-action="delete-orphan"]').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const uid = e.currentTarget.dataset.uid;
+                    if(confirm(`Delete orphaned document for ${uid}? This cannot be undone.`)) {
+                        await deleteDoc(doc(db, 'users', uid));
+                        // UI updates via snapshot
+                    }
+                });
+            });
+        };
+
+        const createSingleUser = async (u) => {
+            if(!confirm(`Create profile for ${u.email || u.uid}?`)) return;
+            try {
+                let rawUsername = u.email ? u.email.split('@')[0] : 'User';
+                if (u.displayName) rawUsername = u.displayName;
+                let username = rawUsername.replace(/[^a-zA-Z0-9]/g, '').slice(0, 16);
+                if (username.length < 6) username = `User${u.uid.substring(0, 8)}`;
+                
+                const providerId = (u.providerData && u.providerData.length > 0) ? u.providerData[0].providerId : 'unknown';
+
+                await setDoc(doc(db, 'users', u.uid), {
+                    email: u.email || null,
+                    authMethod: providerId,
+                    createdAt: u.creationTime ? new Date(u.creationTime) : serverTimestamp(),
+                    username: username,
+                    emailVerified: u.emailVerified, 
+                    photoURL: u.photoURL || null
+                });
+                // UI updates via snapshot
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        };
+
+        // --- Mass Sync Button Logic ---
         document.getElementById('mass-sync-btn')?.addEventListener('click', async () => {
             if (!missingAuthUsers.length) return;
             if (!confirm(`Create Firestore docs for ${missingAuthUsers.length} users?`)) return;
@@ -677,7 +767,7 @@
                 
                 alert("Sync Complete!");
                 btn.classList.add('hidden');
-                checkAuthSync(); // Refresh
+                refreshAuthData(); // Refresh both tabs
             } catch (e) {
                 console.error(e);
                 alert("Sync failed: " + e.message);
@@ -686,6 +776,7 @@
             }
         });
 
+        // --- Traffic & Charts Logic (No changes, just structure) ---
         const loadTrafficData = async () => {
             try {
                 // Fetch all recent sessions (limit to 200 for perf)
@@ -712,7 +803,6 @@
                 allSessions.forEach(s => {
                     totalDuration += (s.duration || 0);
                     
-                    // Parse Pages
                     if (s.visitedPages && Array.isArray(s.visitedPages)) {
                         totalPageViews += s.visitedPages.length;
                         s.visitedPages.forEach(p => {
@@ -725,14 +815,12 @@
                         totalPageViews += s.pageCount;
                     }
 
-                    // Parse User Agent
                     if (s.userAgent) {
                         const ua = parseUserAgent(s.userAgent);
                         browsers[ua.browser] = (browsers[ua.browser] || 0) + 1;
                         os[ua.os] = (os[ua.os] || 0) + 1;
                     }
 
-                    // Check last active
                     const lastActive = s.lastActive && s.lastActive.toDate ? s.lastActive.toDate().getTime() : 0;
                     if (now - lastActive < oneDay) active24h++;
                 });
@@ -792,7 +880,6 @@
 
                 document.getElementById('loading-traffic').style.display = 'none';
 
-                // --- Render Health Charts ---
                 renderPieChart('browserChart', browsers, 'Browsers');
                 renderPieChart('osChart', os, 'Operating Systems');
 
@@ -802,62 +889,7 @@
             }
         };
 
-        const runIntegrityCheck = () => {
-            const tbody = document.getElementById('integrity-table-body');
-            const statusDiv = document.getElementById('integrity-status');
-            tbody.innerHTML = '';
-            let issuesFound = 0;
-
-            // 1. Check for Malformed User Docs (Missing Email/Username)
-            allUsers.forEach(user => {
-                let issues = [];
-                if (!user.email) issues.push('Missing Email');
-                if (!user.username) issues.push('Missing Username');
-                if (!user.authMethod) issues.push('Missing AuthMethod');
-                // Note: user.emailVerified is boolean, false is valid
-
-                if (issues.length > 0) {
-                    issuesFound++;
-                    addIntegrityRow(user.id, 'Incomplete User Record', issues.join(', '));
-                }
-            });
-
-            // 2. Check for Orphaned Analytics (Session ID not in Users)
-            if(allSessions.length > 0) {
-                allSessions.forEach(s => {
-                    if (s.userId && s.userId !== 'anonymous') {
-                        const userExists = allUsers.some(u => u.id === s.userId);
-                        if (!userExists) {
-                             issuesFound++;
-                             addIntegrityRow(s.id, 'Orphaned Analytics', `Session linked to missing User ID ${s.userId.substring(0,8)}...`);
-                        }
-                    }
-                });
-            }
-
-            statusDiv.innerHTML = issuesFound > 0 
-                ? `<span class="text-orange-400"><i class="fa-solid fa-triangle-exclamation"></i> Found ${issuesFound} potential issues.</span>` 
-                : '<span class="text-green-500"><i class="fa-solid fa-check"></i> System integrity is healthy.</span>';
-        };
-
-        const addIntegrityRow = (id, type, details) => {
-            const tbody = document.getElementById('integrity-table-body');
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="font-mono text-xs text-gray-500">${id}</td>
-                <td class="text-orange-400 text-sm">${type}</td>
-                <td class="text-sm text-gray-400">${details}</td>
-                <td>
-                    <button class="text-xs bg-red-900/30 border border-red-500/30 text-red-400 px-2 py-1 rounded hover:bg-red-900/50" onclick="alert('For safety, please delete incomplete records directly via the Firebase Console.')">
-                        Review
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        };
-
         // --- Helpers ---
-
         const parseUserAgent = (ua) => {
             let browser = 'Unknown';
             let os = 'Unknown';
@@ -891,7 +923,6 @@
         const getProviderHtml = (authMethod) => {
             if (!authMethod) return '<span class="text-gray-500">-</span>';
             let key = authMethod;
-            // Map simple strings to provider keys if needed
             if (authMethod === 'email') key = 'email';
             else if (authMethod.includes('google')) key = 'google.com';
             else if (authMethod.includes('github')) key = 'github.com';
@@ -993,7 +1024,6 @@
                     if (confirm(`Are you sure you want to unban this user?`)) {
                         try {
                             await deleteDoc(doc(db, 'bans', uid));
-                            // UI updates automatically via snapshot listener
                         } catch (err) { alert("Unban failed: " + err.message); }
                     }
                 } else {
@@ -1013,7 +1043,6 @@
                                 promotedBy: auth.currentUser.uid
                             });
                         }
-                        // UI updates automatically via snapshot listener
                     } catch (err) { alert("Action failed: " + err.message); }
                 }
             } else if (action === 'view-details') {
@@ -1058,7 +1087,6 @@
                     link: link || null
                 });
                 closeBanModal();
-                // UI updates automatically
             } catch (err) {
                 alert("Ban failed: " + err.message);
             }
@@ -1118,7 +1146,6 @@
                 </div>
             `;
             
-            // Check for ban details
             if (bannedUsers.has(user.id)) {
                 getDoc(doc(db, 'bans', user.id)).then(snap => {
                     if (snap.exists()) {
@@ -1275,7 +1302,6 @@
                 '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#6366f1'
             ];
             
-            // Clean up old instance if exists for these charts too
             if (canvasId === 'browserChart') {
                 if(browserChartInstance) browserChartInstance.destroy();
             } else {
