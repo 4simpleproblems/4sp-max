@@ -33,7 +33,7 @@
         }
 
         .sn-icon {
-            color: #fff;
+            color: #4f46e5;
             font-size: 1.2rem;
         }
 
