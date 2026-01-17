@@ -310,26 +310,37 @@
         }
         .tp-btn {
             flex: 1;
-            padding: 0.75rem;
+            padding: 0.6rem 1rem;
             border-radius: 0.75rem;
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         .tp-btn-cancel {
-            background: #111;
-            color: #999;
+            background: #000000;
+            color: #d1d5db;
             border: 1px solid #333;
         }
-        .tp-btn-cancel:hover { background: #222; color: #fff; }
+        .tp-btn-cancel:hover {
+            border-color: #fff;
+            color: #fff;
+        }
         
         .tp-btn-save {
-            background: var(--accent-color);
-            color: #fff;
-            border: 1px solid var(--accent-color);
+            background: rgba(79, 70, 229, 0.1);
+            color: #4f46e5;
+            border: 1px solid #4f46e5;
         }
-        .tp-btn-save:hover { background: #4338ca; }
+        .tp-btn-save:hover {
+            background: rgba(79, 70, 229, 0.15);
+            border-color: #6366f1;
+            color: #6366f1;
+        }
 
     </style>
 </head>
@@ -371,8 +382,12 @@
                 </div>
             </div>
             <div class="tp-actions">
-                <button class="tp-btn tp-btn-cancel" onclick="closeTimePicker()">Cancel</button>
-                <button class="tp-btn tp-btn-save" onclick="saveTimePicker()">Set Time</button>
+                <button class="tp-btn tp-btn-cancel" onclick="closeTimePicker()">
+                    <i class="fa-solid fa-xmark"></i> Cancel
+                </button>
+                <button class="tp-btn tp-btn-save" onclick="saveTimePicker()">
+                    <i class="fa-solid fa-check"></i> Set Time
+                </button>
             </div>
         </div>
     </div>
