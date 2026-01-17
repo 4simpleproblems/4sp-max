@@ -300,6 +300,12 @@ let db;
         // Load Fireworks JS
         await loadScript("https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js");
         
+        // Load Schedule Notifications
+        // Try/Catch to avoid blocking app if file missing/error
+        try {
+            await loadScript("/schedule_notifications.js");
+        } catch(e) { console.warn("Schedule notifications script not loaded", e); }
+        
         try {
             const response = await fetch(PAGE_CONFIG_URL);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

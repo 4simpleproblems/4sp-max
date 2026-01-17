@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4SP - SCHEDULE CLOCK</title>
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/4sp-dv@latest/images/logo.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --bg-page: #040404;
+            --bg-card: #0a0a0a;
+            --border-color: #333;
+            --text-primary: #c0c0c0;
+            --accent-color: #4f46e5;
+        }
+
+        body { 
+            font-family: 'Geist', sans-serif; 
+            background-color: var(--bg-page); 
+            color: var(--text-primary); 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-weight: 300;
+        }
+        
+        /* Navbar spacing */
+        body { padding-top: 64px; }
+
+        h1, h2, h3, .font-bold, .font-semibold { font-weight: 500 !important; }
+
+        .schedule-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            width: 100%;
+        }
+
+        .period-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: grab;
+        }
+
+        .period-card:active { cursor: grabbing; }
+
+        .period-card.dragging {
+            opacity: 0.5;
+            border-color: var(--accent-color);
+            transform: scale(0.98);
+        }
+
+        .drag-handle {
+            color: #666;
+            cursor: grab;
+            padding: 0.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex-grow: 1;
+        }
+
+        .input-field {
+            background-color: #111;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .time-inputs {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .delete-btn {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+
+        .add-btn {
+            background-color: rgba(79, 70, 229, 0.1);
+            border: 1px dashed var(--accent-color);
+            color: var(--accent-color);
+            width: 100%;
+            padding: 1rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .add-btn:hover {
+            background-color: rgba(79, 70, 229, 0.2);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .save-indicator {
+            font-size: 0.8rem;
+            color: #666;
+            transition: color 0.3s;
+        }
+        .save-indicator.saved { color: #22c55e; }
+
+    </style>
+</head>
+<body>
+
+    <div class="schedule-container">
+        <div class="header-actions">
+            <div>
+                <h1 class="text-2xl text-white mb-1">Schedule Clock</h1>
+                <p class="text-sm text-gray-500">Configure your class times for live notifications.</p>
+            </div>
+            <span id="save-status" class="save-indicator"><i class="fa-solid fa-check"></i> Auto-saved</span>
+        </div>
+
+        <div id="periods-list">
+            <!-- Period cards will be injected here -->
+        </div>
+
+        <button id="add-period-btn" class="add-btn">
+            <i class="fa-solid fa-plus"></i> Add Period
+        </button>
+
+        <div class="mt-8 border-t border-[#333] pt-6">
+            <h2 class="text-lg text-white mb-4">Special Periods (Custom Times)</h2>
+            <p class="text-xs text-gray-500 mb-4">Add single-instance events here. They will override regular schedule notifications if times overlap.</p>
+            <div id="special-periods-list"></div>
+            <button id="add-special-btn" class="add-btn" style="border-color: #d946ef; color: #d946ef; background-color: rgba(217, 70, 239, 0.1);">
+                <i class="fa-solid fa-star"></i> Add Special Period
+            </button>
+        </div>
+    </div>
+
+    <!-- Inject Navigation -->
+    <script src="../navigation.js"></script>
+    <script src="../injector.js"></script>
+
+    <script>
+        const periodsList = document.getElementById('periods-list');
+        const specialPeriodsList = document.getElementById('special-periods-list');
+        const addPeriodBtn = document.getElementById('add-period-btn');
+        const addSpecialBtn = document.getElementById('add-special-btn');
+        const saveStatus = document.getElementById('save-status');
+
+        let periods = [];
+        let specialPeriods = [];
+
+        // Load data
+        function loadData() {
+            const savedPeriods = localStorage.getItem('4sp_user_schedule');
+            const savedSpecial = localStorage.getItem('4sp_user_special_schedule');
+            
+            if (savedPeriods) {
+                periods = JSON.parse(savedPeriods);
+            } else {
+                // Default template
+                periods = [
+                    { id: crypto.randomUUID(), title: 'Period 1', start: '08:00', end: '08:50' },
+                    { id: crypto.randomUUID(), title: 'Period 2', start: '09:00', end: '09:50' },
+                ];
+            }
+
+            if (savedSpecial) {
+                specialPeriods = JSON.parse(savedSpecial);
+            }
+
+            renderPeriods();
+            renderSpecialPeriods();
+        }
+
+        function saveData() {
+            localStorage.setItem('4sp_user_schedule', JSON.stringify(periods));
+            localStorage.setItem('4sp_user_special_schedule', JSON.stringify(specialPeriods));
+            
+            saveStatus.classList.add('saved');
+            saveStatus.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+            setTimeout(() => {
+                saveStatus.classList.remove('saved');
+                saveStatus.innerHTML = 'Auto-saved';
+            }, 2000);
+
+            // Notify notification system if possible (custom event)
+            window.dispatchEvent(new CustomEvent('schedule-updated'));
+        }
+
+        function renderPeriods() {
+            periodsList.innerHTML = '';
+            periods.forEach((period, index) => {
+                const el = createPeriodElement(period, index, false);
+                periodsList.appendChild(el);
+            });
+        }
+
+        function renderSpecialPeriods() {
+            specialPeriodsList.innerHTML = '';
+            specialPeriods.forEach((period, index) => {
+                const el = createPeriodElement(period, index, true);
+                specialPeriodsList.appendChild(el);
+            });
+        }
+
+        function createPeriodElement(period, index, isSpecial) {
+            const div = document.createElement('div');
+            div.className = 'period-card';
+            div.draggable = !isSpecial; // Only regular periods are draggable for now
+            div.dataset.id = period.id;
+            
+            if (!isSpecial) {
+                div.innerHTML = `
+                    <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
+                `;
+            }
+
+            div.innerHTML += `
+                <div class="input-group">
+                    <input type="text" class="input-field font-semibold text-lg" value="${period.title}" placeholder="Period Name" onchange="updatePeriod('${period.id}', 'title', this.value, ${isSpecial})">
+                    <div class="time-inputs">
+                        <input type="time" class="input-field" value="${period.start}" onchange="updatePeriod('${period.id}', 'start', this.value, ${isSpecial})">
+                        <span class="text-gray-500">to</span>
+                        <input type="time" class="input-field" value="${period.end}" onchange="updatePeriod('${period.id}', 'end', this.value, ${isSpecial})">
+                    </div>
+                </div>
+                <button class="delete-btn" onclick="deletePeriod('${period.id}', ${isSpecial})">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
+
+            if (!isSpecial) {
+                addDragEvents(div);
+            }
+
+            return div;
+        }
+
+        function addPeriod() {
+            periods.push({
+                id: crypto.randomUUID(),
+                title: `Period ${periods.length + 1}`,
+                start: '00:00',
+                end: '00:00'
+            });
+            renderPeriods();
+            saveData();
+        }
+
+        function addSpecialPeriod() {
+            specialPeriods.push({
+                id: crypto.randomUUID(),
+                title: 'Special Event',
+                start: '00:00',
+                end: '00:00'
+            });
+            renderSpecialPeriods();
+            saveData();
+        }
+
+        window.updatePeriod = (id, field, value, isSpecial) => {
+            const list = isSpecial ? specialPeriods : periods;
+            const item = list.find(p => p.id === id);
+            if (item) {
+                item[field] = value;
+                saveData();
+            }
+        };
+
+        window.deletePeriod = (id, isSpecial) => {
+            if (isSpecial) {
+                specialPeriods = specialPeriods.filter(p => p.id !== id);
+                renderSpecialPeriods();
+            } else {
+                periods = periods.filter(p => p.id !== id);
+                renderPeriods();
+            }
+            saveData();
+        };
+
+        // Drag and Drop Logic
+        let draggedItem = null;
+
+        function addDragEvents(item) {
+            item.addEventListener('dragstart', () => {
+                draggedItem = item;
+                setTimeout(() => item.classList.add('dragging'), 0);
+            });
+
+            item.addEventListener('dragend', () => {
+                setTimeout(() => {
+                    item.classList.remove('dragging');
+                    draggedItem = null;
+                    // Update array order based on DOM
+                    updateOrderFromDOM();
+                }, 0);
+            });
+        }
+
+        periodsList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(periodsList, e.clientY);
+            const dragging = document.querySelector('.dragging');
+            if (afterElement == null) {
+                periodsList.appendChild(dragging);
+            } else {
+                periodsList.insertBefore(dragging, afterElement);
+            }
+        });
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.period-card:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function updateOrderFromDOM() {
+            const newOrder = [];
+            [...periodsList.children].forEach(child => {
+                const id = child.dataset.id;
+                const period = periods.find(p => p.id === id);
+                if (period) newOrder.push(period);
+            });
+            periods = newOrder;
+            saveData();
+        }
+
+        addPeriodBtn.addEventListener('click', addPeriod);
+        addSpecialBtn.addEventListener('click', addSpecialPeriod);
+
+        loadData();
+
+    </script>
+</body>
+</html>

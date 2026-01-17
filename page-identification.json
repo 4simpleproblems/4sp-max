@@ -34,6 +34,11 @@
         "icon": "fa-solid fa-book", 
         "url": "../logged-in/dictionary.html"
     },
+    "schedule": {
+        "name": "Schedule",
+        "icon": "fa-solid fa-calendar-days",
+        "url": "../logged-in/schedule.html"
+    },
     "messenger-v2": {
         "name": "Messenger",
         "icon": "fa-solid fa-comments", 
