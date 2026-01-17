@@ -5,25 +5,25 @@
     style.textContent = `
         #schedule-notification {
             position: fixed;
-            bottom: 6rem; /* Above the soundboard bar which is at 1rem */
-            right: 1rem;
+            bottom: 1rem;
+            left: 1rem;
             z-index: 9999;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid #4f46e5;
+            border: 1px solid #252525;
             border-radius: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
-            padding: 0.75rem 1.25rem;
-            color: white;
+            padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+            color: #e5e7eb;
             font-family: 'Geist', sans-serif;
             gap: 1rem;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
             transform: translateY(150%) scale(0.95);
             opacity: 0;
-            max-width: 90vw;
+            max-width: 400px;
             pointer-events: auto;
         }
 
@@ -59,23 +59,25 @@
         }
 
         .sn-close {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #ccc;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
+            background-color: rgba(79, 70, 229, 0.1);
+            color: #4f46e5;
+            border: 1px solid transparent;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             margin-left: 0.5rem;
+            flex-shrink: 0;
         }
 
         .sn-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background-color: rgba(79, 70, 229, 0.2);
+            color: #6366f1;
+            transform: scale(1.05);
         }
     `;
     document.head.appendChild(style);
