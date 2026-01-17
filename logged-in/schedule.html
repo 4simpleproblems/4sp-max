@@ -213,7 +213,7 @@
         }
 
         .fade-bottom {
-            bottom: 1rem; /* Match margin-bottom of periods-list */
+            bottom: 0;
             background: linear-gradient(to top, var(--bg-page), transparent);
         }
 
@@ -405,6 +405,9 @@
 
         // Drag and Drop Logic
         let draggedItem = null;
+        let autoScrollInterval = null;
+        const SCROLL_ZONE_SIZE = 60; // px
+        const SCROLL_SPEED = 10; // px per tick
 
         function addDragEvents(item) {
             item.addEventListener('dragstart', () => {
@@ -416,14 +419,43 @@
                 setTimeout(() => {
                     item.classList.remove('dragging');
                     draggedItem = null;
+                    stopAutoScroll();
                     // Update array order based on DOM
                     updateOrderFromDOM();
                 }, 0);
             });
         }
 
+        function stopAutoScroll() {
+            if (autoScrollInterval) {
+                clearInterval(autoScrollInterval);
+                autoScrollInterval = null;
+            }
+        }
+
         periodsList.addEventListener('dragover', (e) => {
             e.preventDefault();
+            
+            // Auto Scroll Logic
+            const rect = periodsList.getBoundingClientRect();
+            const relY = e.clientY - rect.top;
+            const bottomThreshold = rect.height - SCROLL_ZONE_SIZE;
+
+            stopAutoScroll(); // Reset on each move to avoid stacking, or just check state
+            
+            if (relY < SCROLL_ZONE_SIZE) {
+                // Scroll Up
+                autoScrollInterval = setInterval(() => {
+                    periodsList.scrollTop -= SCROLL_SPEED;
+                }, 16);
+            } else if (relY > bottomThreshold) {
+                // Scroll Down
+                autoScrollInterval = setInterval(() => {
+                    periodsList.scrollTop += SCROLL_SPEED;
+                }, 16);
+            }
+
+
             const afterElement = getDragAfterElement(periodsList, e.clientY);
             const dragging = document.querySelector('.dragging');
             if (afterElement == null) {
@@ -431,6 +463,13 @@
             } else {
                 periodsList.insertBefore(dragging, afterElement);
             }
+        });
+        
+        // Safety cleanup for auto-scroll
+        periodsList.addEventListener('dragleave', (e) => {
+             // If leaving the container mostly
+             // But dragleave fires when entering child elements too, so be careful.
+             // We'll rely on dragend for now, or check bounding client.
         });
 
         function getDragAfterElement(container, y) {
