@@ -85,18 +85,16 @@
     // --- State ---
     let notificationEl = null;
     let scheduleData = [];
-    let specialScheduleData = [];
     let checkInterval = null;
     let countdownInterval = null;
-    let activeNotificationPeriodId = null;
+    let activeNotificationPeriodId = null; // ID of the period currently triggering the notification
+    let dismissedPeriodId = null; // ID of the period the user explicitly closed
 
     // --- Logic ---
     function loadSchedule() {
         try {
             const s = localStorage.getItem('4sp_user_schedule');
-            const ss = localStorage.getItem('4sp_user_special_schedule');
             scheduleData = s ? JSON.parse(s) : [];
-            specialScheduleData = ss ? JSON.parse(ss) : [];
         } catch (e) {
             console.error("Failed to load schedule data", e);
         }
@@ -124,9 +122,12 @@
         notificationEl = el;
     }
 
-    function showNotification(nextClass, secondsRemaining) {
+    function showNotification(nextClass, secondsRemaining, periodId) {
         if (!notificationEl) createNotification();
         
+        // If the user dismissed THIS period, don't show it.
+        if (dismissedPeriodId === periodId) return;
+
         const nextText = document.getElementById('sn-next-text');
         const timerText = document.getElementById('sn-timer');
         
@@ -141,7 +142,8 @@
     function hideNotification() {
         if (notificationEl) {
             notificationEl.classList.remove('visible');
-            activeNotificationPeriodId = null; // Allow it to trigger again if condition met (though usually it won't until next period)
+            // Remember that we dismissed this specific period instance
+            dismissedPeriodId = activeNotificationPeriodId;
         }
     }
 
@@ -151,29 +153,12 @@
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
-    function getNextPeriod(currentIndex, allPeriods) {
-        // Simple logic: next in list, or loop to first? Usually school days don't loop immediately.
-        // Assuming sorted by time.
-        if (currentIndex < allPeriods.length - 1) {
-            return allPeriods[currentIndex + 1].title;
-        }
-        return "End of Day";
-    }
-
     function checkTime() {
         const now = new Date();
-        const currentHours = now.getHours();
-        const currentMinutes = now.getMinutes();
-        const currentSeconds = now.getSeconds();
         
-        // Combine regular and special periods, prioritized?
-        // For simplicity, treat them equally but check overlaps. 
-        // Or just iterate all.
-        const allPeriods = [...scheduleData, ...specialScheduleData];
+        // Check only regular schedule
+        const allPeriods = scheduleData;
 
-        // We assume period.start/end are "HH:MM"
-        // We need to check if we are 1 minute (or less) before end.
-        
         let activePeriodFound = false;
 
         for (let i = 0; i < allPeriods.length; i++) {
@@ -191,11 +176,6 @@
             // Trigger if between 0 and 60000ms.
             if (diff > 0 && diff <= 60000) {
                 // Find next period
-                // To do this accurately, we should probably sort periods by start time first
-                // But simplified: find the period that starts after this one ends?
-                // Or just use the array index if sorted.
-                // Let's find a period that starts >= this period's end.
-                
                 const nextP = allPeriods.find(np => {
                     const [startH, startM] = np.start.split(':').map(Number);
                     return (startH > endH) || (startH === endH && startM >= endM);
@@ -203,19 +183,19 @@
                 
                 const nextTitle = nextP ? nextP.title : "Freedom";
 
-                showNotification(nextTitle, diff / 1000);
-                activePeriodFound = true;
+                // Update active tracking
                 activeNotificationPeriodId = p.id;
+
+                showNotification(nextTitle, diff / 1000, p.id);
+                activePeriodFound = true;
                 break; // Only show for one
             }
         }
 
         if (!activePeriodFound && notificationEl && notificationEl.classList.contains('visible')) {
-            // If the time passed (diff <= 0), hide it.
-            // But we need to check if we are "in" a notification window.
-            // If we just broke the loop without finding a match, it means no period is < 1 min away.
-            // So hide.
-            hideNotification();
+            // If the time passed (diff <= 0), hide it automatically (not user dismissal)
+            notificationEl.classList.remove('visible');
+            activeNotificationPeriodId = null;
         }
     }
 

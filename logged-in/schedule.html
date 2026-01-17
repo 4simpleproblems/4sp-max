@@ -48,14 +48,15 @@
         .period-card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            padding: 1rem;
+            border-radius: 1.5rem; /* Squircle radius matching notes.html sound-btn */
+            padding: 1.25rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: grab;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .period-card:active { cursor: grabbing; }
@@ -75,7 +76,7 @@
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.5rem;
             flex-grow: 1;
         }
 
@@ -83,21 +84,23 @@
             background-color: #111;
             border: 1px solid #333;
             color: #fff;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
             font-family: inherit;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             width: 100%;
+            transition: all 0.2s;
         }
         
         .input-field:focus {
             outline: none;
             border-color: var(--accent-color);
+            background-color: #050505;
         }
 
         .time-inputs {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
             align-items: center;
         }
 
@@ -105,14 +108,20 @@
             color: #ef4444;
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
         }
         .delete-btn:hover {
             background: rgba(239, 68, 68, 0.2);
             border-color: #ef4444;
+            transform: scale(1.05);
         }
 
         .add-btn {
@@ -120,34 +129,40 @@
             border: 1px dashed var(--accent-color);
             color: var(--accent-color);
             width: 100%;
-            padding: 1rem;
-            border-radius: 1rem;
+            padding: 1.25rem;
+            border-radius: 1.5rem;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         .add-btn:hover {
             background-color: rgba(79, 70, 229, 0.2);
+            border-style: solid;
         }
 
         .header-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             border-bottom: 1px solid #333;
-            padding-bottom: 1rem;
+            padding-bottom: 1.5rem;
         }
 
         .save-indicator {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #666;
             transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .save-indicator.saved { color: #22c55e; }
 
@@ -158,10 +173,10 @@
     <div class="schedule-container">
         <div class="header-actions">
             <div>
-                <h1 class="text-2xl text-white mb-1">Schedule Clock</h1>
-                <p class="text-sm text-gray-500">Configure your class times for live notifications.</p>
+                <h1 class="text-3xl text-white mb-2">Schedule Clock</h1>
+                <p class="text-sm text-gray-500 font-light">Configure your class times for live notifications.</p>
             </div>
-            <span id="save-status" class="save-indicator"><i class="fa-solid fa-check"></i> Auto-saved</span>
+            <span id="save-status" class="save-indicator"><i class="fa-solid fa-cloud"></i> Auto-saved</span>
         </div>
 
         <div id="periods-list">
@@ -171,15 +186,6 @@
         <button id="add-period-btn" class="add-btn">
             <i class="fa-solid fa-plus"></i> Add Period
         </button>
-
-        <div class="mt-8 border-t border-[#333] pt-6">
-            <h2 class="text-lg text-white mb-4">Special Periods (Custom Times)</h2>
-            <p class="text-xs text-gray-500 mb-4">Add single-instance events here. They will override regular schedule notifications if times overlap.</p>
-            <div id="special-periods-list"></div>
-            <button id="add-special-btn" class="add-btn" style="border-color: #d946ef; color: #d946ef; background-color: rgba(217, 70, 239, 0.1);">
-                <i class="fa-solid fa-star"></i> Add Special Period
-            </button>
-        </div>
     </div>
 
     <!-- Inject Navigation -->
@@ -188,18 +194,14 @@
 
     <script>
         const periodsList = document.getElementById('periods-list');
-        const specialPeriodsList = document.getElementById('special-periods-list');
         const addPeriodBtn = document.getElementById('add-period-btn');
-        const addSpecialBtn = document.getElementById('add-special-btn');
         const saveStatus = document.getElementById('save-status');
 
         let periods = [];
-        let specialPeriods = [];
 
         // Load data
         function loadData() {
             const savedPeriods = localStorage.getItem('4sp_user_schedule');
-            const savedSpecial = localStorage.getItem('4sp_user_special_schedule');
             
             if (savedPeriods) {
                 periods = JSON.parse(savedPeriods);
@@ -211,75 +213,53 @@
                 ];
             }
 
-            if (savedSpecial) {
-                specialPeriods = JSON.parse(savedSpecial);
-            }
-
             renderPeriods();
-            renderSpecialPeriods();
         }
 
         function saveData() {
             localStorage.setItem('4sp_user_schedule', JSON.stringify(periods));
-            localStorage.setItem('4sp_user_special_schedule', JSON.stringify(specialPeriods));
             
             saveStatus.classList.add('saved');
             saveStatus.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
             setTimeout(() => {
                 saveStatus.classList.remove('saved');
-                saveStatus.innerHTML = 'Auto-saved';
+                saveStatus.innerHTML = '<i class="fa-solid fa-cloud"></i> Auto-saved';
             }, 2000);
 
-            // Notify notification system if possible (custom event)
+            // Notify notification system
             window.dispatchEvent(new CustomEvent('schedule-updated'));
         }
 
         function renderPeriods() {
             periodsList.innerHTML = '';
             periods.forEach((period, index) => {
-                const el = createPeriodElement(period, index, false);
+                const el = createPeriodElement(period, index);
                 periodsList.appendChild(el);
             });
         }
 
-        function renderSpecialPeriods() {
-            specialPeriodsList.innerHTML = '';
-            specialPeriods.forEach((period, index) => {
-                const el = createPeriodElement(period, index, true);
-                specialPeriodsList.appendChild(el);
-            });
-        }
-
-        function createPeriodElement(period, index, isSpecial) {
+        function createPeriodElement(period, index) {
             const div = document.createElement('div');
             div.className = 'period-card';
-            div.draggable = !isSpecial; // Only regular periods are draggable for now
+            div.draggable = true;
             div.dataset.id = period.id;
             
-            if (!isSpecial) {
-                div.innerHTML = `
-                    <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
-                `;
-            }
-
-            div.innerHTML += `
+            div.innerHTML = `
+                <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
                 <div class="input-group">
-                    <input type="text" class="input-field font-semibold text-lg" value="${period.title}" placeholder="Period Name" onchange="updatePeriod('${period.id}', 'title', this.value, ${isSpecial})">
+                    <input type="text" class="input-field font-semibold text-lg" value="${period.title}" placeholder="Period Name" onchange="updatePeriod('${period.id}', 'title', this.value)">
                     <div class="time-inputs">
-                        <input type="time" class="input-field" value="${period.start}" onchange="updatePeriod('${period.id}', 'start', this.value, ${isSpecial})">
-                        <span class="text-gray-500">to</span>
-                        <input type="time" class="input-field" value="${period.end}" onchange="updatePeriod('${period.id}', 'end', this.value, ${isSpecial})">
+                        <input type="time" class="input-field" value="${period.start}" onchange="updatePeriod('${period.id}', 'start', this.value)">
+                        <span class="text-gray-500 font-light">to</span>
+                        <input type="time" class="input-field" value="${period.end}" onchange="updatePeriod('${period.id}', 'end', this.value)">
                     </div>
                 </div>
-                <button class="delete-btn" onclick="deletePeriod('${period.id}', ${isSpecial})">
+                <button class="delete-btn" onclick="deletePeriod('${period.id}')">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             `;
 
-            if (!isSpecial) {
-                addDragEvents(div);
-            }
-
+            addDragEvents(div);
             return div;
         }
 
@@ -294,34 +274,17 @@
             saveData();
         }
 
-        function addSpecialPeriod() {
-            specialPeriods.push({
-                id: crypto.randomUUID(),
-                title: 'Special Event',
-                start: '00:00',
-                end: '00:00'
-            });
-            renderSpecialPeriods();
-            saveData();
-        }
-
-        window.updatePeriod = (id, field, value, isSpecial) => {
-            const list = isSpecial ? specialPeriods : periods;
-            const item = list.find(p => p.id === id);
+        window.updatePeriod = (id, field, value) => {
+            const item = periods.find(p => p.id === id);
             if (item) {
                 item[field] = value;
                 saveData();
             }
         };
 
-        window.deletePeriod = (id, isSpecial) => {
-            if (isSpecial) {
-                specialPeriods = specialPeriods.filter(p => p.id !== id);
-                renderSpecialPeriods();
-            } else {
-                periods = periods.filter(p => p.id !== id);
-                renderPeriods();
-            }
+        window.deletePeriod = (id) => {
+            periods = periods.filter(p => p.id !== id);
+            renderPeriods();
             saveData();
         };
 
@@ -381,7 +344,6 @@
         }
 
         addPeriodBtn.addEventListener('click', addPeriod);
-        addSpecialBtn.addEventListener('click', addSpecialPeriod);
 
         loadData();
 
