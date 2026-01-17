@@ -192,6 +192,35 @@
         }
         .save-indicator.saved { color: #22c55e; }
 
+        .list-container {
+            position: relative;
+        }
+
+        .scroll-fade {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 30px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .fade-top {
+            top: 0;
+            background: linear-gradient(to bottom, var(--bg-page), transparent);
+        }
+
+        .fade-bottom {
+            bottom: 1rem; /* Match margin-bottom of periods-list */
+            background: linear-gradient(to top, var(--bg-page), transparent);
+        }
+
+        .scroll-fade.visible {
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
@@ -202,11 +231,15 @@
                 <h1 class="text-3xl text-white mb-2">Schedule Clock</h1>
                 <p class="text-sm text-gray-500 font-light">Configure your class times for live notifications.</p>
             </div>
-            <span id="save-status" class="save-indicator"><i class="fa-solid fa-cloud"></i> Auto-saved</span>
+            <span id="save-status" class="save-indicator"><i class="fa-solid fa-cloud text-white"></i> Auto-saved</span>
         </div>
 
-        <div id="periods-list">
-            <!-- Period cards will be injected here -->
+        <div class="list-container">
+            <div id="fade-top" class="scroll-fade fade-top"></div>
+            <div id="periods-list">
+                <!-- Period cards will be injected here -->
+            </div>
+            <div id="fade-bottom" class="scroll-fade fade-bottom"></div>
         </div>
 
         <button id="add-period-btn" class="add-btn">
@@ -222,8 +255,11 @@
         const periodsList = document.getElementById('periods-list');
         const addPeriodBtn = document.getElementById('add-period-btn');
         const saveStatus = document.getElementById('save-status');
+        const fadeTop = document.getElementById('fade-top');
+        const fadeBottom = document.getElementById('fade-bottom');
 
         let periods = [];
+        const MAX_PERIODS = 18;
 
         // Load data
         function loadData() {
@@ -240,16 +276,17 @@
             }
 
             renderPeriods();
+            updateScrollFades();
         }
 
         function saveData() {
             localStorage.setItem('4sp_user_schedule', JSON.stringify(periods));
             
             saveStatus.classList.add('saved');
-            saveStatus.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+            saveStatus.innerHTML = '<i class="fa-solid fa-check text-white"></i> Saved';
             setTimeout(() => {
                 saveStatus.classList.remove('saved');
-                saveStatus.innerHTML = '<i class="fa-solid fa-cloud"></i> Auto-saved';
+                saveStatus.innerHTML = '<i class="fa-solid fa-cloud text-white"></i> Auto-saved';
             }, 2000);
 
             // Notify notification system
@@ -262,6 +299,7 @@
                 const el = createPeriodElement(period, index);
                 periodsList.appendChild(el);
             });
+            updateAddButtonState();
         }
 
         function createPeriodElement(period, index) {
@@ -290,6 +328,11 @@
         }
 
         function addPeriod() {
+            if (periods.length >= MAX_PERIODS) {
+                alert(`Maximum of ${MAX_PERIODS} periods allowed.`);
+                return;
+            }
+
             periods.push({
                 id: crypto.randomUUID(),
                 title: `Period ${periods.length + 1}`,
@@ -298,6 +341,24 @@
             });
             renderPeriods();
             saveData();
+
+            // Scroll to bottom
+            requestAnimationFrame(() => {
+                periodsList.scrollTo({ top: periodsList.scrollHeight, behavior: 'smooth' });
+                updateScrollFades();
+            });
+        }
+
+        function updateAddButtonState() {
+             if (periods.length >= MAX_PERIODS) {
+                addPeriodBtn.style.opacity = '0.5';
+                addPeriodBtn.style.cursor = 'not-allowed';
+                addPeriodBtn.innerHTML = '<i class="fa-solid fa-ban"></i> Max Periods Reached';
+            } else {
+                addPeriodBtn.style.opacity = '1';
+                addPeriodBtn.style.cursor = 'pointer';
+                addPeriodBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Period';
+            }
         }
 
         window.updatePeriod = (id, field, value) => {
@@ -312,7 +373,35 @@
             periods = periods.filter(p => p.id !== id);
             renderPeriods();
             saveData();
+            updateScrollFades();
         };
+
+        // Scroll Fade Logic
+        function updateScrollFades() {
+            const scrollTop = periodsList.scrollTop;
+            const scrollHeight = periodsList.scrollHeight;
+            const clientHeight = periodsList.clientHeight;
+
+            // Top Fade
+            if (scrollTop > 10) {
+                fadeTop.classList.add('visible');
+            } else {
+                fadeTop.classList.remove('visible');
+            }
+
+            // Bottom Fade
+            // Use a small buffer (5px) to handle fractional pixel rendering differences
+            if (scrollHeight - scrollTop - clientHeight > 5) {
+                fadeBottom.classList.add('visible');
+            } else {
+                fadeBottom.classList.remove('visible');
+            }
+        }
+
+        periodsList.addEventListener('scroll', updateScrollFades);
+        // Check fades on resize too
+        window.addEventListener('resize', updateScrollFades);
+
 
         // Drag and Drop Logic
         let draggedItem = null;
