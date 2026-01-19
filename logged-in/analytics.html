@@ -895,7 +895,7 @@
 
         const loadTrafficData = async () => {
             try {
-                const q = query(collection(db, 'analytics'), orderBy('lastActive', 'desc'), limit(20000));
+                const q = query(collection(db, 'analytics'), orderBy('lastActive', 'desc'), limit(10000));
                 const snap = await getDocs(q);
                 allSessions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
@@ -941,7 +941,7 @@
 
                 const avgDuration = totalSessions > 0 ? (totalDuration / totalSessions).toFixed(1) : 0;
 
-                document.getElementById('stat-total-sessions').textContent = totalSessions + (allSessions.length === 20000 ? '+' : '');
+                document.getElementById('stat-total-sessions').textContent = totalSessions + (allSessions.length === 10000 ? '+' : '');
                 document.getElementById('stat-avg-duration').textContent = formatDuration(avgDuration);
                 document.getElementById('stat-total-views').textContent = totalPageViews;
                 document.getElementById('stat-active-24h').textContent = active24h;
