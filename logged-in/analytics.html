@@ -895,7 +895,7 @@
 
         const loadTrafficData = async () => {
             try {
-                const q = query(collection(db, 'analytics'), orderBy('lastActive', 'desc'), limit(200));
+                const q = query(collection(db, 'analytics'), orderBy('lastActive', 'desc'), limit(20000));
                 const snap = await getDocs(q);
                 allSessions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
