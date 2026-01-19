@@ -257,7 +257,10 @@
                         <span class="text-xs bg-blue-900/30 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20">Firestore Synced</span>
                     </div>
                     <div class="flex gap-4">
-                        <input type="text" id="user-search" placeholder="Search by username, email, or ID..." class="bg-[#1a1a1a] text-white border border-[#333] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 w-64 placeholder-gray-600">
+                        <button id="export-csv-btn" class="bg-[#1a1a1a] hover:bg-[#252525] text-white border border-[#333] px-3 py-2 rounded-lg text-sm transition flex items-center gap-2" title="Export all users to CSV">
+                            <i class="fa-solid fa-file-csv text-green-500"></i> Export
+                        </button>
+                        <input type="text" id="user-search" placeholder="Search by username, email, or ID..." class="bg-[#1a1a1a] text-white border border-[#333] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 w-56 placeholder-gray-600">
                         <select id="user-sort" class="bg-[#1a1a1a] text-gray-300 border border-[#333] rounded-lg px-3 py-2 text-sm focus:outline-none">
                             <option value="newest">Newest First</option>
                             <option value="oldest">Oldest First</option>
@@ -596,6 +599,65 @@
             });
             
             setupTabs();
+            // Attach CSV Export listener
+            document.getElementById('export-csv-btn').addEventListener('click', exportToCSV);
+        };
+
+        /* --- CSV Export Function --- */
+        const exportToCSV = () => {
+            if (!allUsers || allUsers.length === 0) {
+                alert("No users available to export.");
+                return;
+            }
+
+            // CSV Headers
+            const headers = ['UID', 'Username', 'Email', 'Provider', 'Created At', 'Verified', 'Role', 'Status'];
+
+            // Map user data to CSV rows
+            const rows = allUsers.map(u => {
+                const isAdmin = admins.has(u.id) ? 'Admin' : 'User';
+                const isBanned = bannedUsers.has(u.id) ? 'Banned' : 'Active';
+                
+                // Format Date safely
+                const date = u.createdAt && u.createdAt.toDate 
+                    ? u.createdAt.toDate().toISOString() 
+                    : (u.createdAt ? new Date(u.createdAt).toISOString() : '');
+
+                // Helper to escape CSV special characters (commas, quotes)
+                const escapeCsv = (val) => {
+                    if (val === null || val === undefined) return '';
+                    const str = val.toString();
+                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                        return `"${str.replace(/"/g, '""')}"`;
+                    }
+                    return str;
+                };
+
+                return [
+                    escapeCsv(u.id),
+                    escapeCsv(u.username),
+                    escapeCsv(u.email),
+                    escapeCsv(u.authMethod),
+                    escapeCsv(date),
+                    u.emailVerified ? 'Yes' : 'No',
+                    isAdmin,
+                    isBanned
+                ].join(',');
+            });
+
+            // Combine headers and rows
+            const csvContent = [headers.join(','), ...rows].join('\n');
+
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `4sp_users_export_${moment().format('YYYY-MM-DD')}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         };
 
         const setupTabs = () => {
