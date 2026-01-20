@@ -743,6 +743,7 @@
         let messengerNodes = [];
         let messengerLinks = [];
         let graphSimulation = null;
+        let graphZoom = null;
         let isGraphInitialized = false;
         let missingAuthUsers = []; // Auth exists, Doc missing
         let orphanedDocs = [];     // Doc exists, Auth missing
@@ -853,13 +854,13 @@
             const g = svg.append("g");
 
             // Zoom behavior
-            const zoom = d3.zoom()
+            graphZoom = d3.zoom()
                 .scaleExtent([0.01, 10])
                 .on("zoom", (event) => {
                     g.attr("transform", event.transform);
                 });
 
-            svg.call(zoom);
+            svg.call(graphZoom);
 
             // Clique Estimation (Simple community detection via connections)
             let communities = {};
@@ -1023,7 +1024,7 @@
                     .attr("transform", d => `translate(${d.x},${d.y})`);
 
                 if (mode === 'clique') {
-                    renderCliqueOutlines(cliqueLayer, communities, color, svg, zoom, width, height);
+                    renderCliqueOutlines(cliqueLayer, communities, color, svg, graphZoom, width, height);
                 }
             });
 
@@ -1091,6 +1092,27 @@
                 );
         };
 
+        const zoomToUid = (uid) => {
+            const targetNode = messengerNodes.find(n => n.id === uid);
+            if (targetNode && graphZoom) {
+                const container = document.getElementById('messenger-graph-container');
+                const svg = d3.select("#messenger-svg");
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+
+                // Highlight briefly
+                d3.selectAll(".node-circle")
+                    .attr("stroke", d => d.id === uid ? "#fbbf24" : "#fff")
+                    .attr("stroke-width", d => d.id === uid ? 4 : 1.5)
+                    .attr("opacity", d => d.id === uid ? 1 : 0.2);
+
+                svg.transition().duration(750).call(
+                    graphZoom.transform,
+                    d3.zoomIdentity.translate(width / 2, height / 2).scale(2).translate(-targetNode.x, -targetNode.y)
+                );
+            }
+        };
+
         const showNicknamePanel = (user) => {
             const panel = document.getElementById('nickname-panel');
             const list = document.getElementById('nickname-list');
@@ -1100,14 +1122,20 @@
                 list.innerHTML = '<div class="text-gray-500 italic py-4 text-center">No saved nicknames found for this user in other contacts.</div>';
             } else {
                 list.innerHTML = user.nicknames.map(n => `
-                    <div class="bg-[#1a1a1a] p-2 rounded-lg border border-[#333]">
-                        <div class="text-blue-400 font-medium">${n.as}</div>
+                    <div class="bg-[#1a1a1a] p-2 rounded-lg border border-[#333] cursor-pointer hover:border-blue-500 transition-all hover:bg-[#222] group" data-saver-uid="${n.byUid}">
+                        <div class="text-blue-400 font-medium group-hover:text-blue-300">${n.as}</div>
                         <div class="flex justify-between items-center mt-1">
                             <span class="text-[10px] text-gray-500 italic">Saved by: ${n.byName}</span>
                             <span class="text-[9px] font-mono text-gray-600">${n.byUid.substring(0, 8)}</span>
                         </div>
                     </div>
                 `).join('');
+
+                list.querySelectorAll('[data-saver-uid]').forEach(el => {
+                    el.onclick = () => {
+                        zoomToUid(el.dataset.saverUid);
+                    };
+                });
             }
         };
 
@@ -1141,14 +1169,14 @@
                 if (match && !targetNode) targetNode = d;
             });
 
-            if (targetNode) {
+            if (targetNode && graphZoom) {
                 const container = document.getElementById('messenger-graph-container');
                 const svg = d3.select("#messenger-svg");
                 const width = container.clientWidth;
                 const height = container.clientHeight;
 
                 svg.transition().duration(750).call(
-                    d3.zoom().transform,
+                    graphZoom.transform,
                     d3.zoomIdentity.translate(width / 2, height / 2).scale(2).translate(-targetNode.x, -targetNode.y)
                 );
             }
