@@ -761,7 +761,7 @@
                     ${linkedProvidersHtml}
                 </div>
                 
-                <div id="available-providers-section" class="provider-section-fade ${hideLinkSection ? 'section-hidden' : ''}">
+                <div id="available-providers-section" class="provider-section-fade w-full ${hideLinkSection ? 'section-hidden' : ''}">
                     <h3 class="text-xl font-bold text-white mb-2">Link New Providers</h3>
                     <div id="available-providers-list" class="settings-box w-full flex flex-col gap-0 p-0">
                         ${availableProvidersHtml}
