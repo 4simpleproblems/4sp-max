@@ -352,10 +352,6 @@
 </head>
 <body class="min-h-screen">
 
-    <div id="loading-screen" class="fixed inset-0 bg-[#040404] flex items-center justify-center z-50">
-        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-    </div>
-
     <div id="page-content" class="hidden">
         
         <header class="flex justify-between items-center p-4 border-b border-[#1a1a1a] sticky top-0 bg-[#040404] z-40">
@@ -479,9 +475,10 @@
         let isAdmin = false;
 
         // --- UI & State References ---
-        const loadingScreen = document.getElementById('loading-screen');
         const pageContent = document.getElementById('page-content');
         const optionsMenuBtn = document.getElementById('options-menu-btn');
+        
+        if (window.showLoader) window.showLoader("Soundboard");
         const optionsDropdown = document.getElementById('options-dropdown');
         const soundSearchInput = document.getElementById('sound-search');
         
@@ -534,8 +531,8 @@
         let toasterTimeout = null;
 
         function initApp() {
-            // Remove loading screen and show content immediately
-            loadingScreen.style.display = 'none';
+            // Use universal loader
+            if (window.hideLoader) window.hideLoader();
             pageContent.classList.remove('hidden');
             
             // Load sounds

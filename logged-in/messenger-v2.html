@@ -427,6 +427,7 @@
         // --- MAIN APP LOGIC ---
 
         function main() {
+            if (window.showLoader) window.showLoader("Messenger");
             setupEventListeners();
             signInAnonymously(auth).catch(err => console.error("Sign-in failed:", err));
             onAuthStateChanged(auth, handleAuthStateChange);
@@ -439,6 +440,7 @@
                 listenForUserDocChanges();
                 listenForContacts(); 
                 startStatusUpdates();
+                if (window.hideLoader) window.hideLoader();
                 dom.appContainer.classList.remove('hidden');
             } else {
                 stopStatusUpdates();

@@ -267,6 +267,54 @@ let db;
             notifDiv.id = 'notification-container';
             document.body.appendChild(notifDiv);
         }
+
+        if (!document.getElementById('universal-loader')) {
+            const loaderDiv = document.createElement('div');
+            loaderDiv.id = 'universal-loader';
+            loaderDiv.className = 'fixed inset-0 bg-[#000000] z-[9999] opacity-0 flex flex-col items-end justify-end p-12 transition-opacity duration-200 hidden';
+            loaderDiv.innerHTML = `
+                <img src="https://cdn.jsdelivr.net/npm/4sp-asset-library@latest/logo.png" class="absolute top-6 right-6 h-12 w-auto opacity-50" alt="Logo">
+                <div class="flex flex-col items-end gap-2">
+                    <h2 id="loader-title" class="text-white text-3xl font-light italic font-[Geist]">Loading...</h2>
+                    <div class="w-64 h-1 bg-[#333] rounded-full overflow-hidden">
+                        <div id="loader-bar" class="h-full bg-white w-0"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loaderDiv);
+        }
+
+        window.showLoader = (title = "Loading...") => {
+            const loader = document.getElementById('universal-loader');
+            const loaderTitle = document.getElementById('loader-title');
+            const loaderBar = document.getElementById('loader-bar');
+            if (loader && loaderTitle && loaderBar) {
+                loaderTitle.textContent = title;
+                loaderBar.style.width = '0%';
+                loader.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    loader.classList.add('active');
+                    loader.classList.remove('opacity-0');
+                    setTimeout(() => { loaderBar.style.width = '70%'; }, 10);
+                });
+            }
+        };
+
+        window.hideLoader = () => {
+            const loader = document.getElementById('universal-loader');
+            const loaderBar = document.getElementById('loader-bar');
+            if (loader && loaderBar) {
+                loaderBar.style.width = '100%';
+                setTimeout(() => {
+                    loader.classList.add('opacity-0');
+                    loader.classList.remove('active');
+                    setTimeout(() => {
+                        loader.classList.add('hidden');
+                        loaderBar.style.width = '0%';
+                    }, 200);
+                }, 200);
+            }
+        };
         
         injectStyles();
         const container = document.getElementById('navbar-container');
@@ -625,6 +673,18 @@ let db;
             .notification-toast.show:hover {
                 transform: scale(1.02) translateX(-5px); background-color: #151515;
                 border-color: #555; box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            }
+
+            /* UNIVERSAL LOADER CSS */
+            #universal-loader {
+                pointer-events: none;
+                transition: opacity 0.2s ease;
+            }
+            #universal-loader.active {
+                pointer-events: auto;
+            }
+            #loader-bar {
+                transition: width 1s ease-out;
             }
         `;
         document.head.appendChild(style);

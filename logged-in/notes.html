@@ -379,11 +379,6 @@
     
 </head>
 <body class="min-h-screen mode-notes">
-    <div id="loading-screen" class="fixed inset-0 bg-[#040404] flex items-center justify-center z-50">
-        <!-- UPDATED ICON: fa-solid fa-spinner instead of fa-duotone -->
-        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-    </div>
-
     <div id="page-content" classm="hidden">
         
         <header class="flex justify-between items-center p-4 border-b border-[#1a1a1a]">
@@ -495,6 +490,7 @@
     <div id="autosave-status"></div>
     
     <script type="text/javascript">
+        if (window.showLoader) window.showLoader("Notes");
         // --- Global State and Element References ---
         const editor = document.getElementById('note-editor');
         const lineDisplay = document.getElementById('line-count');
@@ -989,7 +985,7 @@
                 if (!user) {
                     window.location.href = '../index.html'; 
                 } else {
-                    loadingScreen.style.display = 'none';
+                    if (window.hideLoader) window.hideLoader();
                     pageContent.classList.remove('hidden');
                     pageContent.style.display = 'flex';
                 }

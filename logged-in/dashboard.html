@@ -701,12 +701,14 @@ body:not(.no-animations) .btn-toolbar-style:active, body:not(.no-animations) .bt
 
         // --- INIT ---
         window.addEventListener('load', () => {
+            if (window.showLoader) window.showLoader("Dashboard");
             updateDateTime();
             setInterval(updateDateTime, 500);
             initWeather(); // Initial load (which checks cache)
             setupWeatherRefresh(); // Start the periodic refresh
 
             waitForFirebase(() => {
+                 if (window.hideLoader) window.hideLoader();
                  if (firebase.auth) {
                     firebase.auth().onAuthStateChanged((user) => {
                         if (!user && !window._LOCAL_MODE) {
