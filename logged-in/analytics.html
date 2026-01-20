@@ -19,6 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <style>
         body { 
@@ -192,6 +193,7 @@
                 <button class="tab-btn whitespace-nowrap" data-tab="traffic">Site Traffic</button>
                 <button class="tab-btn whitespace-nowrap" data-tab="health">System Health</button>
                 <button class="tab-btn whitespace-nowrap" data-tab="data-analytics">Data and Analytics</button>
+                <button class="tab-btn whitespace-nowrap" data-tab="messenger-web">Messenger Web</button>
             </div>
         </header>
 
@@ -537,6 +539,52 @@
             </div>
         </div>
 
+        <div id="tab-messenger-web" class="tab-content hidden">
+            <div class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl p-6 h-[calc(100vh-250px)] flex flex-col">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-white text-lg font-medium">Messenger Network Topology</h3>
+                        <p class="text-sm text-gray-500">Interactive 2D visualization of user connections and message flows.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="relative">
+                            <input type="text" id="messenger-graph-search" placeholder="Search user..." class="bg-[#1a1a1a] text-white border border-[#333] rounded-lg px-10 py-2 text-sm focus:outline-none focus:border-blue-500 w-48">
+                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        </div>
+                        <select id="graph-mode" class="bg-[#1a1a1a] text-gray-300 border border-[#333] rounded-lg px-3 py-2 text-sm focus:outline-none">
+                            <option value="standard">Standard Mode</option>
+                            <option value="clique">Clique Mode</option>
+                        </select>
+                        <button id="refresh-graph-btn" class="nav-tab-style" style="background: #1a1a1a; border: 1px solid #333;">
+                            <i class="fa-solid fa-sync mr-1"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="messenger-graph-container" class="flex-1 bg-black/40 rounded-lg border border-[#1a1a1a] relative overflow-hidden cursor-move">
+                    <div id="graph-loading" class="absolute inset-0 flex items-center justify-center bg-black/60 z-10">
+                        <div class="text-center">
+                            <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-500 mb-4"></i>
+                            <p class="text-gray-400">Mapping social graph...</p>
+                        </div>
+                    </div>
+                    <svg id="messenger-svg" class="w-full h-full"></svg>
+                    
+                    <!-- Tooltip -->
+                    <div id="graph-tooltip" class="absolute pointer-events-none bg-[#111] border border-[#333] p-3 rounded-lg shadow-2xl opacity-0 transition-opacity z-50 min-w-[200px]"></div>
+                </div>
+                
+                <div class="mt-4 flex justify-between items-center text-xs text-gray-500">
+                    <div class="flex gap-4">
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> User</span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-600"></span> Connection</span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> Active Clique</span>
+                    </div>
+                    <div id="graph-stats">Nodes: -- | Edges: --</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div id="user-modal" class="modal-overlay">
@@ -664,8 +712,28 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
+        // --- Messenger Project Config ---
+        const messengerConfig = {
+            apiKey: "AIzaSyASqfiYUPf7xY4wgZ0hLl8_Z0ZkBiwFUO8",
+            authDomain: "theamericanmessenger-0.firebaseapp.com",
+            databaseURL: "https://theamericanmessenger-0-default-rtdb.firebaseio.com",
+            projectId: "theamericanmessenger-0",
+            storageBucket: "theamericanmessenger-0.firebasestorage.app",
+            messagingSenderId: "963196851685",
+            appId: "1:963196851685:web:9f709be8b2888ed4e28b0c",
+            measurementId: "G-SBGEJDRSBZ"
+        };
+        const messengerApp = initializeApp(messengerConfig, "messenger");
+        const messengerDb = getFirestore(messengerApp);
+
         let allUsers = [];      // From Firestore
         let allAuthUsers = [];  // From Cloud Function
+        
+        // Messenger Graph Data
+        let messengerNodes = [];
+        let messengerLinks = [];
+        let graphSimulation = null;
+        let isGraphInitialized = false;
         let missingAuthUsers = []; // Auth exists, Doc missing
         let orphanedDocs = [];     // Doc exists, Auth missing
         
@@ -691,6 +759,292 @@
             'twitter.com': '../images/x.png',
             'password': 'fa-solid fa-envelope',
             'email': 'fa-solid fa-envelope'
+        };
+
+        const initMessengerGraph = async () => {
+            document.getElementById('graph-loading').classList.remove('hidden');
+            isGraphInitialized = true;
+            
+            try {
+                await fetchMessengerData();
+                renderMessengerGraph();
+            } catch (err) {
+                console.error("Graph initialization failed:", err);
+                alert("Failed to load messenger graph data.");
+            } finally {
+                document.getElementById('graph-loading').classList.add('hidden');
+            }
+        };
+
+        const fetchMessengerData = async () => {
+            // Fetch all users
+            const usersSnap = await getDocs(collection(messengerDb, 'users'));
+            const users = usersSnap.docs.map(d => ({ uid: d.id, ...d.data() }));
+            
+            messengerNodes = users.map(u => ({
+                id: u.uid,
+                label: u.username || u.publicId || u.uid.substring(0, 8),
+                publicId: u.publicId,
+                email: u.email || 'N/A'
+            }));
+
+            messengerLinks = [];
+            
+            // Fetch all contacts for all users
+            // Note: In a large system this would be slow. For 4SP size it should be okay.
+            const contactPromises = users.map(async (u) => {
+                const contactsSnap = await getDocs(collection(messengerDb, `users/${u.uid}/contacts`));
+                contactsSnap.forEach(cdoc => {
+                    const targetUid = cdoc.id;
+                    const cdata = cdoc.data();
+                    
+                    // Only add link once (undirected graph representation)
+                    if (u.uid < targetUid) {
+                        messengerLinks.push({
+                            source: u.uid,
+                            target: targetUid,
+                            lastMessage: cdata.lastMessage || '',
+                            timestamp: cdata.timestamp,
+                            savedName: cdata.name
+                        });
+                    }
+                });
+            });
+
+            await Promise.all(contactPromises);
+            
+            document.getElementById('graph-stats').textContent = `Nodes: ${messengerNodes.length} | Edges: ${messengerLinks.length}`;
+        };
+
+        const renderMessengerGraph = () => {
+            const container = document.getElementById('messenger-graph-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const mode = document.getElementById('graph-mode').value;
+
+            d3.select("#messenger-svg").selectAll("*").remove();
+            
+            const svg = d3.select("#messenger-svg")
+                .attr("viewBox", [0, 0, width, height]);
+
+            const g = svg.append("g");
+
+            // Zoom behavior
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 8])
+                .on("zoom", (event) => {
+                    g.attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+            // Clique Estimation (Simple community detection via connections)
+            if (mode === 'clique') {
+                const adj = {};
+                messengerNodes.forEach(n => adj[n.id] = new Set());
+                messengerLinks.forEach(l => {
+                    adj[l.source].add(l.target);
+                    adj[l.target].add(l.source);
+                });
+
+                const communities = {};
+                let commCount = 0;
+                const visited = new Set();
+
+                messengerNodes.forEach(n => {
+                    if (!visited.has(n.id)) {
+                        const queue = [n.id];
+                        const currentComm = [];
+                        visited.add(n.id);
+                        while(queue.length > 0) {
+                            const u = queue.shift();
+                            currentComm.push(u);
+                            adj[u].forEach(v => {
+                                if (!visited.has(v)) {
+                                    visited.add(v);
+                                    queue.push(v);
+                                }
+                            });
+                        }
+                        communities[commCount++] = currentComm;
+                    }
+                });
+
+                messengerNodes.forEach(n => {
+                    for(let id in communities) {
+                        if (communities[id].includes(n.id)) {
+                            n.community = id;
+                            break;
+                        }
+                    }
+                });
+            } else {
+                messengerNodes.forEach(n => n.community = 0);
+            }
+
+            const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            // Simulation
+            graphSimulation = d3.forceSimulation(messengerNodes)
+                .force("link", d3.forceLink(messengerLinks).id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-300))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide().radius(40));
+
+            const link = g.append("g")
+                .attr("stroke", "#333")
+                .attr("stroke-opacity", 0.6)
+                .selectAll("line")
+                .data(messengerLinks)
+                .join("line")
+                .attr("stroke-width", 1.5);
+
+            const node = g.append("g")
+                .selectAll("g")
+                .data(messengerNodes)
+                .join("g")
+                .call(drag(graphSimulation));
+
+            // Circles
+            node.append("circle")
+                .attr("r", 20)
+                .attr("fill", d => mode === 'clique' ? color(d.community) : "#3b82f6")
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1.5)
+                .attr("class", "node-circle");
+
+            // Labels
+            node.append("text")
+                .text(d => d.label)
+                .attr("x", 0)
+                .attr("y", 30)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#ccc")
+                .attr("font-size", "10px")
+                .attr("pointer-events", "none");
+
+            // Tooltips
+            const tooltip = d3.select("#graph-tooltip");
+            
+            node.on("mouseover", (event, d) => {
+                tooltip.style("opacity", 1)
+                    .html(`
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-bold">${d.label.charAt(0)}</div>
+                                <div>
+                                    <div class="text-white font-medium">${d.label}</div>
+                                    <div class="text-[10px] text-gray-500 font-mono">${d.id}</div>
+                                </div>
+                            </div>
+                            <div class="border-t border-[#333] pt-2 mt-2">
+                                <div class="text-[10px] uppercase text-gray-500 tracking-wider">Public ID</div>
+                                <div class="text-xs text-gray-300">${d.publicId || 'N/A'}</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase text-gray-500 tracking-wider">Connections</div>
+                                <div class="text-xs text-gray-300">${messengerLinks.filter(l => l.source.id === d.id || l.target.id === d.id).length} active</div>
+                            </div>
+                        </div>
+                    `);
+            })
+            .on("mousemove", (event) => {
+                tooltip.style("left", (event.pageX + 15) + "px")
+                       .style("top", (event.pageY - 15) + "px");
+            })
+            .on("mouseout", () => {
+                tooltip.style("opacity", 0);
+            });
+
+            link.on("mouseover", (event, d) => {
+                tooltip.style("opacity", 1)
+                    .html(`
+                        <div class="space-y-1">
+                            <div class="text-[10px] uppercase text-gray-500 tracking-wider">Connection Details</div>
+                            <div class="text-xs text-white">${d.source.label} ↔ ${d.target.label}</div>
+                            <div class="text-[10px] text-gray-400 italic mt-1">"${d.lastMessage || 'No messages'}"</div>
+                            <div class="text-[9px] text-gray-600 mt-1">${d.timestamp ? formatDate(d.timestamp) : ''}</div>
+                        </div>
+                    `);
+            })
+            .on("mousemove", (event) => {
+                tooltip.style("left", (event.pageX + 15) + "px")
+                       .style("top", (event.pageY - 15) + "px");
+            })
+            .on("mouseout", () => {
+                tooltip.style("opacity", 0);
+            });
+
+            graphSimulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+            function drag(simulation) {
+                function dragstarted(event) {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    event.subject.fx = event.subject.x;
+                    event.subject.fy = event.subject.y;
+                }
+                
+                function dragged(event) {
+                    event.subject.fx = event.x;
+                    event.subject.fy = event.y;
+                }
+                
+                function dragended(event) {
+                    if (!event.active) simulation.alphaTarget(0);
+                    event.subject.fx = null;
+                    event.subject.fy = null;
+                }
+                
+                return d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended);
+            }
+        };
+
+        const highlightGraphNode = (term) => {
+            if (!isGraphInitialized) return;
+            
+            const nodes = d3.selectAll(".node-circle");
+            if (!term) {
+                nodes.attr("stroke", "#fff").attr("stroke-width", 1.5).attr("opacity", 1);
+                return;
+            }
+
+            let targetNode = null;
+            nodes.each(function(d) {
+                const match = d.label.toLowerCase().includes(term) || 
+                              d.id.toLowerCase().includes(term) || 
+                              (d.publicId && d.publicId.toLowerCase().includes(term));
+                
+                d3.select(this)
+                    .attr("stroke", match ? "#fbbf24" : "#fff")
+                    .attr("stroke-width", match ? 4 : 1.5)
+                    .attr("opacity", match ? 1 : 0.2);
+                
+                if (match && !targetNode) targetNode = d;
+            });
+
+            if (targetNode) {
+                const container = document.getElementById('messenger-graph-container');
+                const svg = d3.select("#messenger-svg");
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+
+                svg.transition().duration(750).call(
+                    d3.zoom().transform,
+                    d3.zoomIdentity.translate(width / 2, height / 2).scale(2).translate(-targetNode.x, -targetNode.y)
+                );
+            }
         };
 
         const init = async () => {
@@ -795,7 +1149,25 @@
                     if(tabId === 'data-analytics') {
                         checkReAuthStatus();
                     }
+                    if(tabId === 'messenger-web') {
+                        if(!isGraphInitialized) {
+                            initMessengerGraph();
+                        }
+                    }
                 });
+            });
+
+            document.getElementById('refresh-graph-btn').addEventListener('click', () => {
+                initMessengerGraph();
+            });
+
+            document.getElementById('graph-mode').addEventListener('change', () => {
+                renderMessengerGraph();
+            });
+
+            document.getElementById('messenger-graph-search').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                highlightGraphNode(term);
             });
 
             document.getElementById('reauth-btn').addEventListener('click', async () => {
