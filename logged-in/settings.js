@@ -683,9 +683,11 @@
                             ${iconHtml}
                             ${config.name}
                         </div>
-                        <button class="btn-toolbar-style btn-primary-override" data-provider-id="${id}" data-action="link" style="padding: 0.5rem 0.75rem;">
-                            <i class="fa-solid fa-link mr-1"></i> Link Provider
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button class="btn-toolbar-style btn-primary-override" data-provider-id="${id}" data-action="link" style="padding: 0.5rem 0.75rem;">
+                                <i class="fa-solid fa-link mr-1"></i> Link Provider
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
