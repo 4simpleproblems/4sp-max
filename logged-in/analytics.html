@@ -715,9 +715,9 @@
             serverTimestamp,
             deleteField
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { firebaseConfig } from "../firebase-config.js";
+        import { firebaseConfig as masterConfig } from "../firebase-config.js";
 
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(masterConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const functions = getFunctions(app);
@@ -1146,27 +1146,65 @@
         const highlightGraphNode = (term) => {
             if (!isGraphInitialized) return;
             
-            const nodes = d3.selectAll(".node-circle");
+            const nodeCircles = d3.selectAll(".node-circle");
+            const links = d3.selectAll("line");
+
             if (!term) {
-                nodes.attr("stroke", "#fff").attr("stroke-width", 1.5).attr("opacity", 1);
+                nodeCircles.attr("stroke", "#fff").attr("stroke-width", 1.5).attr("opacity", 1);
+                links.attr("stroke", "#333").attr("stroke-opacity", 0.4).attr("stroke-width", 1);
                 return;
             }
 
             let targetNode = null;
-            nodes.each(function(d) {
-                // Check username, ID, public ID, and NICKNAMES
-                const nicknameMatch = d.nicknames.some(n => n.as.toLowerCase().includes(term));
-                const match = d.label.toLowerCase().includes(term) || 
-                              d.id.toLowerCase().includes(term) || 
-                              (d.publicId && d.publicId.toLowerCase().includes(term)) ||
-                              nicknameMatch;
+            const matchingNodes = new Set();
+            const matchingLinks = new Set();
+
+            nodeCircles.each(function(d) {
+                // Check if others have saved THIS person (d) as the search term
+                const nicknameMatches = d.nicknames.filter(n => n.as.toLowerCase().includes(term));
+                const isNicknameMatch = nicknameMatches.length > 0;
+                
+                const isDirectMatch = d.label.toLowerCase().includes(term) || 
+                                     d.id.toLowerCase().includes(term) || 
+                                     (d.publicId && d.publicId.toLowerCase().includes(term));
+                
+                const match = isDirectMatch || isNicknameMatch;
+                
+                if (match) {
+                    matchingNodes.add(d.id);
+                    // If it was a nickname match, also find the links from the savers
+                    nicknameMatches.forEach(nm => {
+                        matchingLinks.add(`${nm.byUid}_${d.id}`);
+                        matchingLinks.add(`${d.id}_${nm.byUid}`);
+                    });
+                }
+
+                d3.select(this)
+                    .attr("stroke", match ? (isNicknameMatch ? "#10b981" : "#fbbf24") : "#fff")
+                    .attr("stroke-width", match ? 5 : 1.5)
+                    .attr("opacity", match ? 1 : 0.1);
+                
+                // Prioritize nickname matches for the zoom target
+                if (match) {
+                    if (!targetNode || (isNicknameMatch && !targetNode._isNick)) {
+                        targetNode = d;
+                        targetNode._isNick = isNicknameMatch;
+                    }
+                }
+            });
+
+            // Highlight links
+            links.each(function(l) {
+                const sId = typeof l.source === 'object' ? l.source.id : l.source;
+                const tId = typeof l.target === 'object' ? l.target.id : l.target;
+                const linkKey = `${sId}_${tId}`;
+                
+                const isMatch = matchingLinks.has(linkKey);
                 
                 d3.select(this)
-                    .attr("stroke", match ? "#fbbf24" : "#fff")
-                    .attr("stroke-width", match ? 4 : 1.5)
-                    .attr("opacity", match ? 1 : 0.2);
-                
-                if (match && !targetNode) targetNode = d;
+                    .attr("stroke", isMatch ? "#10b981" : "#333")
+                    .attr("stroke-opacity", isMatch ? 1 : 0.1)
+                    .attr("stroke-width", isMatch ? 3 : 1);
             });
 
             if (targetNode && graphZoom) {
@@ -1177,7 +1215,7 @@
 
                 svg.transition().duration(750).call(
                     graphZoom.transform,
-                    d3.zoomIdentity.translate(width / 2, height / 2).scale(2).translate(-targetNode.x, -targetNode.y)
+                    d3.zoomIdentity.translate(width / 2, height / 2).scale(2.5).translate(-targetNode.x, -targetNode.y)
                 );
             }
         };
