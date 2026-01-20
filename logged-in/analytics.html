@@ -572,15 +572,25 @@
                     
                     <!-- Tooltip -->
                     <div id="graph-tooltip" class="absolute pointer-events-none bg-[#111] border border-[#333] p-3 rounded-lg shadow-2xl opacity-0 transition-opacity z-50 min-w-[200px]"></div>
-                </div>
-                
-                <div class="mt-4 flex justify-between items-center text-xs text-gray-500">
-                    <div class="flex gap-4">
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> User</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-600"></span> Connection</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> Active Clique</span>
+
+                    <!-- Static Stats Overlay -->
+                    <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md border border-[#333] p-3 rounded-lg text-[10px] text-gray-400 pointer-events-none z-20">
+                        <div id="graph-stats" class="font-mono mb-2">Nodes: -- | Edges: --</div>
+                        <div class="flex flex-col gap-1">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> User</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full border border-green-500"></span> Clique</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-500"></span> Search Match</span>
+                        </div>
                     </div>
-                    <div id="graph-stats">Nodes: -- | Edges: --</div>
+
+                    <!-- Nickname Panel -->
+                    <div id="nickname-panel" class="absolute top-4 right-4 w-64 bg-[#0d0d0d]/90 backdrop-blur-lg border border-[#333] rounded-xl shadow-2xl hidden z-30 overflow-hidden flex flex-col max-h-[80%]">
+                        <div class="p-3 border-b border-[#333] flex justify-between items-center bg-[#111]">
+                            <h4 class="text-xs font-bold text-white uppercase tracking-wider">Known Nicknames</h4>
+                            <button id="close-nick-panel" class="text-gray-500 hover:text-white pointer-events-auto"><i class="fa-solid fa-times"></i></button>
+                        </div>
+                        <div id="nickname-list" class="p-3 space-y-3 overflow-y-auto text-xs"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -785,19 +795,32 @@
                 id: u.uid,
                 label: u.username || u.publicId || u.uid.substring(0, 8),
                 publicId: u.publicId,
-                email: u.email || 'N/A'
+                email: u.email || 'N/A',
+                nicknames: [] // Array of { byUid: string, byName: string, as: string }
             }));
 
             messengerLinks = [];
             
+            // Map for quick node access
+            const nodeMap = {};
+            messengerNodes.forEach(n => nodeMap[n.id] = n);
+
             // Fetch all contacts for all users
-            // Note: In a large system this would be slow. For 4SP size it should be okay.
             const contactPromises = users.map(async (u) => {
                 const contactsSnap = await getDocs(collection(messengerDb, `users/${u.uid}/contacts`));
                 contactsSnap.forEach(cdoc => {
                     const targetUid = cdoc.id;
                     const cdata = cdoc.data();
                     
+                    // Store nickname info on the target node
+                    if (nodeMap[targetUid]) {
+                        nodeMap[targetUid].nicknames.push({
+                            byUid: u.uid,
+                            byName: u.username || u.publicId || 'Unknown',
+                            as: cdata.name
+                        });
+                    }
+
                     // Only add link once (undirected graph representation)
                     if (u.uid < targetUid) {
                         messengerLinks.push({
@@ -831,7 +854,7 @@
 
             // Zoom behavior
             const zoom = d3.zoom()
-                .scaleExtent([0.1, 8])
+                .scaleExtent([0.01, 10])
                 .on("zoom", (event) => {
                     g.attr("transform", event.transform);
                 });
@@ -839,15 +862,20 @@
             svg.call(zoom);
 
             // Clique Estimation (Simple community detection via connections)
+            let communities = {};
             if (mode === 'clique') {
                 const adj = {};
                 messengerNodes.forEach(n => adj[n.id] = new Set());
                 messengerLinks.forEach(l => {
-                    adj[l.source].add(l.target);
-                    adj[l.target].add(l.source);
+                    // Handle D3 source/target as object or ID string
+                    const sId = typeof l.source === 'object' ? l.source.id : l.source;
+                    const tId = typeof l.target === 'object' ? l.target.id : l.target;
+                    if (adj[sId] && adj[tId]) {
+                        adj[sId].add(tId);
+                        adj[tId].add(sId);
+                    }
                 });
 
-                const communities = {};
                 let commCount = 0;
                 const visited = new Set();
 
@@ -886,23 +914,27 @@
 
             // Simulation
             graphSimulation = d3.forceSimulation(messengerNodes)
-                .force("link", d3.forceLink(messengerLinks).id(d => d.id).distance(100))
-                .force("charge", d3.forceManyBody().strength(-300))
+                .force("link", d3.forceLink(messengerLinks).id(d => d.id).distance(120))
+                .force("charge", d3.forceManyBody().strength(-400))
                 .force("center", d3.forceCenter(width / 2, height / 2))
-                .force("collision", d3.forceCollide().radius(40));
+                .force("collision", d3.forceCollide().radius(50));
+
+            // Clique Outlines Layer
+            const cliqueLayer = g.append("g").attr("class", "cliques");
 
             const link = g.append("g")
                 .attr("stroke", "#333")
-                .attr("stroke-opacity", 0.6)
+                .attr("stroke-opacity", 0.4)
                 .selectAll("line")
                 .data(messengerLinks)
                 .join("line")
-                .attr("stroke-width", 1.5);
+                .attr("stroke-width", 1);
 
             const node = g.append("g")
                 .selectAll("g")
                 .data(messengerNodes)
                 .join("g")
+                .attr("class", "node-group")
                 .call(drag(graphSimulation));
 
             // Circles
@@ -942,8 +974,8 @@
                                 <div class="text-xs text-gray-300">${d.publicId || 'N/A'}</div>
                             </div>
                             <div>
-                                <div class="text-[10px] uppercase text-gray-500 tracking-wider">Connections</div>
-                                <div class="text-xs text-gray-300">${messengerLinks.filter(l => l.source.id === d.id || l.target.id === d.id).length} active</div>
+                                <div class="text-[10px] uppercase text-gray-500 tracking-wider">Nicknames</div>
+                                <div class="text-xs text-gray-300">${d.nicknames.length} known variants</div>
                             </div>
                         </div>
                     `);
@@ -954,6 +986,10 @@
             })
             .on("mouseout", () => {
                 tooltip.style("opacity", 0);
+            })
+            .on("click", (event, d) => {
+                event.stopPropagation();
+                showNicknamePanel(d);
             });
 
             link.on("mouseover", (event, d) => {
@@ -975,6 +1011,7 @@
                 tooltip.style("opacity", 0);
             });
 
+            // Clique Hull Rendering
             graphSimulation.on("tick", () => {
                 link
                     .attr("x1", d => d.source.x)
@@ -984,6 +1021,10 @@
 
                 node
                     .attr("transform", d => `translate(${d.x},${d.y})`);
+
+                if (mode === 'clique') {
+                    renderCliqueOutlines(cliqueLayer, communities, color, svg, zoom, width, height);
+                }
             });
 
             function drag(simulation) {
@@ -1011,6 +1052,69 @@
             }
         };
 
+        const renderCliqueOutlines = (layer, communities, color, svg, zoom, width, height) => {
+            const data = [];
+            for (let id in communities) {
+                const nodes = messengerNodes.filter(n => communities[id].includes(n.id));
+                if (nodes.length < 2) continue;
+
+                // Simple circle encompassing all nodes
+                const x = d3.mean(nodes, d => d.x);
+                const y = d3.mean(nodes, d => d.y);
+                const r = d3.max(nodes, d => Math.sqrt((d.x - x) ** 2 + (d.y - y) ** 2)) + 40;
+
+                data.push({ id, x, y, r, nodes });
+            }
+
+            layer.selectAll("circle")
+                .data(data, d => d.id)
+                .join(
+                    enter => enter.append("circle")
+                        .attr("stroke", "#22c55e")
+                        .attr("stroke-width", 2)
+                        .attr("stroke-dasharray", "5,5")
+                        .attr("fill", "transparent")
+                        .attr("opacity", 0.6)
+                        .on("mouseover", function() { d3.select(this).attr("fill", "rgba(34, 197, 94, 0.1)"); })
+                        .on("mouseout", function() { d3.select(this).attr("fill", "transparent"); })
+                        .on("click", (event, d) => {
+                            event.stopPropagation();
+                            svg.transition().duration(750).call(
+                                zoom.transform,
+                                d3.zoomIdentity.translate(width / 2, height / 2).scale(1.5).translate(-d.x, -d.y)
+                            );
+                        }),
+                    update => update
+                        .attr("cx", d => d.x)
+                        .attr("cy", d => d.y)
+                        .attr("r", d => d.r)
+                );
+        };
+
+        const showNicknamePanel = (user) => {
+            const panel = document.getElementById('nickname-panel');
+            const list = document.getElementById('nickname-list');
+            panel.classList.remove('hidden');
+
+            if (user.nicknames.length === 0) {
+                list.innerHTML = '<div class="text-gray-500 italic py-4 text-center">No saved nicknames found for this user in other contacts.</div>';
+            } else {
+                list.innerHTML = user.nicknames.map(n => `
+                    <div class="bg-[#1a1a1a] p-2 rounded-lg border border-[#333]">
+                        <div class="text-blue-400 font-medium">${n.as}</div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-[10px] text-gray-500 italic">Saved by: ${n.byName}</span>
+                            <span class="text-[9px] font-mono text-gray-600">${n.byUid.substring(0, 8)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        document.getElementById('close-nick-panel').addEventListener('click', () => {
+            document.getElementById('nickname-panel').classList.add('hidden');
+        });
+
         const highlightGraphNode = (term) => {
             if (!isGraphInitialized) return;
             
@@ -1022,9 +1126,12 @@
 
             let targetNode = null;
             nodes.each(function(d) {
+                // Check username, ID, public ID, and NICKNAMES
+                const nicknameMatch = d.nicknames.some(n => n.as.toLowerCase().includes(term));
                 const match = d.label.toLowerCase().includes(term) || 
                               d.id.toLowerCase().includes(term) || 
-                              (d.publicId && d.publicId.toLowerCase().includes(term));
+                              (d.publicId && d.publicId.toLowerCase().includes(term)) ||
+                              nicknameMatch;
                 
                 d3.select(this)
                     .attr("stroke", match ? "#fbbf24" : "#fff")
