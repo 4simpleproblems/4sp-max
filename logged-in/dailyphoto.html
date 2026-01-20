@@ -446,10 +446,6 @@
 
     </main>
 
-    <div id="loading-screen" class="fixed inset-0 bg-black flex justify-center items-center z-[100]">
-        <i class="fas fa-circle-notch fa-spin text-4xl text-indigo-600"></i>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1371,6 +1367,8 @@ async function cleanText(text) {
                 return;
             }
 
+            if (window.showLoader) window.showLoader("Dailyphoto");
+
             try {
                 await handleFriendCodeLogic(user);
                 await cleanupOldPosts(user);
@@ -1378,7 +1376,7 @@ async function cleanText(text) {
                 console.error("Initialization error:", e);
             }
 
-            document.getElementById('loading-screen').style.display = 'none';
+            if (window.hideLoader) window.hideLoader();
             document.getElementById('messenger-ui').style.display = 'block';
 
             switchSidebar('posts');

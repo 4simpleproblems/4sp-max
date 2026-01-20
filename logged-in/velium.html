@@ -63,9 +63,11 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                if (window.showLoader) window.showLoader("Velium");
                 // User is signed in, check admin status
                 const isAdmin = await checkAdminStatus(user.uid);
                 if (isAdmin) {
+                    if (window.hideLoader) window.hideLoader();
                     pageContent.style.display = 'flex'; // Show content for admins
                 } else {
                     // Not an admin, redirect to dashboard

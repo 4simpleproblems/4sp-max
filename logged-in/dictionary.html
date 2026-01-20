@@ -233,10 +233,6 @@
 </head>
 <body class="min-h-screen">
     
-    <div id="loading-screen" class="fixed inset-0 bg-[#040404] flex items-center justify-center z-50">
-        <i class="fa-solid fa-spinner fa-spin fa-2x text-white"></i>
-    </div>
-
     <div id="page-content" class="hidden">
         
         <header>
@@ -586,13 +582,11 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                loadingScreen.style.opacity = '0';
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    pageContent.classList.remove('hidden');
-                    pageContent.style.display = 'flex'; 
-                    checkUrlHashForWord(); 
-                }, 300);
+                if (window.showLoader) window.showLoader("Dictionary");
+                if (window.hideLoader) window.hideLoader();
+                pageContent.classList.remove('hidden');
+                pageContent.style.display = 'flex'; 
+                checkUrlHashForWord(); 
             } else {
                 window.location.href = '../index.html'; 
             }

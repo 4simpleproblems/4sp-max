@@ -280,12 +280,6 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- LOADING OVERLAY -->
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <div id="loading-text" class="text-sm tracking-widest uppercase text-gray-500">Locating...</div>
-    </div>
-    
     <!-- HOURLY DETAIL MODAL -->
     <div id="hourly-modal-overlay">
         <div class="modal-content">
@@ -481,9 +475,7 @@
         }
 
         async function triggerAutoLocation() {
-            loadingText.innerText = "Locating...";
-            loadingOverlay.style.opacity = '1';
-            loadingOverlay.style.pointerEvents = 'auto';
+            if (window.showLoader) window.showLoader("Weather");
             
             try {
                 const pos = await getBrowserLocation();
@@ -665,9 +657,8 @@
                 }
                 render();
                 
+                if (window.hideLoader) window.hideLoader();
                 setTimeout(() => {
-                    loadingOverlay.style.opacity = '0';
-                    loadingOverlay.style.pointerEvents = 'none';
                     mainContent.style.opacity = '1';
                 }, 500);
 

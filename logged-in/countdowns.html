@@ -1315,11 +1315,13 @@
 
         // --- INIT ---
         window.addEventListener('load', async () => {
+            if (window.showLoader) window.showLoader("Countdowns");
             initPickers(); 
             await idbCountdowns.initDB();
             const saved = await idbCountdowns.load();
             if (saved) appState.countdowns = saved;
             renderCountdowns();
+            if (window.hideLoader) window.hideLoader();
         });
 
     </script>
