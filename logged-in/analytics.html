@@ -191,6 +191,7 @@
                 <button class="tab-btn active whitespace-nowrap" data-tab="users">User Management</button>
                 <button class="tab-btn whitespace-nowrap" data-tab="traffic">Site Traffic</button>
                 <button class="tab-btn whitespace-nowrap" data-tab="health">System Health</button>
+                <button class="tab-btn whitespace-nowrap" data-tab="data-analytics">Data and Analytics</button>
             </div>
         </header>
 
@@ -428,6 +429,114 @@
             </div>
         </div>
 
+        <div id="tab-data-analytics" class="tab-content hidden">
+            <div id="admin-reauth-section" class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl p-8 text-center">
+                <div class="w-16 h-16 bg-blue-900/20 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+                <h3 class="text-xl text-white mb-2 font-medium">Restricted Section</h3>
+                <p class="text-gray-400 mb-6 max-w-md mx-auto">To access comprehensive user data and analytics, you must re-authenticate as the master administrator (4simpleproblems@gmail.com).</p>
+                <button id="reauth-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition shadow-lg shadow-blue-900/20">
+                    <i class="fa-brands fa-google mr-2"></i> Authenticate with Google
+                </button>
+            </div>
+
+            <div id="data-analytics-content" class="hidden space-y-8">
+                <div class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl p-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="text-white text-lg font-medium">User Deep Inspection</h3>
+                            <p class="text-sm text-gray-500">Select a user to view their complete document, settings, and connections.</p>
+                        </div>
+                        <div class="relative w-full md:w-80">
+                            <input type="text" id="inspect-user-search" placeholder="Search users..." class="w-full bg-[#1a1a1a] text-white border border-[#333] rounded-lg px-10 py-2 text-sm focus:outline-none focus:border-blue-500">
+                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                            <div id="inspect-search-results" class="absolute top-full left-0 right-0 bg-[#0d0d0d] border border-[#333] mt-2 rounded-lg overflow-hidden hidden z-50 shadow-2xl"></div>
+                        </div>
+                    </div>
+
+                    <div id="user-inspect-view" class="hidden animate-in fade-in duration-300">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Profile Sidebar -->
+                            <div class="lg:col-span-1 space-y-6">
+                                <div class="bg-[#080808] border border-[#1a1a1a] rounded-xl p-6 text-center">
+                                    <div id="inspect-pfp-preview" class="w-32 h-32 mx-auto mb-4 rounded-xl border border-[#333] overflow-hidden"></div>
+                                    <h4 id="inspect-username" class="text-xl text-white font-medium mb-1">--</h4>
+                                    <p id="inspect-email" class="text-sm text-gray-500 font-mono mb-4">--</p>
+                                    <div id="inspect-tags" class="flex flex-wrap justify-center gap-2 mb-4"></div>
+                                    <div id="inspect-badges" class="flex flex-wrap justify-center gap-2"></div>
+                                </div>
+
+                                <div class="bg-[#080808] border border-[#1a1a1a] rounded-xl p-6">
+                                    <h5 class="text-xs uppercase tracking-widest text-gray-500 mb-4">External Connections</h5>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-purple-900/20 text-purple-400 rounded-lg flex items-center justify-center">
+                                                    <i class="fa-solid fa-image"></i>
+                                                </div>
+                                                <span class="text-sm text-gray-300 font-medium">Dailyphoto</span>
+                                            </div>
+                                            <span id="inspect-dailyphoto-count" class="text-xs font-mono bg-[#1a1a1a] px-2 py-1 rounded">--</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-blue-900/20 text-blue-400 rounded-lg flex items-center justify-center">
+                                                    <i class="fa-solid fa-user-group"></i>
+                                                </div>
+                                                <span class="text-sm text-gray-300 font-medium">Friend Code</span>
+                                            </div>
+                                            <span id="inspect-friend-code" class="text-xs font-mono bg-[#1a1a1a] px-2 py-1 rounded">--</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-green-900/20 text-green-400 rounded-lg flex items-center justify-center">
+                                                    <i class="fa-solid fa-paper-plane"></i>
+                                                </div>
+                                                <span class="text-sm text-gray-300 font-medium">Friends (Rels)</span>
+                                            </div>
+                                            <span id="inspect-friends-count" class="text-xs font-mono bg-[#1a1a1a] px-2 py-1 rounded">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Data Area -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <div class="bg-[#080808] border border-[#1a1a1a] rounded-xl overflow-hidden">
+                                    <div class="p-4 border-b border-[#1a1a1a] bg-[#0a0a0a] flex justify-between items-center">
+                                        <h5 class="text-sm font-medium text-white">Firestore Document Data</h5>
+                                        <button id="copy-raw-json" class="text-xs text-blue-400 hover:text-blue-300 transition">
+                                            <i class="fa-solid fa-copy mr-1"></i> Copy JSON
+                                        </button>
+                                    </div>
+                                    <div class="p-4 bg-black/50 font-mono text-xs overflow-x-auto max-h-[400px]">
+                                        <pre id="inspect-raw-data" class="text-blue-300"></pre>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="bg-[#080808] border border-[#1a1a1a] rounded-xl p-4">
+                                        <h5 class="text-xs uppercase tracking-widest text-gray-500 mb-3">Settings & Theme</h5>
+                                        <div id="inspect-theme-details" class="space-y-2 text-sm"></div>
+                                    </div>
+                                    <div class="bg-[#080808] border border-[#1a1a1a] rounded-xl p-4">
+                                        <h5 class="text-xs uppercase tracking-widest text-gray-500 mb-3">Recent Activity</h5>
+                                        <div id="inspect-recent-activity" class="space-y-2 text-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="user-inspect-placeholder" class="py-20 text-center">
+                        <i class="fa-solid fa-user-astronaut text-4xl text-gray-700 mb-4 block"></i>
+                        <p class="text-gray-500">Search and select a user to begin deep inspection.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div id="user-modal" class="modal-overlay">
@@ -528,7 +637,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
         import { 
             getFirestore, 
@@ -540,6 +649,7 @@
             deleteDoc,
             updateDoc,
             query,
+            where,
             orderBy,
             limit,
             onSnapshot,
@@ -571,6 +681,8 @@
         let unsubscribeUsers = null;
         let unsubscribeBans = null;
         let unsubscribeAdmins = null;
+
+        let isAdminReAuthenticated = false;
 
         const providerImages = {
             'google.com': '../images/google-icon.png',
@@ -662,20 +774,235 @@
 
         const setupTabs = () => {
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
+                btn.addEventListener('click', async () => {
+                    const tabId = btn.dataset.tab;
+
+                    if (tabId === 'data-analytics' && !isAdminReAuthenticated) {
+                        // Keep current tab active if not re-authenticated
+                        // return; 
+                    }
+
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                     
                     btn.classList.add('active');
-                    const tabId = btn.dataset.tab;
                     document.getElementById(`tab-${tabId}`).classList.remove('hidden');
                     
                     if(tabId === 'users') renderChart(allUsers);
                     if(tabId === 'health') {
                         refreshSyncTables(); 
                     }
+                    if(tabId === 'data-analytics') {
+                        checkReAuthStatus();
+                    }
                 });
             });
+
+            document.getElementById('reauth-btn').addEventListener('click', async () => {
+                const provider = new GoogleAuthProvider();
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    if (result.user.email === '4simpleproblems@gmail.com') {
+                        isAdminReAuthenticated = true;
+                        checkReAuthStatus();
+                        showNotification('Master Admin Authenticated', 'fa-solid fa-shield-check', 'success');
+                    } else {
+                        alert('Unauthorized. Access restricted to 4simpleproblems@gmail.com');
+                    }
+                } catch (error) {
+                    console.error('Re-auth error:', error);
+                    alert('Authentication failed: ' + error.message);
+                }
+            });
+
+            // Search logic for inspection
+            const inspectSearchInput = document.getElementById('inspect-user-search');
+            const inspectResults = document.getElementById('inspect-search-results');
+
+            inspectSearchInput.addEventListener('input', () => {
+                const term = inspectSearchInput.value.toLowerCase();
+                if (term.length < 2) {
+                    inspectResults.classList.add('hidden');
+                    return;
+                }
+
+                const matches = allUsers.filter(u => 
+                    (u.username && u.username.toLowerCase().includes(term)) ||
+                    (u.email && u.email.toLowerCase().includes(term)) ||
+                    u.id.toLowerCase().includes(term)
+                ).slice(0, 10);
+
+                if (matches.length > 0) {
+                    inspectResults.innerHTML = matches.map(u => `
+                        <div class="p-3 border-b border-[#1a1a1a] hover:bg-[#1a1a1a] cursor-pointer flex items-center gap-3" data-uid="${u.id}">
+                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-bold">
+                                ${(u.username || '?').charAt(0).toUpperCase()}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm text-white">${u.username || 'Unknown'}</span>
+                                <span class="text-xs text-gray-500">${u.email || u.id}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    inspectResults.classList.remove('hidden');
+                    
+                    inspectResults.querySelectorAll('[data-uid]').forEach(el => {
+                        el.addEventListener('click', () => {
+                            inspectUser(el.dataset.uid);
+                            inspectResults.classList.add('hidden');
+                            inspectSearchInput.value = '';
+                        });
+                    });
+                } else {
+                    inspectResults.innerHTML = '<div class="p-4 text-center text-gray-500 text-sm">No users found</div>';
+                    inspectResults.classList.remove('hidden');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!inspectSearchInput.contains(e.target) && !inspectResults.contains(e.target)) {
+                    inspectResults.classList.add('hidden');
+                }
+            });
+        };
+
+        const checkReAuthStatus = () => {
+            const reauthSection = document.getElementById('admin-reauth-section');
+            const dataContent = document.getElementById('data-analytics-content');
+            
+            if (isAdminReAuthenticated) {
+                reauthSection.classList.add('hidden');
+                dataContent.classList.remove('hidden');
+            } else {
+                reauthSection.classList.remove('hidden');
+                dataContent.classList.add('hidden');
+            }
+        };
+
+        const inspectUser = async (uid) => {
+            const user = allUsers.find(u => u.id === uid);
+            if (!user) return;
+
+            document.getElementById('user-inspect-placeholder').classList.add('hidden');
+            const view = document.getElementById('user-inspect-view');
+            view.classList.remove('hidden');
+
+            // Render PFP Preview
+            renderInspectPfp(user);
+
+            document.getElementById('inspect-username').textContent = user.username || 'Unknown';
+            document.getElementById('inspect-email').textContent = user.email || user.id;
+
+            // Render Tags
+            const tagsContainer = document.getElementById('inspect-tags');
+            tagsContainer.innerHTML = '';
+            if (user.userTag) {
+                const tag = document.createElement('span');
+                tag.className = 'text-[10px] uppercase font-bold px-2 py-0.5 rounded border tracking-wider';
+                tag.style.color = user.userTag.color;
+                tag.style.borderColor = user.userTag.color + '40';
+                tag.style.backgroundColor = user.userTag.color + '10';
+                tag.textContent = user.userTag.text;
+                tagsContainer.appendChild(tag);
+            }
+
+            // Raw Data
+            const rawEl = document.getElementById('inspect-raw-data');
+            rawEl.textContent = JSON.stringify(user, null, 2);
+
+            document.getElementById('copy-raw-json').onclick = () => {
+                navigator.clipboard.writeText(JSON.stringify(user, null, 4));
+                showNotification('JSON Copied to Clipboard', 'fa-solid fa-copy');
+            };
+
+            // Dailyphoto and Friend Code
+            const dpCountEl = document.getElementById('inspect-dailyphoto-count');
+            dpCountEl.textContent = 'Loading...';
+            const photosSnap = await getDocs(query(collection(db, 'dailyPhotos'), where('userId', '==', uid)));
+            dpCountEl.textContent = photosSnap.size;
+
+            const fcEl = document.getElementById('inspect-friend-code');
+            fcEl.textContent = 'Scanning...';
+            const fcDoc = await getDoc(doc(db, 'friend_codes', uid));
+            fcEl.textContent = fcDoc.exists() ? fcDoc.data().code : 'Not Set';
+
+            const friendsEl = document.getElementById('inspect-friends-count');
+            friendsEl.textContent = 'Calculating...';
+            const sentReqs = await getDocs(query(collection(db, 'friendRequests'), where('senderId', '==', uid)));
+            const recvReqs = await getDocs(query(collection(db, 'friendRequests'), where('recipientId', '==', uid)));
+            friendsEl.textContent = `${sentReqs.size} Sent / ${recvReqs.size} Recv`;
+
+            // Theme Details
+            const themeDetails = document.getElementById('inspect-theme-details');
+            if (user.navbarTheme) {
+                themeDetails.innerHTML = `
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Theme Name:</span>
+                        <span class="text-white">${user.navbarTheme.name || 'Custom'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Primary Color:</span>
+                        <span class="font-mono text-xs" style="color: ${user.navbarTheme['tab-active-text']}">${user.navbarTheme['tab-active-text'] || 'N/A'}</span>
+                    </div>
+                `;
+            } else {
+                themeDetails.innerHTML = '<p class="text-gray-600 italic">Default Dark Theme</p>';
+            }
+
+            // Recent Activity
+            const activityEl = document.getElementById('inspect-recent-activity');
+            const userSessions = allSessions.filter(s => s.userId === uid).slice(0, 5);
+            if (userSessions.length > 0) {
+                activityEl.innerHTML = userSessions.map(s => `
+                    <div class="flex justify-between border-b border-white/5 pb-1">
+                        <span class="text-gray-400 truncate w-24">${s.visitedPages && s.visitedPages.length > 0 ? s.visitedPages[s.visitedPages.length-1].title : 'Unknown'}</span>
+                        <span class="text-gray-600 text-[10px]">${formatTimeAgo(s.lastActive)}</span>
+                    </div>
+                `).join('');
+            } else {
+                activityEl.innerHTML = '<p class="text-gray-600 italic">No recent sessions found.</p>';
+            }
+        };
+
+        const renderInspectPfp = (userData) => {
+            const container = document.getElementById('inspect-pfp-preview');
+            const username = userData.username || 'User';
+            const initial = (userData.username || '?').charAt(0).toUpperCase();
+            const pfpType = userData.pfpType || 'google';
+
+            let avatarHtml = '';
+
+            if (pfpType === 'custom' && userData.customPfp) {
+                avatarHtml = `<img src="${userData.customPfp}" class="w-full h-full object-cover" alt="Profile">`;
+            } else if (pfpType === 'mibi' && userData.mibiConfig) {
+                const { eyes, mouths, hats, bgColor, rotation, size, offsetX, offsetY } = userData.mibiConfig;
+                const scale = (size || 100) / 100;
+                const rot = rotation || 0;
+                const x = offsetX || 0;
+                const y = offsetY || 0;
+                
+                avatarHtml = `
+                    <div class="w-full h-full relative overflow-hidden" style="background-color: ${bgColor || '#3B82F6'};">
+                         <div class="absolute inset-0 w-full h-full" style="transform: translate(${x}%, ${y}%) rotate(${rot}deg) scale(${scale}); transform-origin: center;">
+                             <img src="/mibi-avatars/head.png" class="absolute inset-0 w-full h-full object-contain">
+                             ${eyes ? `<img src="/mibi-avatars/eyes/${eyes}" class="absolute inset-0 w-full h-full object-contain">` : ''}
+                             ${mouths ? `<img src="/mibi-avatars/mouths/${mouths}" class="absolute inset-0 w-full h-full object-contain">` : ''}
+                             ${hats ? `<img src="/mibi-avatars/hats/${hats}" class="absolute inset-0 w-full h-full object-contain">` : ''}
+                         </div>
+                    </div>
+                `;
+            } else if (pfpType === 'letter') {
+                const bg = userData.pfpLetterBg || 'linear-gradient(135deg, #374151 0%, #111827 100%)';
+                avatarHtml = `<div class="w-full h-full font-bold flex items-center justify-center text-3xl text-white" style="background: ${bg};">${initial}</div>`;
+            } else {
+                if (userData.photoURL) {
+                    avatarHtml = `<img src="${userData.photoURL}" class="w-full h-full object-cover" alt="Profile">`;
+                } else {
+                    avatarHtml = `<div class="w-full h-full bg-blue-600 flex items-center justify-center text-3xl font-bold text-white">${initial}</div>`;
+                }
+            }
+
+            container.innerHTML = avatarHtml;
         };
 
         const subscribeToData = () => {
