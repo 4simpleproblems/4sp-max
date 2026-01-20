@@ -640,15 +640,12 @@
                 const isPrimary = (id === primaryProviderId); // Check if this is the primary provider
                 const canUnlink = providerData.length > 1 && !(id === 'password' && primaryProviderId === 'password');
                 
-                // NEW: Determine if "Set as Primary" button should be shown
-                // Show if no primary is explicitly set, it's not the current primary, and it's not the password provider.
                 const showSetPrimaryButton = !isPrimary && primaryProviderId === null && id !== 'password';
 
-                // Determine if icon is an image or a FontAwesome icon
                 let iconHtml = config.icon.startsWith('<i') ? config.icon : `<img src="${config.icon}" alt="${config.name} Icon" class="h-6 w-auto mr-3">`;
 
                 return `
-                    <div class="flex justify-between items-center px-4 py-4 border-b border-[#252525] last:border-b-0">
+                    <div class="provider-item flex justify-between items-center px-4 py-4 border-b border-[#252525] last:border-b-0" data-provider-row="${id}">
                         <div class="flex items-center text-lg text-white">
                             ${iconHtml}
                             ${config.name}
@@ -664,7 +661,6 @@
                                 `<button class="btn-toolbar-style text-red-400 hover:border-red-600 hover:text-red-600" data-provider-id="${id}" data-action="unlink" style="padding: 0.5rem 0.75rem;">
                                     <i class="fa-solid fa-unlink mr-1"></i> Unlink
                                 </button>` : 
-                                // Show "Cannot Unlink" if not able to unlink (e.g., it's the only provider, or it's password and primary)
                                 (providerData.length === 1 || (id === 'password' && primaryProviderId === 'password')) ? 
                                     `<span class="text-xs text-custom-light-gray font-light ml-4">Cannot Unlink</span>` : ''
                             }
@@ -675,33 +671,26 @@
 
             // Filter out already linked social providers for the linking list
             const linkedIds = providerData.map(p => p.providerId);
-            let availableProvidersHtml = Object.keys(PROVIDER_CONFIG)
-                .filter(id => id !== 'password' && !linkedIds.includes(id))
-                .map(id => {
-                    const config = PROVIDER_CONFIG[id];
-                    let iconHtml = config.icon.startsWith('<i') ? config.icon : `<img src="${config.icon}" alt="${config.name} Icon" class="h-6 w-auto mr-3">`;
+            const availableProviders = Object.keys(PROVIDER_CONFIG).filter(id => id !== 'password' && !linkedIds.includes(id));
+            
+            let availableProvidersHtml = availableProviders.map(id => {
+                const config = PROVIDER_CONFIG[id];
+                let iconHtml = config.icon.startsWith('<i') ? config.icon : `<img src="${config.icon}" alt="${config.name} Icon" class="h-6 w-auto mr-3">`;
 
-                    return `
-                        <div class="flex justify-between items-center px-4 py-4 border-b border-[#252525] last:border-b-0">
-                            <div class="flex items-center text-lg text-white">
-                                ${iconHtml}
-                                ${config.name}
-                            </div>
-                            <button class="btn-toolbar-style btn-primary-override" data-provider-id="${id}" data-action="link" style="padding: 0.5rem 0.75rem;">
-                                <i class="fa-solid fa-link mr-1"></i> Link Provider
-                            </button>
+                return `
+                    <div class="provider-item flex justify-between items-center px-4 py-4 border-b border-[#252525] last:border-b-0" data-provider-row="${id}">
+                        <div class="flex items-center text-lg text-white">
+                            ${iconHtml}
+                            ${config.name}
                         </div>
-                    `;
-                }).join('');
-                
-            if (availableProvidersHtml === '') {
-                availableProvidersHtml = `
-                    <div class="px-4 py-4">
-                        <p class="text-sm text-gray-500 text-center">All available social providers are linked.</p>
+                        <button class="btn-toolbar-style btn-primary-override" data-provider-id="${id}" data-action="link" style="padding: 0.5rem 0.75rem;">
+                            <i class="fa-solid fa-link mr-1"></i> Link Provider
+                        </button>
                     </div>
                 `;
-            }
-
+            }).join('');
+                
+            const hideLinkSection = (availableProviders.length === 0);
 
             // --- Account Deletion Section ---
             let deletionContent = '';
@@ -766,13 +755,15 @@
             // --- Combined HTML for Account Management ---
             return `
                 <h3 class="text-xl font-bold text-white mb-2 mt-8">Linked Providers</h3>
-                <div class="settings-box w-full mb-4 p-0" data-section="linked-providers">
+                <div id="linked-providers-list" class="settings-box w-full mb-4 p-0">
                     ${linkedProvidersHtml}
                 </div>
                 
-                <h3 class="text-xl font-bold text-white mb-2">Link New Providers</h3>
-                <div class="settings-box w-full flex flex-col gap-0 p-0">
-                    ${availableProvidersHtml}
+                <div id="available-providers-section" class="provider-section-fade ${hideLinkSection ? 'section-hidden' : ''}">
+                    <h3 class="text-xl font-bold text-white mb-2">Link New Providers</h3>
+                    <div id="available-providers-list" class="settings-box w-full flex flex-col gap-0 p-0">
+                        ${availableProvidersHtml}
+                    </div>
                 </div>
                 
                 ${deletionContent}
@@ -3018,8 +3009,17 @@
                     
                     try {
                         await linkWithPopup(auth.currentUser, providerInstance);
+                        
+                        // Animation before refresh
+                        const row = mainView.querySelector(`[data-provider-row="${providerId}"]`);
+                        if (row) row.classList.add('provider-exit');
+                        
                         showMessage(messageElement, `${config.name} successfully linked to your account!`, 'success');
-                        setTimeout(refreshGeneralTab, 1500); // Refresh UI
+                        
+                        setTimeout(() => {
+                            refreshGeneralTab();
+                            // The new item in "Linked" will naturally appear, we could add entry anim here if needed
+                        }, 400);
                     } catch (error) {
                         console.error("Error linking provider:", error);
                         let msg = `Failed to link ${config.name}.`;
@@ -3030,7 +3030,6 @@
                         } else if (error.code === 'auth/requires-recent-login') {
                             msg = 'Please sign out and sign in again to link a new provider.';
                         } else if (error.code === 'auth/invalid-credential') {
-                            // Explicitly identifying the configuration error from logs
                             msg = `Configuration Error: The Client ID or Secret for ${config.name} is incorrect in the Firebase Console.`;
                         }
                         showMessage(messageElement, msg, 'error');
@@ -3048,8 +3047,21 @@
                     
                     try {
                         await unlink(auth.currentUser, providerId);
+                        
+                        // Animation before refresh
+                        const row = mainView.querySelector(`[data-provider-row="${providerId}"]`);
+                        if (row) row.classList.add('provider-exit');
+
                         showMessage(messageElement, `${config.name} successfully unlinked.`, 'success');
-                        setTimeout(refreshGeneralTab, 1500); // Refresh UI
+                        
+                        setTimeout(() => {
+                            refreshGeneralTab();
+                            // Apply entry animation to the newly unlinked provider in the available list
+                            setTimeout(() => {
+                                const newRow = mainView.querySelector(`#available-providers-list [data-provider-row="${providerId}"]`);
+                                if (newRow) newRow.classList.add('provider-enter');
+                            }, 50);
+                        }, 400);
                     } catch (error) {
                         console.error("Error unlinking provider:", error);
                         let msg = `Failed to unlink ${config.name}.`;
@@ -3058,7 +3070,6 @@
                         } else if (error.code === 'auth/requires-recent-login') {
                              msg = 'Please sign out and sign in again to unlink this provider.';
                         } else if (error.code === 'auth/provider-already-linked') {
-                            // This can happen if attempting to unlink the last provider
                             msg = "Cannot unlink the last remaining sign-in method.";
                         }
                         

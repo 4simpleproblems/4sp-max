@@ -39,69 +39,67 @@
     // State
     let isAdmin = false;
     let adminUnsubscribe = null;
+    let toasterTimeout = null;
     
     const OWNER_EMAIL = "4simpleproblems@gmail.com";
 
-    // Visual Feedback Helper
-    function showAdminToast(message, type = "neutral") {
-        const existing = document.getElementById("admin-keybind-toast");
-        if (existing) existing.remove();
+    // Standardized Notification CSS (Matches soundboard.html exactly)
+    const style = document.createElement('style');
+    style.textContent = `
+        #admin-status-toaster {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            z-index: 10000000;
+            background-color: rgba(13, 13, 13, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 0.75rem 1.5rem;
+            border-radius: 18px;
+            border: 1px solid #333;
+            font-size: 0.85rem;
+            color: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            font-family: 'Geist', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #admin-status-toaster.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    `;
+    document.head.appendChild(style);
 
-        const toast = document.createElement("div");
-        toast.id = "admin-keybind-toast";
+    // Create Toaster Element
+    const statusToaster = document.createElement('div');
+    statusToaster.id = 'admin-status-toaster';
+    document.body.appendChild(statusToaster);
 
-        // Styles
-        Object.assign(toast.style, {
-            position: "fixed",
-            bottom: "24px",
-            right: "24px",
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            backgroundColor: "rgba(13, 13, 13, 0.95)", // Dark glass effect
-            backdropFilter: "blur(5px)",
-            color: "#c0c0c0", // Light gray text
-            padding: "14px 20px",
-            borderRadius: "12px", // Rounded corners
-            border: "1px solid #333", // Dark border
-            fontFamily: "'Geist', 'Roboto', sans-serif",
-            fontSize: "14px",
-            fontWeight: "500",
-            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.5)",
-            zIndex: "9999999",
-            opacity: "0",
-            transform: "translateY(20px)",
-            transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
-        });
-
-        // Type-specific accents
+    // Visual Feedback Helper (Matching soundboard.html)
+    function showAdminToast(message, type = 'info') {
+        statusToaster.innerHTML = '';
+        
         let iconHtml = '';
-        if (type === "success" || type === "green") {
-            toast.style.borderColor = "rgba(34, 197, 94, 0.5)"; // Green hint
-            iconHtml = '<i class="fa-solid fa-check-circle" style="color: #4ade80;"></i>';
-        } else if (type === "error" || type === "red") {
-            toast.style.borderColor = "rgba(239, 68, 68, 0.5)"; // Red hint
-            iconHtml = '<i class="fa-solid fa-circle-exclamation" style="color: #f87171;"></i>';
+        if (type === 'error' || type === 'red') {
+            statusToaster.style.borderColor = '#ef4444';
+            iconHtml = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
+        } else if (type === 'success' || type === 'green') {
+            statusToaster.style.borderColor = '#22c55e';
+            iconHtml = '<i class="fa-solid fa-check-circle text-green-500"></i>';
         } else {
-            toast.style.borderColor = "rgba(59, 130, 246, 0.5)"; // Blue hint
-            iconHtml = '<i class="fa-solid fa-info-circle" style="color: #60a5fa;"></i>';
+            statusToaster.style.borderColor = '#333';
+            iconHtml = '<i class="fa-solid fa-info-circle text-blue-400"></i>';
         }
 
-        toast.innerHTML = `${iconHtml}<span>${message}</span>`;
-        document.body.appendChild(toast);
-
-        // Animation In
-        requestAnimationFrame(() => {
-            toast.style.opacity = "1";
-            toast.style.transform = "translateY(0)";
-        });
-
-        // Animation Out
-        setTimeout(() => {
-            toast.style.opacity = "0";
-            toast.style.transform = "translateY(10px)";
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        statusToaster.innerHTML = `${iconHtml}<span>${message}</span>`;
+        statusToaster.classList.add('visible');
+        
+        if (toasterTimeout) clearTimeout(toasterTimeout);
+        toasterTimeout = setTimeout(() => statusToaster.classList.remove('visible'), 2000);
     }
 
     function cleanupListeners() {
@@ -147,16 +145,16 @@
 
     // Keybind Listener
     document.addEventListener('keydown', async (e) => {
-        // Only run if admin and Shift key is pressed
-        if (!isAdmin || !e.shiftKey) return;
+        // Only run if admin, Shift key, and Ctrl key are pressed
+        if (!isAdmin || !e.shiftKey || !e.ctrlKey) return;
 
-        // Shift + E: Explicit Sounds
+        // Shift + Ctrl + E: Explicit Sounds
         if (e.key.toLowerCase() === 'e') {
             e.preventDefault(); // Prevent default browser behavior if any
             toggleConfig('explicitEnabled', 'Explicit Sounds');
         }
 
-        // Shift + F: Third Party Sounds
+        // Shift + Ctrl + F: Third Party Sounds
         if (e.key.toLowerCase() === 'f') {
             e.preventDefault();
             toggleConfig('thirdPartyEnabled', 'Third Party Sounds');

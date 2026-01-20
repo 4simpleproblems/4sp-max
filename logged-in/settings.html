@@ -49,7 +49,7 @@
         .btn-toolbar-style {
             background: #0000000;
             border: 1px solid #333;
-            border-radius: 0.75rem;
+            border-radius: 14px;
             color: #d1d5db;
             padding: 0.5rem 1rem;
             font-weight: 500;
@@ -139,7 +139,7 @@
             padding: 20px;
             background-color: #0d0d0d;
             border: 1px solid #1a1a1a;
-            border-radius: 0.75rem;
+            border-radius: 1.25rem;
             min-height: 100%; 
             display: flex;
             flex-direction: column; 
@@ -168,7 +168,7 @@
         /* MODIFICATION: Hard-coded default theme */
         .settings-box { 
             border: 1px solid #333; 
-            border-radius: 1rem; 
+            border-radius: 1.25rem; 
             background-color: #0000000; 
             transition: all 0.2s;
         }
@@ -179,7 +179,7 @@
             padding: 0.75rem; 
             border: 1px solid #252525; 
             background-color: #111111; 
-            border-radius: 0.5rem; 
+            border-radius: 14px; 
             color: #c0c0c0; 
             transition: all 0.2s;
         }
@@ -195,7 +195,7 @@
             padding: 0.75rem;
             border: 1px solid #252525; 
             background-color: #111111; 
-            border-radius: 0.5rem; 
+            border-radius: 14px; 
             color: #c0c0c0; 
             transition: all 0.2s;
             font-size: 1.1rem;
@@ -219,7 +219,7 @@
             padding: 0.75rem; 
             border: 1px solid #252525; 
             background-color: #111111; 
-            border-radius: 0.5rem; 
+            border-radius: 14px; 
             color: #c0c0c0; 
             transition: all 0.2s;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -263,7 +263,7 @@
             color: #c0c0c0;
             background: #111111;
             border: 1px solid #252525;
-            border-radius: 0.5rem;
+            border-radius: 14px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -278,8 +278,8 @@
             right: 0;
             border: 1px solid #252525;
             border-top: 0;
-            border-bottom-left-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
             background: #111111;
             transition: all 0.2s;
             opacity: 0;
@@ -409,7 +409,7 @@
         .modal-content {
           background-color: #1a1a1a; /* Darker modal */
           padding: 20px;
-          border-radius: 10px;
+          border-radius: 1.25rem;
           border: 1px solid #333;
           width: 90%;
           max-width: 400px;
@@ -467,7 +467,7 @@
           width: 20px;
           height: 40px;
           margin-right: 5px;
-          border-radius: 10px;
+          border-radius: 14px;
           animation: load ease infinite 5s;
         }
         .loading-bar:nth-child(2) {
@@ -509,7 +509,7 @@
         #cropperContent {
             background-color: #000000;
             padding: 0;
-            border-radius: 1rem;
+            border-radius: 1.25rem;
             border: 1px solid #333;
             display: flex;
             flex-direction: column;
@@ -550,7 +550,7 @@
                and can be kept at their fixed 40px size. */
             width: 40px;
             height: 40px;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             border: 2px solid transparent;
             transition: transform 0.2s, border-color 0.2s;
@@ -561,6 +561,36 @@
         .color-option.selected {
             border-color: white;
             box-shadow: 0 0 0 2px #4f46e5; /* Ring effect */
+        }
+
+        /* --- Provider Transition Animations --- */
+        .provider-item {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center;
+        }
+        .provider-exit {
+            transform: scale(0.5);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .provider-enter {
+            animation: provider-zoom-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes provider-zoom-in {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .provider-section-fade {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .section-hidden {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
     </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
