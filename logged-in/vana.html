@@ -26,7 +26,6 @@
                 try {
                     const reg = await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
                     
-                    // Reload if the SW takes control (first load)
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         if (navigator.serviceWorker.controller) {
                             console.log("SW active, reloading...");
@@ -37,7 +36,10 @@
             }
             try {
                 const conn = new BareMux.BareMuxConnection('/logged-in/baremux/worker.js');
-                await conn.setTransport('/logged-in/libcurl/index.mjs', [{ websocket: 'wss://wisp.rhw.one/' }]);
+                await conn.setTransport('/logged-in/libcurl/index.mjs', [
+                    { websocket: 'wss://wisp.rhw.one/' },
+                    { websocket: 'wss://wisp.mercurywork.shop/' }
+                ]);
             } catch(e) { console.error("BareMux Init Error:", e); }
         })();
     </script>
@@ -505,21 +507,23 @@
         // --- SEARCH ---
         async function searchWeb(query) {
             const baseUrl = "https://api.duckduckgo.com/?q=" + encodeURIComponent(query) + "&format=json";
-            // Use the config path or fallback
-            const prefix = (self.__uv$config && self.__uv$config.prefix) || "/logged-in/uv/service/";
+            
+            // Construct absolute prefix to ensure SW interception
+            let prefix = (self.__uv$config && self.__uv$config.prefix) || "/logged-in/uv/service/";
+            if (prefix.startsWith('/')) {
+                prefix = window.location.origin + prefix;
+            }
+            
             const proxiedUrl = prefix + Ultraviolet.codec.xor.encode(baseUrl);
             
             try {
                 const response = await fetch(proxiedUrl);
-                if (!response.ok) throw new Error(`Proxy Error: ${response.status}`);
+                if (!response.ok) throw new Error(`Proxy Error: ${response.status} (${response.statusText})`);
                 
-                // Ensure we got JSON (proxy might return HTML on error)
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
                      const text = await response.text();
-                     // If it looks like HTML, it's likely an error page
                      if (text.trim().startsWith("<")) throw new Error("Invalid response from proxy (likely blocked or 404)");
-                     // Try parsing anyway just in case
                      try { return JSON.parse(text); } catch(e) { throw new Error("Invalid JSON response"); }
                 }
 
@@ -549,8 +553,8 @@
                 
                 return result;
             } catch (error) {
-                console.error("Search Error:", error);
-                return "Error performing search: " + error.message;
+                console.error("Search Error:", error, "URL:", proxiedUrl);
+                return `Error performing search: ${error.message} (URL: ${proxiedUrl})`;
             }
         }
 
@@ -886,9 +890,20 @@ print("Hello World")
             const ctx = canvas.getContext('2d');
             const dpr = window.devicePixelRatio||1;
             const rect = canvas.getBoundingClientRect();
+            
+            // Handle hidden or 0-size canvas
+            if (rect.width === 0 || rect.height === 0) {
+                // Retry a few times if layout is pending? For now just return.
+                return; 
+            }
+
             canvas.width = rect.width*dpr;
             canvas.height = rect.height*dpr;
             ctx.scale(dpr,dpr);
+            
+            // Fill background
+            ctx.fillStyle = '#111'; // Dark gray background for chart area
+            ctx.fillRect(0,0, rect.width, rect.height);
 
             const { type, data } = config;
             const P = {t:20,r:20,b:40,l:40};
@@ -908,7 +923,10 @@ print("Hello World")
             const mapY = v => P.t + H - ((v-min)/rng)*H;
             const mapX = (i,n) => P.l + (i*(W/(n-1||1)));
 
-            ctx.strokeStyle='#333'; ctx.beginPath();
+            // Grid / Axes - Lighter color for visibility
+            ctx.strokeStyle='#444'; 
+            ctx.lineWidth = 1;
+            ctx.beginPath();
             ctx.moveTo(P.l,P.t); ctx.lineTo(P.l,P.t+H); ctx.lineTo(P.l+W,P.t+H);
             ctx.stroke(); 
 
