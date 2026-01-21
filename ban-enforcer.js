@@ -109,7 +109,7 @@ function renderBanVisuals(banData) {
                 border: 1px solid #d1d5db !important; 
                 color: #d1d5db !important; 
                 text-decoration: none !important;
-                border-radius: 1rem !important; 
+                border-radius: 1.25rem !important; 
                 font-weight: 400 !important; 
                 transition: all 0.2s !important;
                 margin-right: 10px !important;

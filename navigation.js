@@ -9,15 +9,17 @@
 // =========================================================================
 // >> ACTION REQUIRED: PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE <<
 // =========================================================================
-const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAZBKAckVa4IMvJGjcyndZx6Y1XD52lgro",
-    authDomain: "project-zirconium.firebaseapp.com",
-    projectId: "project-zirconium",
-    storageBucket: "project-zirconium.firebasestorage.app",
-    messagingSenderId: "1096564243475",
-    appId: "1:1096564243475:web:6d0956a70125eeea1ad3e6",
-    measurementId: "G-1D4F692C1Q"
-};
+if (!window.FIREBASE_CONFIG) {
+    window.FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAZBKAckVa4IMvJGjcyndZx6Y1XD52lgro",
+        authDomain: "project-zirconium.firebaseapp.com",
+        projectId: "project-zirconium",
+        storageBucket: "project-zirconium.firebasestorage.app",
+        messagingSenderId: "1096564243475",
+        appId: "1:1096564243475:web:6d0956a70125eeea1ad3e6",
+        measurementId: "G-1D4F692C1Q"
+    };
+}
 // =========================================================================
 
 // --- Configuration ---
@@ -374,7 +376,7 @@ let db;
             await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
             await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
             await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js");
-            initializeApp(pages, FIREBASE_CONFIG);
+            initializeApp(pages, window.FIREBASE_CONFIG);
         } catch (error) {
             console.error("Failed to load core Firebase SDKs:", error);
             renderNavbar(null, null, pages, false);
@@ -598,7 +600,7 @@ let db;
                 display: flex; align-items: center; gap: 0.75rem; width: 100%; text-align: left; 
                 padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--menu-text, #d1d5db); 
                 background: var(--tab-hover-bg, rgba(79, 70, 229, 0.05)); /* Default background color */
-                border-radius: 1rem; 
+                border-radius: 14px; 
                 transition: all 0.2s ease; cursor: pointer;
                 /* FIXED: Border color now matches the background color */
                 border: 1px solid var(--tab-hover-bg, rgba(79, 70, 229, 0.05));

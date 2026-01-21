@@ -119,7 +119,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 0.5rem;
+            border-radius: 14px; /* Updated to 14px */
             background-color: transparent;
             border: 1px solid #374151; /* gray-700 */
             color: #9ca3af; 
@@ -151,6 +151,7 @@
             background-color: rgba(79, 70, 229, 0.15); /* Slightly stronger transparent background */
             color: #4f46e5; /* Strong blue text color */
             border: 1px solid #4f46e5; /* Strong blue border color */
+            border-radius: 14px; /* Updated to 14px */
             transition: all 0.3s ease;
             box-shadow: none; /* Removed the glow effect */
             font-weight: 600;
@@ -170,13 +171,13 @@
             box-shadow: none;
             font-weight: 600;
             
-            /* Shape and size: Match btn-icon size (w-10 h-10 = 2.5rem), but rounded-xl (0.75rem) */
+            /* Shape and size: Match btn-icon size (w-10 h-10 = 2.5rem), but rounded-[1.25rem] (0.75rem) */
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 2.5rem; /* w-10 */
             height: 2.5rem; /* h-10 */
-            border-radius: 0.75rem; /* rounded-xl */
+            border-radius: 14px; /* Updated to 14px */
             cursor: pointer;
         }
         .btn-nav-action:hover:not(:disabled) {
@@ -193,8 +194,8 @@
 
         /* 4. Description Block Custom Styling */
         #description-block {
-            /* Slightly more rounded (1rem is rounded-2xl) */
-            border-radius: 1rem;
+            /* Slightly more rounded (1rem is rounded-[1.25rem]) */
+            border-radius: 1.25rem;
             /* Less side padding (p-6 was 1.5rem, px-4 is 1rem) */
             padding: 1.5rem 1rem; /* 24px top/bottom, 16px left/right */
         }
@@ -270,7 +271,7 @@
             background-color: rgba(0, 0, 0, 0.95); /* bg-black/95 */
             color: white;
             padding: 1rem; /* p-4 */
-            border-radius: 1.5rem; /* rounded-3xl */
+            border-radius: 1.25rem; /* Updated to 1.25rem */
             border: 1px solid #4b5563; /* border-gray-700 */
             box-shadow: 0 0 25px rgba(0,0,0,0.5); /* shadow for depth */
             -webkit-backdrop-filter: blur(8px); /* backdrop-blur-md */
@@ -347,7 +348,7 @@
             padding-bottom: 0.75rem; /* Explicit bottom padding */
             font-size: 1rem; 
             font-weight: 400; 
-            border-radius: 0.75rem; 
+            border-radius: 14px; /* Updated to 14px */
             
             /* Color and Border */
             background-color: #000000; /* Black background */
@@ -388,7 +389,7 @@
 
             <div class="mb-10 w-full">
                 <a href="./messenger-v2.html" download="messenger-v2.html" id="download-btn-fixed" 
-                   class="btn-main-action flex items-center justify-center space-x-2 py-3 px-8 rounded-xl font-semibold text-xl w-full">
+                   class="btn-main-action flex items-center justify-center space-x-2 py-3 px-8 rounded-[14px] font-semibold text-xl w-full">
                     <i class="fa-solid fa-download"></i>
                     <span>Download Here</span>
                 </a>
@@ -466,7 +467,7 @@
                         <i class="fa-solid fa-magnifying-glass text-6xl text-blue-400 mb-6"></i>
                         <h2 class="text-2xl font-semibold text-white mb-3">2. Locate the Download</h2>
                         <p class="text-text-secondary text-lg">
-                            Find the file named <code class="bg-gray-800 text-yellow-300 px-2 py-1 rounded-md text-sm font-mono tracking-wider shadow-inner">messenger-v2.html</code>, usually in your Downloads folder.
+                            Find the file named <code class="bg-gray-800 text-yellow-300 px-2 py-1 rounded-[14px] text-sm font-mono tracking-wider shadow-inner">messenger-v2.html</code>, usually in your Downloads folder.
                         </p>
                     </div>
                 </div>

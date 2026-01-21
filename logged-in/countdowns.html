@@ -46,7 +46,7 @@
         .btn-toolbar-style {
             background: var(--menu-bg);
             border: 1px solid var(--menu-border);
-            border-radius: 0.75rem;
+            border-radius: 14px; /* Updated to 14px */
             color: var(--menu-text);
             padding: 0.5rem 1rem;
             font-weight: 500;
@@ -82,7 +82,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
-            border-radius: 0.5rem;
+            border-radius: 14px; /* Updated to 14px */
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -100,7 +100,7 @@
             right: 0;
             background: var(--menu-bg);
             border: 1px solid var(--menu-border);
-            border-radius: 1rem;
+            border-radius: 1.25rem; /* Updated to 1.25rem */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             z-index: 1010;
             min-width: 200px;
@@ -111,7 +111,7 @@
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
             color: var(--menu-text);
-            border-radius: 0.375rem;
+            border-radius: 14px; /* Updated to 14px */
             cursor: pointer;
             transition: background-color 0.15s, color 0.15s;
             display: flex;
@@ -142,7 +142,7 @@
         .countdown-card {
             background-color: #0d0d0d;
             border: 1px solid #1a1a1a;
-            border-radius: 1rem;
+            border-radius: 1.25rem; /* Updated to 1.25rem */
             padding: 1.5rem;
             padding-bottom: 3.5rem; 
             display: flex;
@@ -186,7 +186,7 @@
             cursor: pointer;
             opacity: 0.8; 
             padding: 0.5rem;
-            border-radius: 0.5rem;
+            border-radius: 14px;
             transition: all 0.2s;
             font-size: 1rem;
             line-height: 1;
@@ -228,7 +228,7 @@
         #countdown-modal {
             background: #0d0d0d;
             border: 1px solid #333;
-            border-radius: 20px;
+            border-radius: 1.25rem; /* Updated to 1.25rem */
             width: 80vw;
             max-width: 1000px;
             aspect-ratio: 16 / 9;
@@ -273,7 +273,7 @@
         .custom-input-container {
             background: #151515;
             border: 1px solid #333;
-            border-radius: 0.5rem;
+            border-radius: 14px; /* Updated to 14px */
             padding: 0.75rem;
             color: #fff;
             outline: none;
@@ -298,7 +298,7 @@
         select {
             background: #151515;
             border: 1px solid #333;
-            border-radius: 0.5rem;
+            border-radius: 14px; /* Updated to 14px */
             padding: 0.75rem;
             color: #fff;
             outline: none;
@@ -353,7 +353,7 @@
         .preview-stat {
             background: #111;
             padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            border-radius: 14px;
             border: 1px solid #222;
         }
         .preview-stat strong {
@@ -387,7 +387,7 @@
         .picker-modal {
             background: #0d0d0d;
             border: 1px solid #333;
-            border-radius: 1rem;
+            border-radius: 1.25rem;
             padding: 1.5rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             min-width: 320px;
@@ -466,7 +466,7 @@
             flex: 1;
             overflow-y: auto;
             border: 1px solid #222;
-            border-radius: 0.5rem;
+            border-radius: 14px;
             background: #080808;
         }
         .time-option {
@@ -541,7 +541,7 @@
                 <div class="form-group">
                     <label>Title</label>
                     <input type="text" id="input-title" placeholder="e.g. Project Launch" maxlength="40" 
-                           class="bg-[#151515] border border-[#333] rounded-lg p-3 text-white outline-none focus:border-indigo-500">
+                           class="bg-[#151515] border border-[#333] rounded-[14px] p-3 text-white outline-none focus:border-indigo-500">
                 </div>
 
                 <div class="flex gap-4">
@@ -566,7 +566,7 @@
                 <div id="frequency-section" class="hidden">
                     <div class="form-group">
                         <label>Frequency Pattern</label>
-                        <select id="input-freq-type" class="bg-[#151515] border border-[#333] rounded-lg p-3 text-white outline-none focus:border-indigo-500">
+                        <select id="input-freq-type" class="bg-[#151515] border border-[#333] rounded-[14px] p-3 text-white outline-none focus:border-indigo-500">
                             <option value="daily">Daily</option>
                             <option value="weekly">Specific Days (Weekly)</option>
                             <option value="monthly">Monthly (Same Day)</option>

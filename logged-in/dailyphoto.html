@@ -40,7 +40,7 @@
         .btn-toolbar-style {
             background: #000000;
             border: 1px solid #333;
-            border-radius: 0.75rem;
+            border-radius: 14px; /* Updated to 14px */
             color: #d1d5db;
             padding: 0.5rem 1rem;
             font-weight: 500;
@@ -74,7 +74,7 @@
             justify-content: center;
             width: 2.5rem; 
             height: 2.5rem; 
-            border-radius: 0.5rem;
+            border-radius: 14px; /* Updated to 14px */
             background-color: #000000;
             border: 1px solid #333;
             color: #9ca3af;
@@ -146,7 +146,7 @@
         /* --- LISTS --- */
         .compact-list-wrapper {
              background-color: #000000;
-             border-radius: 0.75rem; 
+             border-radius: 1.25rem; /* Updated to 1.25rem */
              border: 1px solid #1a1a1a; 
              margin-top: 0.75rem;
         }
@@ -159,7 +159,7 @@
         .compact-list-items::-webkit-scrollbar-thumb { background-color: #4f46e5; }
         
         .compact-list-item {
-            border-radius: 0.5rem; 
+            border-radius: 14px; /* Updated to 14px */
             margin-bottom: 2px;
             padding: 0.5rem; 
             transition: background-color 0.2s;
@@ -197,7 +197,7 @@
         .photo-thumbnail {
             position: relative;
             overflow: hidden;
-            border-radius: 0.5rem;
+            border-radius: 1.25rem; /* Updated to 1.25rem */
             cursor: pointer;
             aspect-ratio: 1 / 1; 
             background-color: #0a0a0a;
@@ -219,7 +219,7 @@
             z-index: 10;
         }
         
-        .photo-thumbnail .flex span { border-radius: 0.5rem; }
+        .photo-thumbnail .flex span { border-radius: 14px; }
         
         /* --- MODAL STYLES --- */
         .modal-backdrop {
@@ -233,7 +233,7 @@
         .modal-content {
             background-color: #0d0d0d; 
             border: 1px solid #1a1a1a;
-            border-radius: 1rem;
+            border-radius: 1.25rem; /* Updated to 1.25rem */
             padding: 0; 
             max-width: 90%; width: 1200px;
             max-height: 90vh; 
@@ -288,8 +288,7 @@
         #comments-section {
             flex-grow: 1;
             background-color: #000000; 
-            border-radius: 0.75rem;
-            padding: 1rem;
+                         border-radius: 1.25rem; /* Updated to 1.25rem */            padding: 1rem;
             margin-bottom: 1rem;
             overflow-y: auto;
             border: 1px solid #1a1a1a;
@@ -312,7 +311,7 @@
         /* Custom Tooltip */
         #custom-tooltip {
             position: fixed; background-color: #000; border: 1px solid #333; color: #fff;
-            padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem;
+            padding: 0.4rem 0.8rem; border-radius: 14px; font-size: 0.75rem;
             pointer-events: none; z-index: 10000; opacity: 0; transition: opacity 0.15s ease;
             white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.5);
         }
@@ -332,7 +331,7 @@
 
     <div id="disclaimer-modal" class="fixed inset-0 bg-black/70 z-[9999] transition-opacity duration-300 opacity-0 hidden">
         <div id="disclaimer-banner" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4">
-            <div class="bg-black/95 text-white p-4 sm:p-6 rounded-3xl border border-gray-700 shadow-2xl backdrop-blur-md flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0 md:space-x-6">
+            <div class="bg-black/95 text-white p-4 sm:p-6 rounded-[1.25rem] border border-gray-700 shadow-2xl backdrop-blur-md flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0 md:space-x-6">
                 <div class="flex-1 min-w-0">
                     <h3 class="text-xl font-normal mb-1">Safe Browsing Notice</h3>
                     <p class="text-sm text-gray-300 mb-2 font-light">
@@ -346,10 +345,10 @@
                 </div>
 
                 <div class="flex-shrink-0 flex gap-2">
-                    <button id="disclaimer-cancel-btn" class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-gray-700 text-base font-normal rounded-xl text-gray-300 bg-transparent hover:bg-gray-800 transition duration-150 transform hover:scale-[1.02]">
+                    <button id="disclaimer-cancel-btn" class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-gray-700 text-base font-normal rounded-[1.25rem] text-gray-300 bg-transparent hover:bg-gray-800 transition duration-150 transform hover:scale-[1.02]">
                         Go Back
                     </button>
-                    <button id="disclaimer-confirm-btn" class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-normal rounded-xl text-white bg-indigo-500/10 ring-1 ring-indigo-500/50 hover:bg-indigo-500/20 transition duration-150 transform hover:scale-[1.02]">
+                    <button id="disclaimer-confirm-btn" class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-normal rounded-[1.25rem] text-white bg-indigo-500/10 ring-1 ring-indigo-500/50 hover:bg-indigo-500/20 transition duration-150 transform hover:scale-[1.02]">
                         Continue
                     </button>
                 </div>
@@ -362,11 +361,11 @@
     </div>
     
     <div id="upload-menu-modal" class="modal-backdrop hidden opacity-0">
-        <div class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl w-full max-w-sm p-6">
+        <div class="bg-[#0d0d0d] border border-[#1a1a1a] rounded-[1.25rem] w-full max-w-sm p-6">
             <h3 id="upload-menu-title" class="text-xl mb-4 text-white">Post Photo</h3>
             <input type="file" id="upload-file-input" class="hidden" accept="image/*" data-slot-index="">
             <div id="upload-select-options" class="flex flex-col gap-3 mb-6">
-                 <label for="upload-file-input" id="upload-drop-area" class="bg-black border-2 border-dashed border-[#333] rounded-lg p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors">
+                 <label for="upload-file-input" id="upload-drop-area" class="bg-black border-2 border-dashed border-[#333] rounded-[14px] p-8 text-center cursor-pointer hover:border-indigo-500 transition-colors">
                     <i class="fas fa-cloud-upload-alt text-4xl mb-3 text-gray-500"></i>
                     <span class="block font-semibold text-gray-400">Select Image</span>
                  </label>
@@ -382,13 +381,13 @@
                 
                 <div class="mb-6 pb-4 border-b border-[#1a1a1a]">
                     <h2 class="text-lg text-white mb-2">My Code</h2>
-                    <div id="friend-code-display" class="p-2 text-center bg-black border border-[#333] rounded-md font-mono text-indigo-400 tracking-widest select-all cursor-pointer" data-tooltip="Click to Copy">LOADING</div>
+                    <div id="friend-code-display" class="p-2 text-center bg-black border border-[#333] rounded-[14px] font-mono text-indigo-400 tracking-widest select-all cursor-pointer" data-tooltip="Click to Copy">LOADING</div>
                 </div>
 
                 <div class="mb-6 pb-4 border-b border-[#1a1a1a]">
                     <h2 class="text-lg text-white mb-2">Add Friend</h2>
                     <form id="add-friend-form" class="flex gap-2">
-                        <input type="text" id="friend-code-input" placeholder="CODE" maxlength="8" class="flex-grow p-2 bg-black border border-[#333] rounded-md outline-none focus:border-indigo-500 text-center font-mono uppercase text-white thin-font">
+                        <input type="text" id="friend-code-input" placeholder="CODE" maxlength="8" class="flex-grow p-2 bg-black border border-[#333] rounded-[14px] outline-none focus:border-indigo-500 text-center font-mono uppercase text-white thin-font">
                         <button type="submit" class="btn-icon" data-tooltip="Send Request"><i class="fas fa-plus"></i></button>
                     </form>
                     <div id="add-friend-message" class="text-xs mt-2 min-h-[16px]"></div>
@@ -867,11 +866,11 @@ async function cleanText(text) {
 
                         <form id="comment-form" class="comment-input-area mt-auto">
                             <div class="flex-grow relative">
-                                <input type="text" id="comment-input" placeholder="Add a comment..." class="w-full p-3 bg-black border border-[#333] rounded-md outline-none focus:border-indigo-500 text-white thin-font text-sm pr-10" maxlength="140">
+                                <input type="text" id="comment-input" placeholder="Add a comment..." class="w-full p-3 bg-black border border-[#333] rounded-[14px] outline-none focus:border-indigo-500 text-white thin-font text-sm pr-10" maxlength="140">
                                 <button type="button" id="comment-emoji-trigger" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-400" title="Add Emoji">
                                     <i class="fa-solid fa-face-kiss-wink-heart"></i>
                                 </button>
-                                <div id="comment-emoji-picker-menu" class="hidden absolute right-0 bottom-full mb-2 w-64 bg-black border border-[#333] rounded-xl z-50 shadow-xl flex flex-col h-64">
+                                <div id="comment-emoji-picker-menu" class="hidden absolute right-0 bottom-full mb-2 w-64 bg-black border border-[#333] rounded-[1.25rem] z-50 shadow-xl flex flex-col h-64">
                                     <div class="flex justify-between items-center p-3 border-b border-[#333]">
                                         <input type="text" id="comment-emoji-search" placeholder="Search..." class="bg-[#1a1a1a] border-none rounded text-xs p-1.5 text-white w-full mr-2 outline-none">
                                         <button id="comment-close-emoji-menu" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
@@ -993,7 +992,7 @@ async function cleanText(text) {
                 container.innerHTML = `
                     <div id="photo-display-area">
                          <img src="${imgData}" class="photo-modal-img">
-                         <button id="cancel-create-btn" class="absolute top-4 right-4 btn-icon" style="width: 48px; height: 48px; border-color: #333; background: black; border-radius: 8px;" title="Cancel"><i class="fas fa-times text-xl text-gray-400"></i></button>
+                         <button id="cancel-create-btn" class="absolute top-4 right-4 btn-icon" style="width: 48px; height: 48px; border-color: #333; background: black; border-radius: 14px;" title="Cancel"><i class="fas fa-times text-xl text-gray-400"></i></button>
                     </div>
                     <div id="photo-info-panel">
                         <div class="modal-header">
@@ -1014,7 +1013,7 @@ async function cleanText(text) {
                                     <i class="fa-solid fa-face-kiss-wink-heart"></i>
                                 </button>
                             </div>
-                            <div id="emoji-picker-menu" class="hidden absolute right-0 top-full mt-2 w-64 bg-black border border-[#333] rounded-xl z-50 shadow-xl flex flex-col h-64">
+                            <div id="emoji-picker-menu" class="hidden absolute right-0 top-full mt-2 w-64 bg-black border border-[#333] rounded-[1.25rem] z-50 shadow-xl flex flex-col h-64">
                                 <div class="flex justify-between items-center p-3 border-b border-[#333]">
                                     <input type="text" id="emoji-search" placeholder="Search..." class="bg-[#1a1a1a] border-none rounded text-xs p-1.5 text-white w-full mr-2 outline-none">
                                     <button id="close-emoji-menu" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
@@ -1158,8 +1157,8 @@ async function cleanText(text) {
                     <img src="${data.imageBase64}" loading="lazy">
                     <div class="overlay"></div>
                     <div class="absolute top-2 right-2 flex gap-2">
-                        <span class="text-white text-xs bg-black/50 px-2 py-1 rounded-lg backdrop-blur-sm" title="Likes"><i class="fas fa-heart text-red-400"></i> ${formatCount(data.heartCount)}</span>
-                        <span class="text-white text-xs bg-black/50 px-2 py-1 rounded-lg backdrop-blur-sm" title="Comments"><i class="fas fa-comment text-indigo-400"></i> ${formatCount(data.commentCount)}</span>
+                        <span class="text-white text-xs bg-black/50 px-2 py-1 rounded-[14px] backdrop-blur-sm" title="Likes"><i class="fas fa-heart text-red-400"></i> ${formatCount(data.heartCount)}</span>
+                        <span class="text-white text-xs bg-black/50 px-2 py-1 rounded-[14px] backdrop-blur-sm" title="Comments"><i class="fas fa-comment text-indigo-400"></i> ${formatCount(data.commentCount)}</span>
                     </div>
                     <div class="title-overlay">${data.title}</div>
                 `;
@@ -1232,7 +1231,7 @@ async function cleanText(text) {
                 searchDiv.className = "mb-4";
                 searchDiv.innerHTML = `
                     <input type="text" id="friend-search-input" placeholder="Search by Username..." 
-                           class="w-full p-2 bg-black border border-[#333] rounded-md outline-none focus:border-indigo-500 text-white thin-font"
+                           class="w-full p-2 bg-black border border-[#333] rounded-[14px] outline-none focus:border-indigo-500 text-white thin-font"
                            oninput="filterFriends(this.value)">
                 `;
                 searchContainer.insertBefore(searchDiv, searchContainer.querySelector('.compact-list-wrapper'));

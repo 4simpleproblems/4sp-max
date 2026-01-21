@@ -211,7 +211,7 @@
         width: 16rem;
         background: var(--menu-bg, #000); 
         border: 1px solid var(--menu-border, #333); 
-        border-radius: 1.5rem;
+        border-radius: 1.25rem; /* Updated to 1.25rem */
         padding: 0.75rem; 
         display: none; 
         flex-direction: column; 
@@ -241,7 +241,7 @@
         color: var(--menu-item-text, #d1d5db); 
         background: var(--menu-item-bg, #0a0a0a);
         border: 1px solid var(--menu-item-border, #333);
-        border-radius: 1rem;
+        border-radius: 14px; /* Updated to 14px */
         text-decoration: none; 
         font-size: 0.9rem;
         font-weight: 500;
@@ -284,12 +284,12 @@
 
     #settings-main-view {
         flex-grow: 1; padding: 20px; background-color: #0d0d0d;
-        border: 1px solid #1a1a1a; border-radius: 0.75rem;
+        border: 1px solid #1a1a1a; border-radius: 1.25rem; /* Updated to 1.25rem */
         overflow-y: auto; overflow-x: hidden;
     }
 
     .btn-toolbar-style {
-        background: #000000; border: 1px solid #333; border-radius: 0.75rem;
+        background: #000000; border: 1px solid #333; border-radius: 14px; /* Updated to 14px */
         color: #d1d5db; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer;
         transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
         position: relative;
@@ -331,13 +331,14 @@
     }
 
     .settings-box { 
-        border: 1px solid #333; border-radius: 1rem; 
+        border: 1px solid #333; border-radius: 1.25rem; /* Updated to 1.25rem */
         background-color: #000000; padding: 1.5rem; margin-bottom: 1.5rem;
     }
     
     .input-text-style, .input-select-style {
         width: 100%; padding: 0.75rem; border: 1px solid #252525; 
-        background-color: #111111; border-radius: 0.5rem; color: #c0c0c0; transition: all 0.2s;
+        background-color: #111111; border-radius: 14px; /* Updated to 14px */
+        color: #c0c0c0; transition: all 0.2s;
     }
     .input-text-style:focus, .input-select-style:focus { 
         border-color: #505050; outline: none; box-shadow: 0 0 0 2px rgba(80, 80, 80, 0.5);
@@ -345,7 +346,8 @@
 
     .input-key-style {
         width: 4rem; padding: 0.75rem; border: 1px solid #252525; 
-        background-color: #111111; border-radius: 0.5rem; color: #c0c0c0; 
+        background-color: #111111; border-radius: 14px; /* Updated to 14px */
+        color: #c0c0c0; 
         transition: all 0.2s; font-size: 1.1rem; text-align: center;
         font-weight: 500; text-transform: uppercase; caret-color: transparent;
     }
@@ -362,7 +364,8 @@
     }
     .theme-button {
         border: 2px solid var(--tab-active-border, #4f46e5); 
-        background-color: #111; border-radius: 0.75rem; padding: 0.75rem; 
+        background-color: #111; border-radius: 14px; /* Updated to 14px */
+        padding: 0.75rem; 
         text-align: center; cursor: pointer; transition: all 0.2s ease-out;
         opacity: 0.7; position: relative;
     }
@@ -729,8 +732,8 @@
         </div>
     </div>
     
-    <div id="cropperModal" style="display: none; position: fixed; z-index: 2050; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; flex-direction: column;">
-        <div id="cropperContent" style="background-color: #000000; padding: 0; border-radius: 1rem; border: 1px solid #333; display: flex; flex-direction: column; width: 90%; max-width: 600px; overflow: hidden;">
+    #cropperModal style="display: none; position: fixed; z-index: 2050; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; flex-direction: column;">
+        <div id="cropperContent" style="background-color: #000000; padding: 0; border-radius: 1.25rem; border: 1px solid #333; display: flex; flex-direction: column; width: 90%; max-width: 600px; overflow: hidden;">
             <div class="flex justify-between items-center p-6 border-b border-[#333] bg-black">
                 <h3 class="text-2xl font-bold text-white">Adjust Profile Picture</h3>
                 <button id="cancelCropBtn" class="btn-toolbar-style w-10 h-10 flex items-center justify-center p-0 rounded-xl">
