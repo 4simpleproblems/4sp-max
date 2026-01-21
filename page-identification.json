@@ -49,6 +49,11 @@
         "icon": "fa-solid fa-gamepad",
         "url": "../GAMES/index.html"
     },
+    "vana": {
+        "name": "Vana",
+        "icon": "fa-solid fa-robot",
+        "url": "../logged-in/vana.html"
+    },
     "vern": {
         "name": "VERN",
         "icon": "fa-solid fa-globe",

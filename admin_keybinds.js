@@ -150,16 +150,18 @@
 
         // Shift + Ctrl + E: Explicit Sounds
         if (e.key.toLowerCase() === 'e') {
-            e.preventDefault(); // Prevent default browser behavior if any
+            e.preventDefault();
+            e.stopPropagation(); // Ensure it stops here
             toggleConfig('explicitEnabled', 'Explicit Sounds');
         }
 
         // Shift + Ctrl + F: Third Party Sounds
         if (e.key.toLowerCase() === 'f') {
             e.preventDefault();
+            e.stopPropagation();
             toggleConfig('thirdPartyEnabled', 'Third Party Sounds');
         }
-    });
+    }, { capture: true }); // Use capture to intercept before inputs
 
     // Auth & Role Check
     onAuthStateChanged(auth, (user) => {
