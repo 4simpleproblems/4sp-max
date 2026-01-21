@@ -35,7 +35,7 @@
                 } catch(e) { console.error("SW Init Error:", e); }
             }
             try {
-                const conn = new BareMux.BareMuxConnection('/logged-in/baremux/worker.js');
+                const conn = new BareMux.BareMuxConnection(window.location.origin + '/logged-in/baremux/worker.js');
                 await conn.setTransport('/logged-in/libcurl/index.mjs', [
                     { websocket: 'wss://wisp.rhw.one/' },
                     { websocket: 'wss://wisp.mercurywork.shop/' }
