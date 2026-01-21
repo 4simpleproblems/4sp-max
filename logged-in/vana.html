@@ -296,7 +296,7 @@
             margin: 0;
             width: 100%; 
             outline: none; 
-            resize: none;
+            resize: none !important;
             font-family: 'Geist', sans-serif; 
             font-size: 1rem;
             line-height: 1.5;
@@ -310,17 +310,21 @@
             height: 38px; width: 38px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 12px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
-            background: transparent; border: 1px solid transparent; color: var(--text-muted);
+            background: #1e1b4b; /* Dark Purple */
+            border: 1px solid var(--accent); /* Purple Outline */
+            color: #fff;
         }
         .send-btn:hover {
-            background: rgba(79, 70, 229, 0.05); color: #ffffff; border-color: #fff;
+            background: var(--accent);
+            color: #ffffff; 
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
         }
         .send-btn:disabled {
             opacity: 0.5; cursor: not-allowed;
-            background: transparent !important; border-color: transparent !important; color: #555 !important;
+            background: #1e1b4b !important; /* Keep purple */
+            border-color: var(--accent) !important;
         }
-        .input-box:focus-within .send-btn { color: var(--accent); }
-        .input-box:focus-within .send-btn:hover { background: rgba(79, 70, 229, 0.1); border-color: var(--accent); }
 
         /* Character Counter */
         .char-counter {
@@ -361,7 +365,7 @@
             background: #111;
             border: 1px solid #333;
             color: #ef4444; /* Red */
-            border-radius: 50%;
+            border-radius: 16px; /* CHANGED FROM 50% */
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
