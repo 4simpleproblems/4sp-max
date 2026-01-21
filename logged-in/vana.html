@@ -503,6 +503,22 @@
         
         // --- STATE ---
         let conversationHistory = [];
+        
+        // --- PAGE OBSERVER ---
+        const pageObserverChannel = new BroadcastChannel('VANA_DATA_CHANNEL');
+        pageObserverChannel.onmessage = (e) => {
+            if (e.data && e.data.type === 'VANA_PAGE_DATA') {
+                const payload = e.data.payload;
+                // Add to history as system message if it's new/relevant
+                // We keep only the latest snapshot to avoid context bloat
+                conversationHistory = conversationHistory.filter(msg => !msg.content.startsWith('PAGE SNAPSHOT:'));
+                conversationHistory.push({
+                    role: "system",
+                    content: `PAGE SNAPSHOT (Current URL: ${payload.url}, Title: ${payload.title}):\n${JSON.stringify(payload)}`
+                });
+                console.log("Vana received page snapshot:", payload);
+            }
+        };
 
         // --- SEARCH ---
         async function searchWeb(query) {
@@ -568,6 +584,8 @@ You are Vana, a highly capable AI assistant.
 3. **Files**: If the user asks for a file, use the <CREATE_FILE> tag.
 4. **Charts**: To visualize data, use a \`\`\`chart\`\`\` block with the JSON schema below.
 5. **Web Search**: If you need real-time information, latest news, or details you are unsure of, use the <SEARCH>query</SEARCH> tag. I will perform the search and provide you with results to help you answer.
+
+6.  **Page Awareness**: You receive "PAGE SNAPSHOT" data containing the text and interactive elements of the user's current webpage. Use this to answer questions about the page, summarize it, or guide the user.
 
 **JSON Schema for Charts:**
 \`\`\`json
