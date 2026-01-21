@@ -132,7 +132,8 @@
             border: 1px solid var(--menu-border);
             border-radius: 1.25rem; 
             padding: 0.75rem; 
-            display: none; flex-direction: column; gap: 0.5rem; 
+            display: none; /* DEFAULT CLOSED */
+            flex-direction: column; gap: 0.5rem; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             transform-origin: top right; z-index: 10000;
         }
@@ -365,7 +366,7 @@
             background: #111;
             border: 1px solid #333;
             color: #ef4444; /* Red */
-            border-radius: 16px; /* CHANGED FROM 50% */
+            border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
@@ -512,19 +513,28 @@ print("Hello World")
 
         conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
 
-        // --- DROPDOWN LOGIC ---
+        // --- DROPDOWN LOGIC (FIXED) ---
         const toggleBtn = document.getElementById('model-toggle');
         const menu = document.getElementById('model-menu');
         const wrapper = document.getElementById('dropdown-wrapper');
         const display = document.getElementById('current-model-display');
 
         toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menu.classList.contains('open') ? closeMenu() : openMenu();
+            e.stopPropagation(); // Prevents the document listener from firing immediately
+            if (menu.classList.contains('open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
         });
 
-        function openMenu() { menu.classList.add('open'); }
-        function closeMenu() { menu.classList.remove('open'); }
+        function openMenu() { 
+            menu.classList.add('open'); 
+        }
+
+        function closeMenu() { 
+            menu.classList.remove('open'); 
+        }
         
         window.setModel = (modelId, displayName, element) => {
             if (currentModel !== modelId) {
@@ -541,8 +551,12 @@ print("Hello World")
             closeMenu();
         };
 
+        // CLOSE ON CLICK OUTSIDE
         document.addEventListener('click', (e) => {
-            if (!wrapper.contains(e.target)) closeMenu();
+            // If menu is open and click is OUTSIDE the wrapper
+            if (menu.classList.contains('open') && !wrapper.contains(e.target)) {
+                closeMenu();
+            }
         });
 
         // --- INPUT HANDLING ---
