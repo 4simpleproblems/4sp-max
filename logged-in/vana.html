@@ -29,7 +29,7 @@
             }
             try {
                 const conn = new BareMux.BareMuxConnection('/logged-in/baremux/worker.js');
-                conn.setTransport('/logged-in/libcurl/index.mjs', [{ websocket: 'wss://wisp.rhw.one/' }]);
+                await conn.setTransport('/logged-in/libcurl/index.mjs', [{ websocket: 'wss://wisp.rhw.one/' }]);
             } catch(e) { console.error("BareMux Init Error:", e); }
         })();
     </script>
