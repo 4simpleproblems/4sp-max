@@ -16,7 +16,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../navigation.js"></script>
 
-    <!-- Proxy Scripts -->
     <script src="/logged-in/uv/uv.bundle.js"></script>
     <script src="/logged-in/uv/uv.config.js"></script>
     <script src="/logged-in/baremux/index.js"></script>
@@ -418,14 +417,14 @@
         </div>
 
         <div class="auth-controls-wrapper" id="dropdown-wrapper">
-            <button id="model-toggle" class="auth-toggle">
+            <button id="model-toggle" class="auth-toggle" type="button">
                 <span id="current-model-display"><i class="fa-solid fa-bolt mr-2"></i>Llama 3.1 8B (Fast)</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </button>
             <div id="model-menu" class="auth-menu-container">
                 <div class="text-xs text-gray-500 uppercase font-bold px-3 py-2">Select Model</div>
                 
-                <button class="auth-menu-link active" onclick="setModel('llama-3.1-8b-instant', 'Llama 3.1 8B (Fast)', this)">
+                <button class="auth-menu-link active" data-model="llama-3.1-8b-instant" onclick="setModel('llama-3.1-8b-instant', 'Llama 3.1 8B (Fast)', this)">
                     <i class="fa-solid fa-bolt w-4"></i>
                     <div>
                         <div class="font-medium">Llama 3.1 8B</div>
@@ -433,7 +432,7 @@
                     </div>
                 </button>
 
-                <button class="auth-menu-link" onclick="setModel('llama-3.3-70b-versatile', 'Llama 3.3 70B (Smart)', this)">
+                <button class="auth-menu-link" data-model="llama-3.3-70b-versatile" onclick="setModel('llama-3.3-70b-versatile', 'Llama 3.3 70B (Smart)', this)">
                     <i class="fa-solid fa-brain w-4"></i>
                     <div>
                         <div class="font-medium">Llama 3.3 70B</div>
@@ -441,7 +440,7 @@
                     </div>
                 </button>
 
-                <button class="auth-menu-link" onclick="setModel('openai/gpt-oss-120b', 'GPT-OSS 120B', this)">
+                <button class="auth-menu-link" data-model="openai/gpt-oss-120b" onclick="setModel('openai/gpt-oss-120b', 'GPT-OSS 120B', this)">
                     <i class="fa-solid fa-code-branch w-4"></i>
                     <div>
                         <div class="font-medium">GPT-OSS 120B</div>
@@ -603,6 +602,7 @@ print("Hello World")
 
         toggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            e.preventDefault();
             menu.classList.toggle('open');
         });
 
@@ -795,7 +795,8 @@ print("Hello World")
             // Update menu active state
             document.querySelectorAll('.auth-menu-link').forEach(btn => {
                 btn.classList.remove('active');
-                if(btn.innerHTML.includes(currentModelName.split(' ')[0])) btn.classList.add('active'); 
+                // Use data-model attribute instead of text content matching to allow distinct Llama models
+                if(btn.getAttribute('data-model') === modelId) btn.classList.add('active'); 
             });
         }
 
