@@ -24,7 +24,15 @@
         (async () => {
             if ('serviceWorker' in navigator) {
                 try {
-                    await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
+                    const reg = await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
+                    
+                    // Reload if the SW takes control (first load)
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (navigator.serviceWorker.controller) {
+                            console.log("SW active, reloading...");
+                            window.location.reload();
+                        }
+                    });
                 } catch(e) { console.error("SW Init Error:", e); }
             }
             try {
