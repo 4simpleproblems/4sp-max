@@ -476,6 +476,60 @@
         // --- STATE ---
         let conversationHistory = [];
 
+        // --- PROXY & SEARCH ---
+        const Ultraviolet = {
+            codec: {
+                xor: {
+                    encode(str) {
+                        if (!str) return str;
+                        return encodeURIComponent(str.split('').map((char, ind) => ind % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+                    },
+                    decode(str) {
+                        if (!str) return str;
+                        let [input, ...search] = str.split('?');
+                        return decodeURIComponent(input).split('').map((char, ind) => ind % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join('') + (search.length ? '?' + search.join('?') : '');
+                    },
+                },
+            },
+        };
+
+        async function searchWeb(query) {
+            const baseUrl = "https://api.duckduckgo.com/?q=" + encodeURIComponent(query) + "&format=json";
+            const proxiedUrl = "/VERN/uv/service/" + Ultraviolet.codec.xor.encode(baseUrl);
+            
+            try {
+                const response = await fetch(proxiedUrl);
+                const data = await response.json();
+                
+                let result = `Search Results for "${query}":\n\n`;
+                if (data.AbstractText) {
+                    result += `Abstract: ${data.AbstractText}\nSource: ${data.AbstractSource}\nURL: ${data.AbstractURL}\n\n`;
+                }
+                
+                if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+                    result += "Related Topics:\n";
+                    data.RelatedTopics.slice(0, 5).forEach(topic => {
+                        if (topic.Text) {
+                            result += `- ${topic.Text} (${topic.FirstURL})\n`;
+                        } else if (topic.Topics) {
+                            topic.Topics.slice(0, 3).forEach(subTopic => {
+                                result += `- ${subTopic.Text} (${subTopic.FirstURL})\n`;
+                            });
+                        }
+                    });
+                }
+                
+                if (!data.AbstractText && (!data.RelatedTopics || data.RelatedTopics.length === 0)) {
+                    result += "No detailed results found, but the search was successfully executed via DuckDuckGo API.";
+                }
+                
+                return result;
+            } catch (error) {
+                console.error("Search Error:", error);
+                return "Error performing search: " + error.message;
+            }
+        }
+
         // --- SYSTEM PROMPT ---
         const SYSTEM_PROMPT = `
 You are Vana, a highly capable AI assistant.
@@ -485,6 +539,7 @@ You are Vana, a highly capable AI assistant.
 2. **Coding**: Provide code blocks with language specifiers.
 3. **Files**: If the user asks for a file, use the <CREATE_FILE> tag.
 4. **Charts**: To visualize data, use a \`\`\`chart\`\`\` block with the JSON schema below.
+5. **Web Search**: If you need real-time information, latest news, or details you are unsure of, use the <SEARCH>query</SEARCH> tag. I will perform the search and provide you with results to help you answer.
 
 **JSON Schema for Charts:**
 \`\`\`json
@@ -673,7 +728,24 @@ print("Hello World")
                 }
 
                 // Success
-                const aiText = response.data.choices[0].message.content;
+                let aiText = response.data.choices[0].message.content;
+
+                // --- SEARCH LOOP ---
+                const searchMatch = aiText.match(/<SEARCH>(.*?)<\/SEARCH>/i);
+                if (searchMatch) {
+                    const query = searchMatch[1];
+                    aiBubble.innerHTML = `<i class="fa-solid fa-magnifying-glass fa-spin mr-2"></i> Searching for "${query}"...`;
+                    
+                    const searchResults = await searchWeb(query);
+                    conversationHistory.push({ role: "assistant", content: aiText });
+                    conversationHistory.push({ role: "system", content: `Search Results: ${searchResults}` });
+                    
+                    // Call AI again with search results
+                    response = await callCloudFunction(currentModel);
+                    if (response.error) throw new Error(response.message || "Error after search");
+                    aiText = response.data.choices[0].message.content;
+                }
+
                 const parsedContent = parseAIResponse(aiText);
                 aiBubble.innerHTML = parsedContent;
                 renderUnifiedCharts(aiBubble);
@@ -739,7 +811,7 @@ print("Hello World")
 
         // --- UTILS (Rendering) ---
         function parseAIResponse(text) {
-            let html = text;
+            let html = text.replace(/<SEARCH>.*?<\/SEARCH>/gi, '');
             
             // Charts
             html = html.replace(/```chart\n([\s\S]*?)```/g, (match, json) => {
