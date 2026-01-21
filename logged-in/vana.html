@@ -16,6 +16,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../navigation.js"></script>
 
+    <!-- Proxy Scripts -->
+    <script src="/logged-in/uv/uv.bundle.js"></script>
+    <script src="/logged-in/uv/uv.config.js"></script>
+    <script src="/logged-in/baremux/index.js"></script>
+    <script>
+        (async () => {
+            if ('serviceWorker' in navigator) {
+                try {
+                    await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
+                } catch(e) { console.error("SW Init Error:", e); }
+            }
+            try {
+                const conn = new BareMux.BareMuxConnection('/logged-in/baremux/worker.js');
+                conn.setTransport('/logged-in/libcurl/index.mjs', [{ websocket: 'wss://wisp.rhw.one/' }]);
+            } catch(e) { console.error("BareMux Init Error:", e); }
+        })();
+    </script>
+
     <script>
         if(window.console && console.warn) {
             const originalWarn = console.warn;
@@ -476,29 +494,27 @@
         // --- STATE ---
         let conversationHistory = [];
 
-        // --- PROXY & SEARCH ---
-        const Ultraviolet = {
-            codec: {
-                xor: {
-                    encode(str) {
-                        if (!str) return str;
-                        return encodeURIComponent(str.split('').map((char, ind) => ind % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
-                    },
-                    decode(str) {
-                        if (!str) return str;
-                        let [input, ...search] = str.split('?');
-                        return decodeURIComponent(input).split('').map((char, ind) => ind % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join('') + (search.length ? '?' + search.join('?') : '');
-                    },
-                },
-            },
-        };
-
+        // --- SEARCH ---
         async function searchWeb(query) {
             const baseUrl = "https://api.duckduckgo.com/?q=" + encodeURIComponent(query) + "&format=json";
-            const proxiedUrl = "/VERN/uv/service/" + Ultraviolet.codec.xor.encode(baseUrl);
+            // Use the config path or fallback
+            const prefix = (self.__uv$config && self.__uv$config.prefix) || "/logged-in/uv/service/";
+            const proxiedUrl = prefix + Ultraviolet.codec.xor.encode(baseUrl);
             
             try {
                 const response = await fetch(proxiedUrl);
+                if (!response.ok) throw new Error(`Proxy Error: ${response.status}`);
+                
+                // Ensure we got JSON (proxy might return HTML on error)
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                     const text = await response.text();
+                     // If it looks like HTML, it's likely an error page
+                     if (text.trim().startsWith("<")) throw new Error("Invalid response from proxy (likely blocked or 404)");
+                     // Try parsing anyway just in case
+                     try { return JSON.parse(text); } catch(e) { throw new Error("Invalid JSON response"); }
+                }
+
                 const data = await response.json();
                 
                 let result = `Search Results for "${query}":\n\n`;
