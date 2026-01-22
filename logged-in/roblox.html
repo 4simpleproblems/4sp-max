@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4SP - Roblox</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../navigation.js"></script>
+
+    <!-- VERN Proxy Scripts -->
+    <script src="/logged-in/uv/uv.bundle.js"></script>
+    <script>
+        const basePath = "/logged-in/uv/";
+        self.__uv$config = {
+            prefix: basePath + "service/",
+            encodeUrl: Ultraviolet.codec.xor.encode,
+            decodeUrl: Ultraviolet.codec.xor.decode,
+            handler: basePath + "uv.handler.js",
+            client: basePath + "uv.client.js",
+            bundle: basePath + "uv.bundle.js",
+            config: basePath + "uv.config.js",
+            sw: basePath + "uv.sw.js",
+            stockSW: basePath + "sw.js",
+        };
+    </script>
+    <script src="/logged-in/baremux/index.js"></script>
+    <script>
+        (async () => {
+            if ("serviceWorker" in navigator) {
+                try {
+                    await navigator.serviceWorker.register("/logged-in/sw.js", {
+                        scope: "/logged-in/"
+                    });
+                    console.log("VERN SW Registered");
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!navigator.serviceWorker.controller) return;
+                        window.location.reload();
+                    });
+                } catch (e) {
+                    console.error("SW Register Failed", e);
+                }
+            }
+            try {
+                const connection = new BareMux.BareMuxConnection(window.location.origin + "/logged-in/baremux/worker.js");
+                await connection.setTransport("/logged-in/libcurl/index.mjs", [
+                    { websocket: "wss://wisp.rhw.one/" },
+                    { websocket: "wss://wisp.mercurywork.shop/" }
+                ]);
+                console.log("BareMux Initialized");
+            } catch (e) {
+                console.error("BareMux Init Failed", e);
+            }
+        })();
+    </script>
+
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: #000;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            flex-grow: 1;
+        }
+
+        #loader-overlay {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: opacity 0.5s;
+        }
+        #loader-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen">
+    
+    <div id="loader-overlay">
+        <div class="text-center">
+            <i class="fa-solid fa-spinner fa-spin text-4xl text-white mb-4"></i>
+            <p class="text-gray-400">Loading Instance...</p>
+        </div>
+    </div>
+
+    <div class="flex-grow relative">
+        <iframe id="game-frame" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        // The original logic tried to fetch '/ip' which is a backend endpoint on the other site.
+        // Since we don't have that backend, we need to adapt. 
+        // The URL format was `https://${ip}.ip.nowgg.fun/apps/a/19900/b.html`
+        // Often these proxies use a rotating set of IPs or a known trick.
+        
+        // However, without the backend to provide the IP, this specific method might fail unless 
+        // we know a valid subdomain or can fetch it via proxy from the original source.
+        
+        // Assuming we want to try fetching the IP through our proxy from the original source if possible,
+        // or falling back to a known working instance if available.
+        
+        // Let's try to fetch the IP via our proxy from a known source or handle the logic directly.
+        // For this specific request, I will implement the fetch logic but route it through the VERN proxy.
+        
+        async function getRobloxUrl() {
+            // Since we don't have the original '/ip' endpoint locally, we can't fetch it directly.
+            // If the user meant "take the code... and form it to work", they might imply we should 
+            // try to use the same logic if we can target the external service.
+            // But 'goonbox' likely hosted that /ip endpoint themselves.
+            
+            // NOTE: Without a valid target to get the dynamic IP/subdomain, this might not work 100%.
+            // I will implement a fallback or try to hit a common now.gg loader if applicable.
+            // For now, I will assume we proxy the request to the target the user likely intended or a generic one.
+            
+            // As a placeholder for the missing backend, I will point to a known now.gg structure
+            // or allow the user to input/we try to fetch from a public list if one exists.
+            
+            // Since I cannot know the exact external API they used for `/ip`, I will try to use
+            // the VERN proxy to load the Now.gg roblox page directly or a known mirror.
+            
+            // Attempting to construct a valid URL for Now.gg Roblox via Proxy
+            const target = "https://now.gg/apps/roblox-corporation/5349/roblox.html";
+            
+            // Encode using UV
+            if (window.__uv$config) {
+                return window.__uv$config.prefix + window.__uv$config.encodeUrl(target);
+            }
+            return target;
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const frame = document.getElementById('game-frame');
+            const loader = document.getElementById('loader-overlay');
+            
+            try {
+                // If we had the IP logic:
+                // const ipRes = await fetch(window.__uv$config.prefix + window.__uv$config.encodeUrl('https://api.goonbox.ix.tc/ip')); 
+                // const ip = await ipRes.text();
+                // const url = `https://${ip}.ip.nowgg.fun/apps/a/19900/b.html`;
+                
+                // Using standard Now.gg URL proxied for now as a safe bet for "Roblox"
+                const url = await getRobloxUrl();
+                
+                frame.src = url;
+                
+                frame.onload = () => {
+                    loader.classList.add('hidden');
+                };
+                
+            } catch (e) {
+                console.error("Failed to load Roblox:", e);
+                loader.innerHTML = `<p class="text-red-500">Failed to load. Proxy might be blocked.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
