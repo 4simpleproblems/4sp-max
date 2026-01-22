@@ -595,36 +595,49 @@ print("Hello World")
 
         conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
 
-        // --- DROPDOWN LOGIC (ROBUST) ---
-        const toggleBtn = document.getElementById('model-toggle');
-        const menu = document.getElementById('model-menu');
+        // --- DROPDOWN LOGIC (NAMESPACED + TRAPPED) ---
+        const vanaToggleBtn = document.getElementById('model-toggle');
+        const vanaMenu = document.getElementById('model-menu');
 
-        function closeMenu() {
-            menu.classList.remove('open');
+        // 1. Unique Close Function
+        function vanaCloseDropdown() {
+            vanaMenu.classList.remove('open');
+            // Remove the global listener when closed to save resources/conflicts
+            document.removeEventListener('click', vanaOutsideClickListener);
         }
 
-        // Single "Manager" Listener for all clicks
-        window.addEventListener('click', (e) => {
-            // 1. Did we click the Toggle Button?
-            if (toggleBtn.contains(e.target)) {
-                e.preventDefault();
-                menu.classList.toggle('open');
-                return; // Stop here
+        // 2. The "Outside Click" Listener (Only active when menu is open)
+        function vanaOutsideClickListener(e) {
+            // If click is NOT inside the menu and NOT on the button
+            if (!vanaMenu.contains(e.target) && !vanaToggleBtn.contains(e.target)) {
+                vanaCloseDropdown();
             }
+        }
 
-            // 2. Did we click inside the Menu?
-            if (menu.contains(e.target)) {
-                // Do nothing (let the item buttons handle their own logic)
-                return; 
+        // 3. Unique Toggle Function
+        function vanaToggleDropdown(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Stop bubbling immediately
+
+            const isOpen = vanaMenu.classList.contains('open');
+
+            if (isOpen) {
+                vanaCloseDropdown();
+            } else {
+                vanaMenu.classList.add('open');
+                
+                // CRITICAL FIX: Wait 1 tick before listening for outside clicks.
+                // This ensures the current click doesn't trigger the close listener.
+                setTimeout(() => {
+                    document.addEventListener('click', vanaOutsideClickListener);
+                }, 0);
             }
+        }
 
-            // 3. Clicked anywhere else? Close it.
-            if (menu.classList.contains('open')) {
-                closeMenu();
-            }
-        });
+        // 4. Bind the unique toggle
+        vanaToggleBtn.onclick = vanaToggleDropdown;
 
-        // Close when clicking an option
+        // 5. Update Selection Logic
         window.setModel = (modelId, displayName, element) => {
             if (currentModel !== modelId) {
                 currentModel = modelId;
@@ -632,7 +645,7 @@ print("Hello World")
                 updateHeaderUI(modelId);
                 addSystemBadge(`Switched to ${displayName}`);
             }
-            closeMenu();
+            vanaCloseDropdown();
         };
 
         // --- INPUT HANDLING ---
