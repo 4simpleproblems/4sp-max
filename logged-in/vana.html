@@ -159,7 +159,8 @@
             border: 1px solid var(--menu-border);
             border-radius: 1.25rem; 
             padding: 0.75rem; 
-            display: none; /* DEFAULT CLOSED */
+            /* DEFAULT CLOSED STATE (Hidden) */
+            display: none; 
             flex-direction: column; gap: 0.5rem; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             transform-origin: top right; z-index: 10000;
@@ -171,9 +172,30 @@
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        @keyframes menu-pop-out {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-10px) scale(0.95); }
+        }
+
+        /* Open State */
         .auth-menu-container.open { 
             display: flex !important; 
             animation: menu-pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Closing State (Animation Running) */
+        .auth-menu-container.closing {
+            display: flex !important;
+            animation: menu-pop-out 0.3s ease-in forwards;
+            pointer-events: none;
+        }
+
+        /* Fully Closed State */
+        .auth-menu-container.closed { 
+            opacity: 0; 
+            pointer-events: none; 
+            transform: translateY(-10px) scale(0.95); 
+            display: none !important; 
         }
 
         .auth-menu-link { 
@@ -421,7 +443,7 @@
                 <span id="current-model-display"><i class="fa-solid fa-bolt mr-2"></i>Llama 3.1 8B (Fast)</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </button>
-            <div id="model-menu" class="auth-menu-container">
+            <div id="model-menu" class="auth-menu-container closed">
                 <div class="text-xs text-gray-500 uppercase font-bold px-3 py-2">Select Model</div>
                 
                 <button class="auth-menu-link active" data-model="llama-3.1-8b-instant" onclick="setModel('llama-3.1-8b-instant', 'Llama 3.1 8B (Fast)', this)">
@@ -595,49 +617,46 @@ print("Hello World")
 
         conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
 
-        // --- DROPDOWN LOGIC (NAMESPACED + TRAPPED) ---
-        const vanaToggleBtn = document.getElementById('model-toggle');
-        const vanaMenu = document.getElementById('model-menu');
+        // --- DROPDOWN LOGIC (Navigation.js Style) ---
+        const modelToggle = document.getElementById('model-toggle');
+        const modelMenu = document.getElementById('model-menu');
 
-        // 1. Unique Close Function
-        function vanaCloseDropdown() {
-            vanaMenu.classList.remove('open');
-            // Remove the global listener when closed to save resources/conflicts
-            document.removeEventListener('click', vanaOutsideClickListener);
+        // Helper to close with animation
+        function closeMenuWithAnimation() {
+            modelMenu.classList.remove('open');
+            modelMenu.classList.add('closing');
+            modelMenu.addEventListener('animationend', () => {
+                modelMenu.classList.remove('closing');
+                modelMenu.classList.add('closed');
+            }, { once: true });
         }
 
-        // 2. The "Outside Click" Listener (Only active when menu is open)
-        function vanaOutsideClickListener(e) {
-            // If click is NOT inside the menu and NOT on the button
-            if (!vanaMenu.contains(e.target) && !vanaToggleBtn.contains(e.target)) {
-                vanaCloseDropdown();
-            }
-        }
-
-        // 3. Unique Toggle Function
-        function vanaToggleDropdown(e) {
-            e.preventDefault();
-            e.stopPropagation(); // Stop bubbling immediately
-
-            const isOpen = vanaMenu.classList.contains('open');
-
-            if (isOpen) {
-                vanaCloseDropdown();
-            } else {
-                vanaMenu.classList.add('open');
+        // Toggle Listener
+        if (modelToggle && modelMenu) {
+            modelToggle.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent bubbling to document
                 
-                // CRITICAL FIX: Wait 1 tick before listening for outside clicks.
-                // This ensures the current click doesn't trigger the close listener.
-                setTimeout(() => {
-                    document.addEventListener('click', vanaOutsideClickListener);
-                }, 0);
-            }
+                if (modelMenu.classList.contains('open')) {
+                    closeMenuWithAnimation();
+                } else {
+                    modelMenu.classList.remove('closed');
+                    modelMenu.classList.remove('closing');
+                    modelMenu.classList.add('open');
+                }
+            });
         }
 
-        // 4. Bind the unique toggle
-        vanaToggleBtn.onclick = vanaToggleDropdown;
+        // Document Click Listener (Outside Click)
+        document.addEventListener('click', (e) => {
+            if (modelMenu && modelMenu.classList.contains('open')) {
+                // If click is NOT inside menu AND NOT on toggle button
+                if (!modelMenu.contains(e.target) && !modelToggle.contains(e.target)) {
+                    closeMenuWithAnimation();
+                }
+            }
+        });
 
-        // 5. Update Selection Logic
+        // Update Selection Logic
         window.setModel = (modelId, displayName, element) => {
             if (currentModel !== modelId) {
                 currentModel = modelId;
@@ -645,7 +664,7 @@ print("Hello World")
                 updateHeaderUI(modelId);
                 addSystemBadge(`Switched to ${displayName}`);
             }
-            vanaCloseDropdown();
+            closeMenuWithAnimation();
         };
 
         // --- INPUT HANDLING ---
