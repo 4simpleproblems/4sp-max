@@ -595,30 +595,32 @@ print("Hello World")
 
         conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
 
-        // --- DROPDOWN LOGIC (FIXED) ---
+        // --- DROPDOWN LOGIC (ROBUST) ---
         const toggleBtn = document.getElementById('model-toggle');
         const menu = document.getElementById('model-menu');
 
-        // Toggle function
-        function toggleMenu(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            menu.classList.toggle('open');
-        }
-
-        // Close function
         function closeMenu() {
             menu.classList.remove('open');
         }
 
-        // Bind events
-        toggleBtn.addEventListener('click', toggleMenu);
+        // Single "Manager" Listener for all clicks
+        window.addEventListener('click', (e) => {
+            // 1. Did we click the Toggle Button?
+            if (toggleBtn.contains(e.target)) {
+                e.preventDefault();
+                menu.classList.toggle('open');
+                return; // Stop here
+            }
 
-        document.addEventListener('click', (e) => {
+            // 2. Did we click inside the Menu?
+            if (menu.contains(e.target)) {
+                // Do nothing (let the item buttons handle their own logic)
+                return; 
+            }
+
+            // 3. Clicked anywhere else? Close it.
             if (menu.classList.contains('open')) {
-                if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
-                    closeMenu();
-                }
+                closeMenu();
             }
         });
 
