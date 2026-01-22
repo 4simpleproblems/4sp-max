@@ -1,170 +1,185 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4SP - Roblox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Roblox (now.gg Copy)</title>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../navigation.js"></script>
-
-    <!-- VERN Proxy Scripts -->
+    <!-- VERN Proxy Scripts (Injected) -->
     <script src="/logged-in/uv/uv.bundle.js"></script>
-    <script>
-        const basePath = "/logged-in/uv/";
-        self.__uv$config = {
-            prefix: basePath + "service/",
-            encodeUrl: Ultraviolet.codec.xor.encode,
-            decodeUrl: Ultraviolet.codec.xor.decode,
-            handler: basePath + "uv.handler.js",
-            client: basePath + "uv.client.js",
-            bundle: basePath + "uv.bundle.js",
-            config: basePath + "uv.config.js",
-            sw: basePath + "uv.sw.js",
-            stockSW: basePath + "sw.js",
-        };
-    </script>
+    <script src="/logged-in/uv/uv.config.js"></script>
     <script src="/logged-in/baremux/index.js"></script>
     <script>
         (async () => {
-            if ("serviceWorker" in navigator) {
+            if ('serviceWorker' in navigator) {
                 try {
-                    await navigator.serviceWorker.register("/logged-in/sw.js", {
-                        scope: "/logged-in/"
-                    });
-                    console.log("VERN SW Registered");
+                    await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
+                    
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
-                        if (!navigator.serviceWorker.controller) return;
-                        window.location.reload();
+                        if (navigator.serviceWorker.controller) {
+                            console.log("SW active, reloading...");
+                            window.location.reload();
+                        }
                     });
-                } catch (e) {
-                    console.error("SW Register Failed", e);
-                }
+                } catch(e) { console.error("SW Init Error:", e); }
             }
             try {
-                const connection = new BareMux.BareMuxConnection(window.location.origin + "/logged-in/baremux/worker.js");
-                await connection.setTransport("/logged-in/libcurl/index.mjs", [
-                    { websocket: "wss://wisp.rhw.one/" },
-                    { websocket: "wss://wisp.mercurywork.shop/" }
+                const conn = new BareMux.BareMuxConnection(window.location.origin + '/logged-in/baremux/worker.js');
+                await conn.setTransport('/logged-in/libcurl/index.mjs', [
+                    { websocket: 'wss://wisp.rhw.one/' },
+                    { websocket: 'wss://wisp.mercurywork.shop/' }
                 ]);
-                console.log("BareMux Initialized");
-            } catch (e) {
-                console.error("BareMux Init Failed", e);
-            }
+            } catch(e) { console.error("BareMux Init Error:", e); }
         })();
+
+        // --- URL REWRITING FOR PROXY ---
+        // This function ensures all external assets go through the proxy
+        function getProxiedUrl(url) {
+            if (!url || !url.startsWith('http')) return url;
+            const prefix = (self.__uv$config && self.__uv$config.prefix) ? 
+                           (window.location.origin + self.__uv$config.prefix) : 
+                           (window.location.origin + "/logged-in/uv/service/");
+                           
+            // Encode the URL using UV's codec
+            return prefix + Ultraviolet.codec.xor.encode(url);
+        }
+    </script>
+
+    <script>
+        try {
+            history.replaceState = function(state, title, url) { console.log("Blocked URL update:", url); };
+            history.pushState = function(state, title, url) { console.log("Blocked URL push:", url); };
+        } catch (e) { console.warn("Shim failed:", e); }
+    </script>
+
+    <script>
+        // This mimics the original site's ID generation so the game connects
+        (function() {
+            // Simple random ID generator
+            const generateId = (prefix) => prefix + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            
+            // 1. Generate User Agent ID if missing
+            if (!localStorage.getItem("fe_uaId")) {
+                localStorage.setItem("fe_uaId", generateId("ua-"));
+            }
+            
+            // 2. Generate Session ID
+            sessionStorage.setItem("fe_uaSessionId", generateId("uasess-"));
+            
+            // 3. Generate Visit ID
+            if (!sessionStorage.getItem("ngVisitId")) {
+                sessionStorage.setItem("ngVisitId", generateId("visitid-"));
+            }
+            
+            console.log("Fake Session IDs generated:", sessionStorage.getItem("fe_uaSessionId"));
+        })();
+    </script>
+    
+    <!-- Proxying External Stylesheets -->
+    <script>
+        document.write(`<link rel="stylesheet" href="${getProxiedUrl('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap')}"/>`);
+        document.write(`<link rel="stylesheet" href="${getProxiedUrl('https://cdn.now.gg/nowgg-static/fonts/fonts.css')}"/>`);
+        document.write(`<link rel="stylesheet" href="${getProxiedUrl('https://now.gg/3/play/assets/_next/static/css/styles.d6c7be162965db05.css')}" />`);
     </script>
 
     <style>
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100%; 
-            overflow: hidden; 
-            background-color: #000;
-        }
-        
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            flex-grow: 1;
-        }
-
-        #loader-overlay {
-            position: absolute;
-            inset: 0;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            transition: opacity 0.5s;
-        }
-        #loader-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+        body { background-color: #111; margin: 0; overflow: hidden; }
+        .AppContent { height: 100vh; width: 100vw; }
+        .HeroAppInfo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-align: center; }
     </style>
 </head>
-<body class="flex flex-col h-screen">
-    
-    <div id="loader-overlay">
-        <div class="text-center">
-            <i class="fa-solid fa-spinner fa-spin text-4xl text-white mb-4"></i>
-            <p class="text-gray-400">Loading Instance...</p>
-        </div>
+<body>
+
+    <div id="__next">
+        <div class="lcpImgWrapper full-wh" style="background-color: #222;"></div>
+
+        <section class="StyledLayout">
+            <header class="sc-74ddd4db-0 gLZcnl">
+                <div class="sc-b5bac989-0 ifdeIN app-logo">
+                    <!-- Proxy Image -->
+                    <script>
+                        document.write(`<img width="120" height="30" src="${getProxiedUrl('https://now.gg/3/_next/static/media/nowgg-logo.2eda3eaf.svg')}" alt="now.gg Logo"/>`);
+                    </script>
+                </div>
+            </header>
+
+            <div class="AppContent">
+                <section class="sc-31f7ab6d-0 jMlUSs auto-h">
+                    <section class="sc-31f7ab6d-1 TUWaW">
+                        <div class="StyledPreview">
+                            <video class="BgVideo" autoplay muted loop playsinline height="100%" width="100%" id="bg-video">
+                                <!-- Sources injected via JS -->
+                            </video>
+                            <script>
+                                const video = document.getElementById('bg-video');
+                                video.poster = getProxiedUrl('https://cdn.now.gg/apps-content/default/images/Banner_Landscape.jpg');
+                                video.innerHTML = `<source type="video/mp4" src="${getProxiedUrl('https://cdn.now.gg/apps-content/default/launch-video/desktop/Launch_1920.mp4')}"/>`;
+                            </script>
+                        </div>
+
+                        <div class="HeroAppInfo landscape">
+                            <h1 style="color: white; font-family: 'Bricolage Grotesque'; font-size: 48px; margin-bottom: 20px;">Roblox</h1>
+                            <div class="PlayBtnWrap">
+                                <button class="Button loading" id="ng-getting-ready-btn" style="background: #FF42A5; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; cursor: pointer;">
+                                    Getting ready...
+                                </button>
+                            </div>
+                            <div class="sc-7f59e304-20 dSWedn">
+                                <p style="color: rgba(255,255,255,0.7);">Preparing to launch</p>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </section>
     </div>
 
-    <div class="flex-grow relative">
-        <iframe id="game-frame" allowfullscreen></iframe>
-    </div>
+    <script id="__NEXT_DATA__" type="application/json">
+    {
+        "props": {
+            "pageProps": {
+                "appInfo": {
+                    "status": "Success",
+                    "appId": "19900",
+                    "appName": "Roblox",
+                    "packageName": "com.roblox.client",
+                    "appType": "Android",
+                    "playDomain": "now.gg",
+                    "authClientId": "zBC1LCs7s7IuZzxQP9oO$$01FM9VYWMSWR6SP42Q4S46Z0SY",
+                    "playFeFeatures": { "enableAiBot": true, "enableRecording": true }
+                },
+                "popularGames": [], "sidebarGames": [], "ssrGames": { "topBarApps": [], "topApps": [] }
+            },
+            "__N_SSP": true
+        },
+        "page": "/apps/[...index]",
+        "query": { "index": ["a", "19900", "b.html"] },
+        "buildId": "uSxdBU4_Ag5Vf23kJZUCZ",
+        "assetPrefix": "https://now.gg/3/play/assets",
+        "runtimeConfig": { "NEXT_PUBLIC_ENVIRONMENT": "prod3-berlin", "NEXT_PUBLIC_FE_VERSION": "berlin-v1.49.100-arm.1" },
+        "isFallback": false, "gssp": true
+    }
+    </script>
 
+    <!-- Proxying External Scripts -->
+    <!-- We override document.createElement to catch and proxy dynamic script injections if needed, 
+         but for these static ones, we manually rewrite them. -->
     <script>
-        // The original logic tried to fetch '/ip' which is a backend endpoint on the other site.
-        // Since we don't have that backend, we need to adapt. 
-        // The URL format was `https://${ip}.ip.nowgg.fun/apps/a/19900/b.html`
-        // Often these proxies use a rotating set of IPs or a known trick.
-        
-        // However, without the backend to provide the IP, this specific method might fail unless 
-        // we know a valid subdomain or can fetch it via proxy from the original source.
-        
-        // Assuming we want to try fetching the IP through our proxy from the original source if possible,
-        // or falling back to a known working instance if available.
-        
-        // Let's try to fetch the IP via our proxy from a known source or handle the logic directly.
-        // For this specific request, I will implement the fetch logic but route it through the VERN proxy.
-        
-        async function getRobloxUrl() {
-            // Since we don't have the original '/ip' endpoint locally, we can't fetch it directly.
-            // If the user meant "take the code... and form it to work", they might imply we should 
-            // try to use the same logic if we can target the external service.
-            // But 'goonbox' likely hosted that /ip endpoint themselves.
-            
-            // NOTE: Without a valid target to get the dynamic IP/subdomain, this might not work 100%.
-            // I will implement a fallback or try to hit a common now.gg loader if applicable.
-            // For now, I will assume we proxy the request to the target the user likely intended or a generic one.
-            
-            // As a placeholder for the missing backend, I will point to a known now.gg structure
-            // or allow the user to input/we try to fetch from a public list if one exists.
-            
-            // Since I cannot know the exact external API they used for `/ip`, I will try to use
-            // the VERN proxy to load the Now.gg roblox page directly or a known mirror.
-            
-            // Attempting to construct a valid URL for Now.gg Roblox via Proxy
-            const target = "https://now.gg/apps/roblox-corporation/5349/roblox.html";
-            
-            // Encode using UV
-            if (window.__uv$config) {
-                return window.__uv$config.prefix + window.__uv$config.encodeUrl(target);
-            }
-            return target;
-        }
+        const scripts = [
+            'https://now.gg/3/play/assets/_next/static/chunks/polyfills-42372ed130431b0a.js',
+            'https://now.gg/3/play/assets/_next/static/chunks/webpack-fcb1a2d5c6cf741a.js',
+            'https://now.gg/3/play/assets/_next/static/chunks/main-4f884091f83cebb1.js',
+            'https://now.gg/3/play/assets/_next/static/chunks/pages/_app-35838c1c35badd69.js',
+            'https://now.gg/3/play/assets/_next/static/chunks/pages/apps/%5B...index%5D-927b8564ac4c49eb.js'
+        ];
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            const frame = document.getElementById('game-frame');
-            const loader = document.getElementById('loader-overlay');
-            
-            try {
-                // If we had the IP logic:
-                // const ipRes = await fetch(window.__uv$config.prefix + window.__uv$config.encodeUrl('https://api.goonbox.ix.tc/ip')); 
-                // const ip = await ipRes.text();
-                // const url = `https://${ip}.ip.nowgg.fun/apps/a/19900/b.html`;
-                
-                // Using standard Now.gg URL proxied for now as a safe bet for "Roblox"
-                const url = await getRobloxUrl();
-                
-                frame.src = url;
-                
-                frame.onload = () => {
-                    loader.classList.add('hidden');
-                };
-                
-            } catch (e) {
-                console.error("Failed to load Roblox:", e);
-                loader.innerHTML = `<p class="text-red-500">Failed to load. Proxy might be blocked.</p>`;
-            }
+        scripts.forEach(src => {
+            const s = document.createElement('script');
+            s.src = getProxiedUrl(src);
+            s.defer = true;
+            document.body.appendChild(s);
         });
     </script>
+
 </body>
 </html>
