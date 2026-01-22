@@ -71,6 +71,41 @@
             pointer-events: none;
             transition: opacity 0.1s linear;
         }
+
+        /* --- NEW BUTTON STYLES IMPORTED FROM ORG HTML --- */
+        .hero-btn-base {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #ffffff;
+            border-radius: 14px; 
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Purple Style (like 'Download V5') */
+        .btn-style-purple {
+            background-color: rgba(147, 51, 234, 0.1); 
+            border: 1px solid rgba(192, 132, 252, 0.5); 
+        }
+        .btn-style-purple:hover {
+            background-color: rgba(192, 132, 252, 0.2);
+            border-color: rgba(192, 132, 252, 1);
+            box-shadow: 0 0 15px rgba(192, 132, 252, 0.3);
+        }
+
+        /* Orange Style (like 'Create Link') */
+        .btn-style-orange {
+            background-color: rgba(249, 115, 22, 0.1); 
+            border: 1px solid rgba(253, 186, 116, 0.5); 
+        }
+        .btn-style-orange:hover {
+            background-color: rgba(253, 186, 116, 0.2);
+            border-color: rgba(253, 186, 116, 1);
+        }
     </style>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
@@ -100,15 +135,23 @@
                     You're using the <strong>MAX</strong> branch. Experience the new <span class="text-white">Velium Focus Environment</span>, redesigned navigation with live effects, and professional productivity tools.
                 </p>
                 <div id="auth-button-container" class="space-y-4">
-                    <a id="auth-button" href="../authentication.html" class="inline-flex items-center justify-center px-8 py-4 border border-[#333] text-lg font-normal rounded-full shadow-sm text-white bg-black hover:bg-[#0a0a0a] hover:border-gray-600 hover:scale-105 transition duration-300">
+                    <a id="auth-button" href="../authentication.html" 
+                       class="inline-flex items-center justify-center px-8 py-4 border border-[#333] text-lg font-normal shadow-sm text-white bg-black hover:bg-[#0a0a0a] hover:border-gray-600 hover:scale-105 transition duration-300"
+                       style="border-radius: 22px;">
                         Get Started Instantly <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
 
-                <div class="flex items-center justify-center gap-6 mt-8">
-                    <a href="https://linktr.ee/4sp_org" target="_blank" class="text-gray-500 hover:text-white transition text-sm uppercase tracking-widest font-medium">Linktree</a>
-                    <a href="https://discord.gg/your-invite" target="_blank" class="text-gray-500 hover:text-white transition text-sm uppercase tracking-widest font-medium">Discord</a>
-                    <a href="https://4sp-organization.github.io" class="text-gray-400 hover:text-white transition text-sm uppercase tracking-widest font-bold border-b border-transparent hover:border-white pb-1">Organization</a>
+                <div class="flex flex-wrap items-center justify-center gap-4 mt-8">
+                    <a href="https://linktr.ee/4sp_org" target="_blank" class="hero-btn-base btn-style-purple">
+                        <i class="fas fa-link mr-2"></i> Linktree
+                    </a>
+                    <a href="https://discord.gg/your-invite" target="_blank" class="hero-btn-base btn-style-purple">
+                        <i class="fa-brands fa-discord mr-2"></i> Discord
+                    </a>
+                    <a href="https://4sp-organization.github.io" class="hero-btn-base btn-style-orange">
+                        <i class="fas fa-sitemap mr-2"></i> Organization
+                    </a>
                 </div>
                 
                 <p id="pronunciation-text" class="text-sm text-gray-600 mt-8 mb-2 italic font-light">
@@ -172,7 +215,7 @@
                     <ul class="space-y-2 text-lg text-gray-300">
                         <li class="flex items-center"><i class="fas fa-eye-slash fa-fw w-5 mr-3 text-purple-500"></i><span class="font-light mr-2">Pin Button:</span>Pin your most used page instantly.</li>
                         <li class="flex items-center"><i class="fas fa-exclamation fa-fw w-5 mr-3 text-purple-500"></i><span class="font-light mr-2">Panic Key:</span>One click to redirect to another page.</li>
-                         <li class="flex items-center"><i class="fas fa-ghost fa-fw w-5 mr-3 text-purple-500"></i><span class="font-light mr-2">Tab Disguiser:</span>Disguise the website's favicon and title.</li>
+                          <li class="flex items-center"><i class="fas fa-ghost fa-fw w-5 mr-3 text-purple-500"></i><span class="font-light mr-2">Tab Disguiser:</span>Disguise the website's favicon and title.</li>
                     </ul>
                 </div>
 
