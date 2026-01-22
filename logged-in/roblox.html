@@ -13,7 +13,7 @@
         (async () => {
             if ('serviceWorker' in navigator) {
                 try {
-                    await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
+                    const reg = await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
                     
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         if (navigator.serviceWorker.controller) {
