@@ -38,8 +38,10 @@
                     });
                     console.log("VERN SW Registered");
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
-                        if (!navigator.serviceWorker.controller) return;
-                        window.location.reload();
+                        if (navigator.serviceWorker.controller) {
+                            console.log("SW active, reloading...");
+                            window.location.reload();
+                        }
                     });
                 } catch (e) {
                     console.error("SW Register Failed", e);
