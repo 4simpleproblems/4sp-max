@@ -14,14 +14,17 @@
         (async () => {
             if ('serviceWorker' in navigator) {
                 try {
-                    const reg = await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
+                    await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
+                    console.log("VERN SW Registered");
                     
-                    navigator.serviceWorker.addEventListener('controllerchange', () => {
-                        if (navigator.serviceWorker.controller) {
-                            console.log("SW active, reloading...");
+                    if (navigator.serviceWorker.controller) {
+                        console.log("SW already active");
+                    } else {
+                        navigator.serviceWorker.addEventListener('controllerchange', () => {
+                            console.log("SW activated, reloading...");
                             window.location.reload();
-                        }
-                    });
+                        });
+                    }
                 } catch(e) { console.error("SW Init Error:", e); }
             }
             try {
@@ -30,6 +33,7 @@
                     { websocket: 'wss://wisp.rhw.one/' },
                     { websocket: 'wss://wisp.mercurywork.shop/' }
                 ]);
+                console.log("BareMux Transport Set");
             } catch(e) { console.error("BareMux Init Error:", e); }
         })();
 
