@@ -11,22 +11,81 @@
     <script src="/logged-in/uv/uv.config.js"></script>
     <script src="/logged-in/baremux/index.js"></script>
     <script>
+        // Global asset loader
+        async function loadGameAssets() {
+            console.log("Service Worker Active. Loading assets...");
+            
+            const head = document.head;
+            const body = document.body;
+
+            // CSS
+            const cssUrls = [
+                'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap',
+                'https://cdn.now.gg/nowgg-static/fonts/fonts.css',
+                'https://now.gg/3/play/assets/_next/static/css/styles.d6c7be162965db05.css'
+            ];
+            
+            cssUrls.forEach(url => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = getProxiedUrl(url);
+                head.appendChild(link);
+            });
+
+            // Images/Video content injection
+            const logo = document.querySelector('.app-logo');
+            if(logo) {
+                logo.innerHTML = `<img width="120" height="30" src="${getProxiedUrl('https://now.gg/3/_next/static/media/nowgg-logo.2eda3eaf.svg')}" alt="now.gg Logo"/>`;
+            }
+
+            const video = document.getElementById('bg-video');
+            if(video) {
+                video.poster = getProxiedUrl('https://cdn.now.gg/apps-content/default/images/Banner_Landscape.jpg');
+                video.innerHTML = `<source type="video/mp4" src="${getProxiedUrl('https://cdn.now.gg/apps-content/default/launch-video/desktop/Launch_1920.mp4')}"/>`;
+                video.load(); // Reload video source
+            }
+
+            // External Scripts
+            const scripts = [
+                'https://now.gg/3/play/assets/_next/static/chunks/polyfills-42372ed130431b0a.js',
+                'https://now.gg/3/play/assets/_next/static/chunks/webpack-fcb1a2d5c6cf741a.js',
+                'https://now.gg/3/play/assets/_next/static/chunks/main-4f884091f83cebb1.js',
+                'https://now.gg/3/play/assets/_next/static/chunks/pages/_app-35838c1c35badd69.js',
+                'https://now.gg/3/play/assets/_next/static/chunks/pages/apps/%5B...index%5D-927b8564ac4c49eb.js'
+            ];
+
+            for (const src of scripts) {
+                const s = document.createElement('script');
+                s.src = getProxiedUrl(src);
+                s.defer = true;
+                body.appendChild(s);
+            }
+        }
+
         (async () => {
+            // SW Registration
             if ('serviceWorker' in navigator) {
                 try {
                     await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
                     console.log("VERN SW Registered");
                     
                     if (navigator.serviceWorker.controller) {
-                        console.log("SW already active");
+                        // SW is already active, safe to load
+                        loadGameAssets();
                     } else {
+                        // Wait for activation then reload/load
                         navigator.serviceWorker.addEventListener('controllerchange', () => {
                             console.log("SW activated, reloading...");
                             window.location.reload();
                         });
                     }
                 } catch(e) { console.error("SW Init Error:", e); }
+            } else {
+                // Fallback for no SW support (unlikely to work but tries)
+                loadGameAssets();
             }
+
+            // BareMux Init
             try {
                 const conn = new BareMux.BareMuxConnection(window.location.origin + '/logged-in/baremux/worker.js');
                 await conn.setTransport('/logged-in/libcurl/index.mjs', [
@@ -38,14 +97,12 @@
         })();
 
         // --- URL REWRITING FOR PROXY ---
-        // This function ensures all external assets go through the proxy
         function getProxiedUrl(url) {
             if (!url || !url.startsWith('http')) return url;
-            const prefix = (self.__uv$config && self.__uv$config.prefix) ? 
-                           (window.location.origin + self.__uv$config.prefix) : 
-                           (window.location.origin + "/logged-in/uv/service/");
-                           
-            // Encode the URL using UV's codec
+            // Ensure config exists or fallback
+            if (!self.__uv$config) return url; 
+            
+            const prefix = (window.location.origin + self.__uv$config.prefix);
             return prefix + Ultraviolet.codec.xor.encode(url);
         }
     </script>
@@ -80,12 +137,7 @@
         })();
     </script>
     
-    <!-- Proxying External Stylesheets -->
-    <script>
-        document.write(`<link rel="stylesheet" href="${getProxiedUrl('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap')}"/>`);
-        document.write(`<link rel="stylesheet" href="${getProxiedUrl('https://cdn.now.gg/nowgg-static/fonts/fonts.css')}"/>`);
-        document.write(`<link rel="stylesheet" href="${getProxiedUrl('https://now.gg/3/play/assets/_next/static/css/styles.d6c7be162965db05.css')}" />`);
-    </script>
+    <!-- Proxying External Stylesheets (Handled by loadGameAssets) -->
 
     <style>
         body { background-color: #111; margin: 0; overflow: hidden; }
@@ -101,10 +153,7 @@
         <section class="StyledLayout">
             <header class="sc-74ddd4db-0 gLZcnl">
                 <div class="sc-b5bac989-0 ifdeIN app-logo">
-                    <!-- Proxy Image -->
-                    <script>
-                        document.write(`<img width="120" height="30" src="${getProxiedUrl('https://now.gg/3/_next/static/media/nowgg-logo.2eda3eaf.svg')}" alt="now.gg Logo"/>`);
-                    </script>
+                    <!-- Proxy Image (Injected) -->
                 </div>
             </header>
 
@@ -115,11 +164,6 @@
                             <video class="BgVideo" autoplay muted loop playsinline height="100%" width="100%" id="bg-video">
                                 <!-- Sources injected via JS -->
                             </video>
-                            <script>
-                                const video = document.getElementById('bg-video');
-                                video.poster = getProxiedUrl('https://cdn.now.gg/apps-content/default/images/Banner_Landscape.jpg');
-                                video.innerHTML = `<source type="video/mp4" src="${getProxiedUrl('https://cdn.now.gg/apps-content/default/launch-video/desktop/Launch_1920.mp4')}"/>`;
-                            </script>
                         </div>
 
                         <div class="HeroAppInfo landscape">
@@ -164,26 +208,6 @@
         "runtimeConfig": { "NEXT_PUBLIC_ENVIRONMENT": "prod3-berlin", "NEXT_PUBLIC_FE_VERSION": "berlin-v1.49.100-arm.1" },
         "isFallback": false, "gssp": true
     }
-    </script>
-
-    <!-- Proxying External Scripts -->
-    <!-- We override document.createElement to catch and proxy dynamic script injections if needed, 
-         but for these static ones, we manually rewrite them. -->
-    <script>
-        const scripts = [
-            'https://now.gg/3/play/assets/_next/static/chunks/polyfills-42372ed130431b0a.js',
-            'https://now.gg/3/play/assets/_next/static/chunks/webpack-fcb1a2d5c6cf741a.js',
-            'https://now.gg/3/play/assets/_next/static/chunks/main-4f884091f83cebb1.js',
-            'https://now.gg/3/play/assets/_next/static/chunks/pages/_app-35838c1c35badd69.js',
-            'https://now.gg/3/play/assets/_next/static/chunks/pages/apps/%5B...index%5D-927b8564ac4c49eb.js'
-        ];
-
-        scripts.forEach(src => {
-            const s = document.createElement('script');
-            s.src = getProxiedUrl(src);
-            s.defer = true;
-            document.body.appendChild(s);
-        });
     </script>
 
 </body>
