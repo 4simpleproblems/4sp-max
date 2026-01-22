@@ -595,15 +595,31 @@ print("Hello World")
 
         conversationHistory.push({ role: "system", content: SYSTEM_PROMPT });
 
-        // --- DROPDOWN LOGIC ---
+        // --- DROPDOWN LOGIC (FIXED) ---
         const toggleBtn = document.getElementById('model-toggle');
         const menu = document.getElementById('model-menu');
-        const display = document.getElementById('current-model-display');
 
-        toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+        // Toggle function
+        function toggleMenu(e) {
             e.preventDefault();
+            e.stopPropagation();
             menu.classList.toggle('open');
+        }
+
+        // Close function
+        function closeMenu() {
+            menu.classList.remove('open');
+        }
+
+        // Bind events
+        toggleBtn.addEventListener('click', toggleMenu);
+
+        document.addEventListener('click', (e) => {
+            if (menu.classList.contains('open')) {
+                if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+                    closeMenu();
+                }
+            }
         });
 
         // Close when clicking an option
@@ -614,15 +630,8 @@ print("Hello World")
                 updateHeaderUI(modelId);
                 addSystemBadge(`Switched to ${displayName}`);
             }
-            menu.classList.remove('open');
+            closeMenu();
         };
-
-        // Close on click outside
-        document.addEventListener('click', (e) => {
-            if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
-                menu.classList.remove('open');
-            }
-        });
 
         // --- INPUT HANDLING ---
         function handleInput(el) {
