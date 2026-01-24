@@ -1,7 +1,72 @@
 // Vora MAX - Logic Engine
-const isMoviePage = window.location.pathname.includes('movies.html');
-const isSeriesPage = window.location.pathname.includes('series.html');
-const isIndexPage = window.location.pathname.includes('index.html') || window.location.pathname.endsWith('vora/') || window.location.pathname.endsWith('/');
+window.VORA_CONFIG = window.VORA_CONFIG || {
+    currentView: window.location.pathname.includes('movies.html') ? 'movies' : 
+                 window.location.pathname.includes('series.html') ? 'series' : 'index'
+};
+
+const isMoviePage = () => window.VORA_CONFIG.currentView === 'movies';
+const isSeriesPage = () => window.VORA_CONFIG.currentView === 'series';
+const isIndexPage = () => window.VORA_CONFIG.currentView === 'index';
+
+window.switchView = function(view) {
+    window.VORA_CONFIG.currentView = view;
+    window.location.hash = ''; // Clear player when switching views
+    
+    // Update Sidebar UI
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('onclick')?.includes(`'${view}'`)) {
+            link.classList.add('active');
+        }
+    });
+
+    // Update Headers
+    const title = document.querySelector('h2.text-2xl');
+    const subtitle = document.querySelector('p.text-gray-500');
+    if (view === 'index') {
+        if (title) title.innerText = 'Welcome back';
+        if (subtitle) subtitle.innerText = 'Find your next favorite media.';
+    } else if (view === 'movies') {
+        if (title) title.innerText = 'Movies';
+        if (subtitle) subtitle.innerText = 'Browse our extensive movie collection.';
+    } else if (view === 'series') {
+        if (title) title.innerText = 'Series';
+        if (subtitle) subtitle.innerText = 'Discover your next favorite series.';
+    }
+
+    // Toggle Sections
+    const favorites = document.getElementById('favorites-section');
+    const movies = document.getElementById('movies-section') || document.querySelector('section:has(#moviesGrid)');
+    const series = document.getElementById('series-section') || document.querySelector('section:has(#seriesGrid)');
+    const dynamic = document.getElementById('dynamic-section');
+    const singleGrid = document.getElementById('videoGrid');
+    
+    if (view === 'index') {
+        if (favorites) favorites.classList.remove('hidden');
+        if (movies) movies.classList.remove('hidden');
+        if (series) series.classList.remove('hidden');
+        if (dynamic) dynamic.classList.add('hidden');
+        if (singleGrid) singleGrid.innerHTML = '';
+        
+        window.themoviedb(`trending/movie/week?language=${getTmdbLanguage()}&page=1`);
+        window.themoviedb(`trending/tv/week?language=${getTmdbLanguage()}&page=1`);
+    } else {
+        if (favorites) favorites.classList.add('hidden');
+        if (movies) movies.classList.add('hidden');
+        if (series) series.classList.add('hidden');
+        if (dynamic) dynamic.classList.remove('hidden');
+        if (singleGrid) singleGrid.innerHTML = '<div class="text-center py-20 col-span-full text-white"><i class="fas fa-spinner fa-spin text-3xl text-purple-500"></i></div>';
+        
+        const dynamicTitle = document.getElementById('dynamic-title');
+        if (dynamicTitle) dynamicTitle.innerText = view === 'movies' ? 'Movies' : 'Series';
+
+        if (view === 'movies') {
+            window.themoviedb(`discover/movie`, { params: { sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
+        } else {
+            window.themoviedb(`discover/tv`, { params: { sort_by: 'first_air_date.desc', 'first_air_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
+        }
+    }
+};
 
 const AD_URL = "https://raw.githubusercontent.com/Himanshuxzx/test/refs/heads/main/document_6183624446532656632.mp4";
 
@@ -138,8 +203,8 @@ function createMediaCard(item) {
     if (!item.poster_path) return null;
     const isActuallyMovie = !!item.title || item.media_type === 'movie';
     const isActuallyTV = !!item.name || item.media_type === 'tv';
-    if (isMoviePage && !isActuallyMovie) return null;
-    if (isSeriesPage && !isActuallyTV) return null;
+    if (isMoviePage() && !isActuallyMovie) return null;
+    if (isSeriesPage() && !isActuallyTV) return null;
 
     const title = item.title || item.name;
     const poster = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
@@ -206,19 +271,19 @@ async function renderTmdb(res, endpoint) {
     try {
         const data = await res.json();
         let grid;
-        if (isIndexPage && !isSearchActive) {
+        if (isIndexPage() && !isSearchActive) {
             grid = endpoint.includes('movie') ? document.getElementById('moviesGrid') : document.getElementById('seriesGrid');
         } else {
             grid = document.getElementById('videoGrid');
         }
         if (!grid || !data.results || window.location.hash) return;
         if (data.page === 1) grid.innerHTML = '';
-        const itemsToShow = (isIndexPage && !isSearchActive) ? data.results.slice(0, 11) : data.results;
+        const itemsToShow = (isIndexPage() && !isSearchActive) ? data.results.slice(0, 11) : data.results;
         itemsToShow.forEach(item => {
             const card = createMediaCard(item);
             if (card) grid.appendChild(card);
         });
-        if (isIndexPage && !isSearchActive) grid.appendChild(createViewAllCard(endpoint.includes('movie') ? 'movies.html' : 'series.html'));
+        if (isIndexPage() && !isSearchActive) grid.appendChild(createViewAllCard(endpoint.includes('movie') ? 'movies.html' : 'series.html'));
         isLoading = false;
         if (data.page >= data.total_pages) hasMore = false;
     } catch (e) {
@@ -230,7 +295,7 @@ async function renderTmdb(res, endpoint) {
 // Pagination Logic
 let currentPage = 1, currentEndpoint = '', isLoading = false, hasMore = true, isSearchActive = false;
 window.addEventListener('scroll', () => {
-    if (isLoading || !hasMore || window.location.hash || (isIndexPage && !isSearchActive)) return;
+    if (isLoading || !hasMore || window.location.hash || (isIndexPage() && !isSearchActive)) return;
     const scrollHeight = document.documentElement.scrollHeight;
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const clientHeight = window.innerHeight;
@@ -263,13 +328,13 @@ async function loadFromHash() {
     if (!hash) {
         const playerView = document.getElementById('player-view');
         if (playerView) playerView.remove();
-        if (isIndexPage) {
+        if (isIndexPage()) {
             document.getElementById('favorites-section')?.classList.remove('hidden');
             renderFavorites();
         }
         return;
     };
-    let type = isSeriesPage ? 'tv' : 'movie';
+    let type = isSeriesPage() ? 'tv' : 'movie';
     document.querySelectorAll('.video-grid').forEach(g => g.innerHTML = '');
     document.getElementById('favorites-section')?.classList.add('hidden');
     document.getElementById('dynamic-section')?.classList.add('hidden');
@@ -290,7 +355,7 @@ async function loadFromHash() {
             const item = await res.json();
             renderPlayerUI(t, hash, item);
         } catch (e) {
-            if (t === 'movie' && isIndexPage) tryLoad('tv');
+            if (t === 'movie' && isIndexPage()) tryLoad('tv');
             else playerView.innerHTML = `<div class="text-center py-20 text-white font-normal">Error loading media.</div>`;
         }
     }
@@ -551,7 +616,7 @@ function performSearch() {
     const query = document.getElementById('searchInput').value.trim();
     if (!query) return;
     isSearchActive = true;
-    if (isIndexPage) {
+    if (isIndexPage()) {
         document.getElementById('moviesGrid')?.parentElement.classList.add('hidden');
         document.getElementById('seriesGrid')?.parentElement.classList.add('hidden');
         document.getElementById('favorites-section')?.classList.add('hidden');
@@ -560,7 +625,7 @@ function performSearch() {
     const grid = document.getElementById('videoGrid');
     if (grid) grid.innerHTML = '<div class="text-center py-20 col-span-full text-white"><i class="fas fa-spinner fa-spin text-3xl text-purple-500"></i></div>';
     window.location.hash = ''; 
-    let endpoint = isMoviePage ? 'search/movie' : (isSeriesPage ? 'search/tv' : 'search/multi');
+    let endpoint = isMoviePage() ? 'search/movie' : (isSeriesPage() ? 'search/tv' : 'search/multi');
     window.themoviedb(endpoint, { params: { query: query, language: getTmdbLanguage() } });
 }
 
@@ -579,12 +644,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.hash) {
         loadFromHash();
     } else {
-        if (isIndexPage) {
+        // Only auto-load if not in single_file SPA mode (where switchView handles it)
+        if (window.location.pathname.includes('single_file.html')) return;
+
+        if (isIndexPage()) {
             window.themoviedb(`trending/movie/week?language=${getTmdbLanguage()}&page=1`);
             window.themoviedb(`trending/tv/week?language=${getTmdbLanguage()}&page=1`);
-        } else if (isMoviePage) {
+        } else if (isMoviePage()) {
             window.themoviedb(`discover/movie`, { params: { sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
-        } else if (isSeriesPage) {
+        } else if (isSeriesPage()) {
             window.themoviedb(`discover/tv`, { params: { sort_by: 'first_air_date.desc', 'first_air_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
         }
     }
