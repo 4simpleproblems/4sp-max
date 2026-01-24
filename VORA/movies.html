@@ -20,16 +20,17 @@
     <script src="./VERN_SYSTEM/baremux/index.js"></script>
     <script>
         window.checkBare = async () => {
-            const connection = new BareMux.BareMuxConnection(new URL("./VERN_SYSTEM/baremux/worker.js", window.location.origin).href);
+            const connection = new BareMux.BareMuxConnection(new URL("./VERN_SYSTEM/baremux/worker.js", window.location.href).href);
             const wispUrl = "wss://wisp.rhw.one/";
+            const transportPath = new URL("./VERN_SYSTEM/libcurl/index.mjs", window.location.href).href;
             
             try {
                 const transport = await connection.getTransport();
-                if (!transport || transport.path !== "./VERN_SYSTEM/libcurl/index.mjs") {
-                    await connection.setTransport("./VERN_SYSTEM/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                if (!transport || transport.path !== transportPath) {
+                    await connection.setTransport(transportPath, [{ websocket: wispUrl }]);
                 }
             } catch (e) {
-                await connection.setTransport("./VERN_SYSTEM/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                await connection.setTransport(transportPath, [{ websocket: wispUrl }]);
             }
         };
 
