@@ -218,6 +218,10 @@ function toggleLike(item) {
 // Rendering Logic
 function createMediaCard(item) {
     if (!item.poster_path) return null;
+    
+    // Language Filter: Only English
+    if (item.original_language && item.original_language !== 'en') return null;
+
     const isActuallyMovie = !!item.title || item.media_type === 'movie';
     const isActuallyTV = !!item.name || item.media_type === 'tv';
     if (isMoviePage() && !isActuallyMovie) return null;
@@ -681,7 +685,7 @@ function performSearch() {
     if (!isSPA) window.location.hash = ''; 
 
     let endpoint = isMoviePage() ? 'search/movie' : (isSeriesPage() ? 'search/tv' : 'search/multi');
-    window.themoviedb(endpoint, { params: { query: query, language: getTmdbLanguage() } });
+    window.themoviedb(endpoint, { params: { query: query, language: 'en-US' } });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
