@@ -78,9 +78,9 @@ window.switchView = function(view, clearHash = true) {
         if (dynamicTitle) dynamicTitle.innerText = view === 'movies' ? 'Movies' : 'Series';
 
         if (view === 'movies') {
-            window.themoviedb(`discover/movie`, { params: { sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
+            window.themoviedb(`discover/movie`, { params: { sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], with_original_language: 'en', language: getTmdbLanguage(), page: 1 } });
         } else {
-            window.themoviedb(`discover/tv`, { params: { sort_by: 'first_air_date.desc', 'first_air_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
+            window.themoviedb(`discover/tv`, { params: { sort_by: 'first_air_date.desc', 'first_air_date.lte': new Date().toISOString().split('T')[0], with_original_language: 'en', language: getTmdbLanguage(), page: 1 } });
         }
     }
 };
@@ -707,9 +707,9 @@ document.addEventListener('DOMContentLoaded', () => {
             window.themoviedb(`trending/movie/week?language=${getTmdbLanguage()}&page=1`);
             window.themoviedb(`trending/tv/week?language=${getTmdbLanguage()}&page=1`);
         } else if (isMoviePage()) {
-            window.themoviedb(`discover/movie`, { params: { sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
+            window.themoviedb(`discover/movie`, { params: { sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], with_original_language: 'en', language: getTmdbLanguage(), page: 1 } });
         } else if (isSeriesPage()) {
-            window.themoviedb(`discover/tv`, { params: { sort_by: 'first_air_date.desc', 'first_air_date.lte': new Date().toISOString().split('T')[0], language: getTmdbLanguage(), page: 1 } });
+            window.themoviedb(`discover/tv`, { params: { sort_by: 'first_air_date.desc', 'first_air_date.lte': new Date().toISOString().split('T')[0], with_original_language: 'en', language: getTmdbLanguage(), page: 1 } });
         }
     }
 });
