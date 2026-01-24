@@ -244,9 +244,18 @@ function createMediaCard(item) {
 }
 
 function createViewAllCard(link) {
+    const isSPA = window.location.pathname.includes('single_file.html') || window.location.pathname.includes('vora.html');
+    const view = link.includes('movie') ? 'movies' : 'series';
+    
     const card = document.createElement('a');
-    card.href = link;
-    card.className = 'video-item group flex flex-col items-center justify-center min-h-[300px] border-dashed border-2 border-brand-border hover:border-solid hover:border-purple-500 bg-white/5 hover:bg-white/10 transition-all rounded-[16px]';
+    if (isSPA) {
+        card.href = 'javascript:void(0)';
+        card.onclick = () => window.switchView(view);
+    } else {
+        card.href = link;
+    }
+    
+    card.className = 'video-item group flex flex-col items-center justify-center min-h-[300px] border-dashed border-2 border-brand-border hover:border-solid hover:border-purple-500 bg-white/5 hover:bg-white/10 transition-all rounded-[16px] cursor-pointer';
     card.innerHTML = `
         <i class="fas fa-arrow-right text-3xl mb-4 text-purple-500 group-hover:translate-x-2 transition-transform"></i>
         <span class="text-white font-medium">View All</span>
