@@ -235,6 +235,9 @@ function createMediaCard(item) {
     const isSPA = window.location.pathname.includes('single_file.html') || window.location.pathname.includes('vora.html');
     const link = isSPA ? '' : (isActuallyMovie ? 'movies.html' : 'series.html');
     
+    // Explicit Hash: Include type to avoid ID collisions between movies and TV
+    const hashValue = isSPA ? `${effectiveType}/${item.id}` : item.id;
+
     const card = document.createElement('div');
     card.className = 'video-item group relative';
     const isFav = isLiked(item.id);
@@ -243,7 +246,7 @@ function createMediaCard(item) {
     card.innerHTML = `
         <div class="thumbnail-container">
             <img src="${poster}" loading="lazy" onerror="this.closest('.video-item').style.display='none'">
-            <a href="${link}#${item.id}" class="play-overlay">
+            <a href="${link}#${hashValue}" class="play-overlay">
                 <i class="fas fa-play text-4xl text-white"></i>
             </a>
             <button class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-xl bg-black/60 backdrop-blur-md text-white border border-white/10 hover:scale-110 transition-all fav-trigger z-10" data-id="${item.id}" title="Like">
@@ -357,14 +360,14 @@ async function fetchSeason(id, seasonNum) {
 }
 
 async function loadFromHash() {
-    const hash = window.location.hash.substring(1);
+    let fullHash = window.location.hash.substring(1);
     const header = document.querySelector('header');
     const favorites = document.getElementById('favorites-section');
     const movies = document.getElementById('movies-section');
     const series = document.getElementById('series-section');
     const dynamic = document.getElementById('dynamic-section');
 
-    if (!hash) {
+    if (!fullHash) {
         const playerView = document.getElementById('player-view');
         if (playerView) playerView.remove();
         
@@ -382,6 +385,17 @@ async function loadFromHash() {
         return;
     };
 
+    // Parse hash: format is type/id (e.g. movie/123) or just id
+    let type, id;
+    if (fullHash.includes('/')) {
+        const parts = fullHash.split('/');
+        type = parts[0];
+        id = parts[1];
+    } else {
+        type = isSeriesPage() ? 'tv' : 'movie';
+        id = fullHash;
+    }
+
     // Hide everything when player is active
     if (header) header.classList.add('hidden');
     if (favorites) favorites.classList.add('hidden');
@@ -389,7 +403,6 @@ async function loadFromHash() {
     if (series) series.classList.add('hidden');
     if (dynamic) dynamic.classList.add('hidden');
 
-    let type = isSeriesPage() ? 'tv' : 'movie';
     document.querySelectorAll('.video-grid').forEach(g => g.innerHTML = '');
     
     const main = document.querySelector('main');
@@ -401,20 +414,20 @@ async function loadFromHash() {
         main.prepend(playerView);
     }
     playerView.innerHTML = `<div class="text-center py-20"><i class="fas fa-spinner fa-spin text-3xl text-purple-500"></i></div>`;
-    async function tryLoad(t) {
+    async function tryLoad(t, currentId) {
         try {
             if (window.checkBare) await window.checkBare();
-            const res = await originalThemoviedb(`${t}/${hash}`, { params: { language: getTmdbLanguage() } });
+            const res = await originalThemoviedb(`${t}/${currentId}`, { params: { language: getTmdbLanguage() } });
             if (!res.ok) throw new Error();
             const item = await res.json();
-            renderPlayerUI(t, hash, item);
+            renderPlayerUI(t, currentId, item);
         } catch (e) {
-            // Fallback: if movie fails, try tv (and vice versa if appropriate)
-            if (t === 'movie' && !isSeriesPage()) tryLoad('tv');
+            // Fallback only if we didn't have an explicit type in the hash
+            if (!fullHash.includes('/') && t === 'movie' && !isSeriesPage()) tryLoad('tv', currentId);
             else playerView.innerHTML = `<div class="text-center py-20 text-white font-normal">Error loading media.</div>`;
         }
     }
-    tryLoad(type);
+    tryLoad(type, id);
 }
 
 // Proxy Helper
