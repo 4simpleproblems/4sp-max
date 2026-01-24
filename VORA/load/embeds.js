@@ -209,7 +209,10 @@ function createMediaCard(item) {
     const title = item.title || item.name;
     const poster = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
     const effectiveType = isActuallyMovie ? 'movie' : 'tv';
-    const link = isActuallyMovie ? 'movies.html' : 'series.html';
+    
+    // SPA Check: If we are on single_file.html or vora.html, don't redirect
+    const isSPA = window.location.pathname.includes('single_file.html') || window.location.pathname.includes('vora.html');
+    const link = isSPA ? '' : (isActuallyMovie ? 'movies.html' : 'series.html');
     
     const card = document.createElement('div');
     card.className = 'video-item group relative';
@@ -355,7 +358,8 @@ async function loadFromHash() {
             const item = await res.json();
             renderPlayerUI(t, hash, item);
         } catch (e) {
-            if (t === 'movie' && isIndexPage()) tryLoad('tv');
+            // Fallback: if movie fails, try tv (and vice versa if appropriate)
+            if (t === 'movie' && !isSeriesPage()) tryLoad('tv');
             else playerView.innerHTML = `<div class="text-center py-20 text-white font-normal">Error loading media.</div>`;
         }
     }
