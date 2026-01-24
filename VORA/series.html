@@ -2,11 +2,11 @@
 <html lang="en" class="dark">
 <head>
     <!-- VERN_SYSTEM Proxy -->
-    <script src="/VERN_SYSTEM/uv/uv.bundle.js"></script>
+    <script src="./VERN_SYSTEM/uv/uv.bundle.js"></script>
     <script>
-        const basePath = "/VERN_SYSTEM/uv/";
+        const basePath = "./VERN_SYSTEM/uv/";
         self.__uv$config = {
-            prefix: "/VERN_SYSTEM/uv/service/",
+            prefix: "./VERN_SYSTEM/uv/service/",
             encodeUrl: Ultraviolet.codec.xor.encode,
             decodeUrl: Ultraviolet.codec.xor.decode,
             handler: basePath + "uv.handler.js",
@@ -14,30 +14,30 @@
             bundle: basePath + "uv.bundle.js",
             config: basePath + "uv.config.js",
             sw: basePath + "uv.sw.js",
-            stockSW: basePath + "sw.js",
+            stockSW: "./VERN_SYSTEM/sw.js",
         };
     </script>
-    <script src="/VERN_SYSTEM/baremux/index.js"></script>
+    <script src="./VERN_SYSTEM/baremux/index.js"></script>
     <script>
         window.checkBare = async () => {
-            const connection = new BareMux.BareMuxConnection(new URL("/VERN_SYSTEM/baremux/worker.js", window.location.origin).href);
+            const connection = new BareMux.BareMuxConnection(new URL("./VERN_SYSTEM/baremux/worker.js", window.location.origin).href);
             const wispUrl = "wss://wisp.rhw.one/";
             
             try {
                 const transport = await connection.getTransport();
-                if (!transport || transport.path !== "/VERN_SYSTEM/libcurl/index.mjs") {
-                    await connection.setTransport("/VERN_SYSTEM/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                if (!transport || transport.path !== "./VERN_SYSTEM/libcurl/index.mjs") {
+                    await connection.setTransport("./VERN_SYSTEM/libcurl/index.mjs", [{ websocket: wispUrl }]);
                 }
             } catch (e) {
-                await connection.setTransport("/VERN_SYSTEM/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                await connection.setTransport("./VERN_SYSTEM/libcurl/index.mjs", [{ websocket: wispUrl }]);
             }
         };
 
         (async () => {
             if ("serviceWorker" in navigator) {
                 try {
-                    await navigator.serviceWorker.register("/VERN_SYSTEM/sw.js", {
-                        scope: "/VERN_SYSTEM/"
+                    await navigator.serviceWorker.register("./VERN_SYSTEM/sw.js", {
+                        scope: "./VERN_SYSTEM/"
                     });
                 } catch (e) { console.error("VERN Proxy Error", e); }
             }

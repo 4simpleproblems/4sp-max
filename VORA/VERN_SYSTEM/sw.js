@@ -1,6 +1,6 @@
-importScripts('/VERN_SYSTEM/uv/uv.bundle.js');
-importScripts('/VERN_SYSTEM/uv/uv.config.js');
-importScripts('/VERN_SYSTEM/uv/uv.sw.js');
+importScripts('./uv/uv.bundle.js');
+importScripts('./uv/uv.config.js');
+importScripts('./uv/uv.sw.js');
 
 const uv = new UVServiceWorker();
 
