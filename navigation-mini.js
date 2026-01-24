@@ -21,7 +21,7 @@ const FIREBASE_CONFIG = {
 // =========================================================================
 
 // --- Configuration ---
-const PAGE_CONFIG_URL = '../page-identification.json';
+window.PAGE_CONFIG_URL = window.PAGE_CONFIG_URL || '../page-identification.json';
 const PRIVILEGED_EMAIL = '4simpleproblems@gmail.com'; 
 const THEME_STORAGE_KEY = 'user-navbar-theme';
 const lightThemeNames = ['Light', 'Lavender', 'Rose Gold', 'Mint', 'Pink']; // Define light theme names
@@ -294,7 +294,7 @@ let db;
         await loadScript("https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js");
         
         try {
-            const response = await fetch(PAGE_CONFIG_URL);
+            const response = await fetch(window.PAGE_CONFIG_URL);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             pages = await response.json();
         } catch (error) {

@@ -648,8 +648,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.hash) {
         loadFromHash();
     } else {
-        // Only auto-load if not in single_file SPA mode (where switchView handles it)
-        if (window.location.pathname.includes('single_file.html')) return;
+        // Only auto-load if not in SPA mode (where switchView handles it)
+        const isSPA = window.location.pathname.includes('single_file.html') || window.location.pathname.includes('vora.html');
+        if (isSPA) return;
 
         if (isIndexPage()) {
             window.themoviedb(`trending/movie/week?language=${getTmdbLanguage()}&page=1`);
