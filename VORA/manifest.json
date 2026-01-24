@@ -1,0 +1,15 @@
+{
+  "name": "Vora",
+  "short_name": "Vora",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#181818",
+  "theme_color": "#ff7575",
+  "icons": [
+    {
+      "src": "https://www.themoviedb.org/assets/2/favicon-32x32-543978441014951620328a2a9bc2099e448ddf2340a996f3e1c1dc6938243933.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ]
+}
