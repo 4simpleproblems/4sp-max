@@ -300,7 +300,7 @@ async function loadFromHash() {
 // Proxy Helper
 function proxyUrl(url) {
     if (typeof Ultraviolet === 'undefined') return url;
-    return window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/VERN_SYSTEM/uv/service/" + Ultraviolet.codec.xor.encode(url);
+    return window.location.origin + "/VORA/VERN_SYSTEM/uv/service/" + Ultraviolet.codec.xor.encode(url);
 }
 
 function renderPlayerUI(type, id, item) {

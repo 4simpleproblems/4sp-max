@@ -1,5 +1,5 @@
 (() => {
-    const basePath = "./VERN_SYSTEM/uv/";
+    const basePath = "/VORA/VERN_SYSTEM/uv/";
 
     self.__uv$config = {
         prefix: basePath + "service/",
@@ -10,7 +10,7 @@
         bundle: basePath + "uv.bundle.js",
         config: basePath + "uv.config.js",
         sw: basePath + "uv.sw.js",
-        stockSW: "../sw.js",
+        stockSW: "/VORA/VERN_SYSTEM/sw.js",
         /**
          * @type {string}
          * @description The Bare server to use. This can be an absolute URL or a relative path.

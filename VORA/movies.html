@@ -4,9 +4,9 @@
     <!-- VERN_SYSTEM Proxy -->
     <script src="./VERN_SYSTEM/uv/uv.bundle.js"></script>
     <script>
-        const basePath = "./VERN_SYSTEM/uv/";
+        const basePath = "/VORA/VERN_SYSTEM/uv/";
         self.__uv$config = {
-            prefix: "./VERN_SYSTEM/uv/service/",
+            prefix: basePath + "service/",
             encodeUrl: Ultraviolet.codec.xor.encode,
             decodeUrl: Ultraviolet.codec.xor.decode,
             handler: basePath + "uv.handler.js",
@@ -14,15 +14,15 @@
             bundle: basePath + "uv.bundle.js",
             config: basePath + "uv.config.js",
             sw: basePath + "uv.sw.js",
-            stockSW: "./VERN_SYSTEM/sw.js",
+            stockSW: "/VORA/VERN_SYSTEM/sw.js",
         };
     </script>
     <script src="./VERN_SYSTEM/baremux/index.js"></script>
     <script>
         window.checkBare = async () => {
-            const connection = new BareMux.BareMuxConnection(new URL("./VERN_SYSTEM/baremux/worker.js", window.location.href).href);
+            const connection = new BareMux.BareMuxConnection("/VORA/VERN_SYSTEM/baremux/worker.js");
             const wispUrl = "wss://wisp.rhw.one/";
-            const transportPath = new URL("./VERN_SYSTEM/libcurl/index.mjs", window.location.href).href;
+            const transportPath = "/VORA/VERN_SYSTEM/libcurl/index.mjs";
             
             try {
                 const transport = await connection.getTransport();
