@@ -54,8 +54,13 @@
         "icon": "fa-solid fa-robot",
         "url": "../logged-in/vana.html"
     },
+    "vana": {
+        "name": "Vora",
+        "icon": "fa-solid fa-tv",
+        "url": "../logged-in/vora.html"
+    },
     "vern": {
-        "name": "VERN",
+        "name": "Vern",
         "icon": "fa-solid fa-globe",
         "url": "../logged-in/vern.html"
     },
