@@ -89,7 +89,7 @@
             try {
                 const conn = new BareMux.BareMuxConnection(window.location.origin + '/logged-in/baremux/worker.js');
                 await conn.setTransport('/logged-in/libcurl/index.mjs', [
-                    { websocket: 'wss://wisp.pydust.workers.dev/' },
+                    { websocket: 'wss://wisp.rhw.one/' },
                     { websocket: 'wss://wisp.mercurywork.shop/' }
                 ]);
                 console.log("BareMux Transport Set");

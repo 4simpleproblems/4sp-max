@@ -8,9 +8,9 @@ const isMoviePage = () => window.VORA_CONFIG.currentView === 'movies';
 const isSeriesPage = () => window.VORA_CONFIG.currentView === 'series';
 const isIndexPage = () => window.VORA_CONFIG.currentView === 'index';
 
-window.switchView = function(view) {
+window.switchView = function(view, clearHash = true) {
     window.VORA_CONFIG.currentView = view;
-    window.location.hash = ''; // Clear player when switching views
+    if (clearHash) window.location.hash = ''; // Only clear hash if explicitly requested
     
     // Update Sidebar UI
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -36,8 +36,8 @@ window.switchView = function(view) {
 
     // Toggle Sections
     const favorites = document.getElementById('favorites-section');
-    const movies = document.getElementById('movies-section') || document.querySelector('section:has(#moviesGrid)');
-    const series = document.getElementById('series-section') || document.querySelector('section:has(#seriesGrid)');
+    const movies = document.getElementById('movies-section');
+    const series = document.getElementById('series-section');
     const dynamic = document.getElementById('dynamic-section');
     const singleGrid = document.getElementById('videoGrid');
     
@@ -46,7 +46,8 @@ window.switchView = function(view) {
         if (movies) movies.classList.remove('hidden');
         if (series) series.classList.remove('hidden');
         if (dynamic) dynamic.classList.add('hidden');
-        if (singleGrid) singleGrid.innerHTML = '';
+        // Don't clear singleGrid here if it might contain search results, 
+        // but index view usually doesn't use it.
         
         window.themoviedb(`trending/movie/week?language=${getTmdbLanguage()}&page=1`);
         window.themoviedb(`trending/tv/week?language=${getTmdbLanguage()}&page=1`);
@@ -637,7 +638,11 @@ function performSearch() {
     }
     const grid = document.getElementById('videoGrid');
     if (grid) grid.innerHTML = '<div class="text-center py-20 col-span-full text-white"><i class="fas fa-spinner fa-spin text-3xl text-purple-500"></i></div>';
-    window.location.hash = ''; 
+    
+    // Only clear hash if NOT in SPA mode or if we explicitly want to close the player
+    const isSPA = window.location.pathname.includes('single_file.html') || window.location.pathname.includes('vora.html');
+    if (!isSPA) window.location.hash = ''; 
+
     let endpoint = isMoviePage() ? 'search/movie' : (isSeriesPage() ? 'search/tv' : 'search/multi');
     window.themoviedb(endpoint, { params: { query: query, language: getTmdbLanguage() } });
 }

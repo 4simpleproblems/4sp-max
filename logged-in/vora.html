@@ -21,7 +21,7 @@
     <script>
         window.checkBare = async () => {
             const connection = new BareMux.BareMuxConnection("/VORA/VERN_SYSTEM/baremux/worker.js");
-            const wispUrl = "wss://wisp.pydust.workers.dev/";
+            const wispUrl = "wss://wisp.rhw.one/";
             const transportPath = "/VORA/VERN_SYSTEM/libcurl/index.mjs";
             
             try {
@@ -226,7 +226,7 @@
     <script>
         window.VORA_CONFIG = { currentView: 'index' };
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.switchView) switchView(window.VORA_CONFIG.currentView);
+            if (window.switchView) switchView(window.VORA_CONFIG.currentView, false);
         });
     </script>
     <script src="/VORA/cachedFetch.js"></script>
