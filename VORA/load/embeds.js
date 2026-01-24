@@ -10,8 +10,12 @@ const isIndexPage = () => window.VORA_CONFIG.currentView === 'index';
 
 window.switchView = function(view, clearHash = true) {
     window.VORA_CONFIG.currentView = view;
-    if (clearHash) window.location.hash = ''; // Only clear hash if explicitly requested
+    if (clearHash) {
+        window.location.hash = ''; 
+    }
     
+    const hasHash = !!window.location.hash;
+
     // Update Sidebar UI
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
@@ -23,6 +27,8 @@ window.switchView = function(view, clearHash = true) {
     // Update Headers
     const title = document.querySelector('h2.text-2xl');
     const subtitle = document.querySelector('p.text-gray-500');
+    const header = document.querySelector('header');
+
     if (view === 'index') {
         if (title) title.innerText = 'Welcome back';
         if (subtitle) subtitle.innerText = 'Find your next favorite media.';
@@ -41,17 +47,27 @@ window.switchView = function(view, clearHash = true) {
     const dynamic = document.getElementById('dynamic-section');
     const singleGrid = document.getElementById('videoGrid');
     
+    // If player is active, keep everything hidden regardless of view switch
+    if (hasHash) {
+        if (header) header.classList.add('hidden');
+        if (favorites) favorites.classList.add('hidden');
+        if (movies) movies.classList.add('hidden');
+        if (series) series.classList.add('hidden');
+        if (dynamic) dynamic.classList.add('hidden');
+        return; 
+    }
+
     if (view === 'index') {
+        if (header) header.classList.remove('hidden');
         if (favorites) favorites.classList.remove('hidden');
         if (movies) movies.classList.remove('hidden');
         if (series) series.classList.remove('hidden');
         if (dynamic) dynamic.classList.add('hidden');
-        // Don't clear singleGrid here if it might contain search results, 
-        // but index view usually doesn't use it.
         
         window.themoviedb(`trending/movie/week?language=${getTmdbLanguage()}&page=1`);
         window.themoviedb(`trending/tv/week?language=${getTmdbLanguage()}&page=1`);
     } else {
+        if (header) header.classList.remove('hidden');
         if (favorites) favorites.classList.add('hidden');
         if (movies) movies.classList.add('hidden');
         if (series) series.classList.add('hidden');
@@ -338,19 +354,40 @@ async function fetchSeason(id, seasonNum) {
 
 async function loadFromHash() {
     const hash = window.location.hash.substring(1);
+    const header = document.querySelector('header');
+    const favorites = document.getElementById('favorites-section');
+    const movies = document.getElementById('movies-section');
+    const series = document.getElementById('series-section');
+    const dynamic = document.getElementById('dynamic-section');
+
     if (!hash) {
         const playerView = document.getElementById('player-view');
         if (playerView) playerView.remove();
+        
+        // Restore visibility based on current view
+        if (header) header.classList.remove('hidden');
+        
         if (isIndexPage()) {
-            document.getElementById('favorites-section')?.classList.remove('hidden');
+            if (favorites) favorites.classList.remove('hidden');
+            if (movies) movies.classList.remove('hidden');
+            if (series) series.classList.remove('hidden');
             renderFavorites();
+        } else {
+            if (dynamic) dynamic.classList.remove('hidden');
         }
         return;
     };
+
+    // Hide everything when player is active
+    if (header) header.classList.add('hidden');
+    if (favorites) favorites.classList.add('hidden');
+    if (movies) movies.classList.add('hidden');
+    if (series) series.classList.add('hidden');
+    if (dynamic) dynamic.classList.add('hidden');
+
     let type = isSeriesPage() ? 'tv' : 'movie';
     document.querySelectorAll('.video-grid').forEach(g => g.innerHTML = '');
-    document.getElementById('favorites-section')?.classList.add('hidden');
-    document.getElementById('dynamic-section')?.classList.add('hidden');
+    
     const main = document.querySelector('main');
     let playerView = document.getElementById('player-view');
     if (!playerView) {
