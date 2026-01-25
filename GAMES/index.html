@@ -67,13 +67,12 @@
                     try {
                         if (window.BareMux) {
                             const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                            await connection.setTransport("/GAMES/libcurl/index.mjs", [
-                                { websocket: "wss://wisp.rhw.one/" },
-                                { websocket: "wss://wisp.mercurywork.shop/" },
-                                { websocket: "wss://wisp.mercurynate.xyz/" },
-                                { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
-                            ]);
-                            console.log("BareMux Initialized");
+                                                await connection.setTransport("/GAMES/libcurl/index.mjs", [
+                                                    { websocket: "wss://wisp.mercurywork.shop/" },
+                                                    { websocket: "wss://wisp.rhw.one/" },
+                                                    { websocket: "wss://wisp.mercurynate.xyz/" },
+                                                    { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
+                                                ]);                            console.log("BareMux Initialized");
                         }
                     } catch (e) { console.error("BareMux Init Failed", e); }
                 })();
@@ -753,6 +752,12 @@
             const origin = window.location.origin;
             if (url.startsWith(origin)) return url;
             
+            // PERFORMANCE: Direct loading for safe CORS domains
+            // Workers and jsDelivr support CORS and are usually faster than proxying
+            if (url.includes('workers.dev') || url.includes('cdn.jsdelivr.net')) {
+                return url;
+            }
+
             // Ensure UV is ready for encoding
             if (window.Ultraviolet && window.__uv$config) {
                 try {
@@ -762,7 +767,7 @@
                 }
             }
             
-            // Fallback during early boot if we know the structure
+            // Fallback during early boot
             if (window.Ultraviolet && Ultraviolet.codec && Ultraviolet.codec.xor) {
                 return origin + "/GAMES/uv/service/" + Ultraviolet.codec.xor.encode(url);
             }
@@ -1593,21 +1598,21 @@
         // --- FETCHING DATA MANUALLY (With Fallback) ---
         async function fetchGameData() {
             try {
-                console.log("Attempting to load game data via Proxy: " + CARDS_DATA_URL);
-                // 1. Try Proxy First
-                const response = await fetch(proxyUrl(CARDS_DATA_URL));
-                if (!response.ok) throw new Error('Proxy fetch failed with status ' + response.status);
-                console.log("Game data loaded via Proxy successfully.");
+                // PERFORMANCE: Try Direct Fetch first (Worker supports CORS)
+                // This is much faster than proxying and bypasses SW warm-up.
+                console.log("Attempting direct load for game data: " + CARDS_DATA_URL);
+                const directUrl = CARDS_DATA_URL + '?t=' + Date.now();
+                const response = await fetch(directUrl);
+                if (!response.ok) throw new Error('Direct fetch failed with status ' + response.status);
+                console.log("Game data loaded directly successfully.");
                 return await processGameData(await response.text());
             } catch (e) {
-                console.warn("Proxy load failed, attempting direct fetch...", e);
+                console.warn("Direct fetch failed, attempting Proxy load...", e);
                 try {
-                    // 2. Try Direct Fetch (Bypass Proxy) if proxy is broken
-                    const directUrl = CARDS_DATA_URL + '?t=' + Date.now();
-                    console.log("Direct fetch URL: " + directUrl);
-                    const response = await fetch(directUrl);
-                    if (!response.ok) throw new Error('Direct fetch failed with status ' + response.status);
-                    console.log("Game data loaded via direct fetch successfully.");
+                    // Fallback to Proxy if direct fetch fails
+                    const response = await fetch(proxyUrl(CARDS_DATA_URL));
+                    if (!response.ok) throw new Error('Proxy fetch failed with status ' + response.status);
+                    console.log("Game data loaded via Proxy successfully.");
                     return await processGameData(await response.text());
                 } catch (e2) {
                     console.error("CRITICAL: All game data load attempts failed.", e2);
@@ -1646,12 +1651,23 @@
             const strongdogGames = gamesData.map(g => ({ ...g, category: 'StrongdogXP' }));
             
             try {
-                const res = await fetch(proxyUrl(GN_ZONES_URL));
-                const gnMathRaw = await res.json();
+                // PERFORMANCE: Try direct fetch for GN-Math metadata first
+                let gnMathRaw;
+                try {
+                    const res = await fetch(GN_ZONES_URL);
+                    if (!res.ok) throw new Error('Direct GN-Math fetch failed');
+                    gnMathRaw = await res.json();
+                } catch (gnError) {
+                    console.warn("Direct GN-Math fetch failed, falling back to proxy...", gnError);
+                    const res = await fetch(proxyUrl(GN_ZONES_URL));
+                    if (!res.ok) throw new Error('Proxy GN-Math fetch failed');
+                    gnMathRaw = await res.json();
+                }
+                
                 const gnMathGames = gnMathRaw.map(g => ({ id: `gn-${g.id}`, name: g.name, imgSrc: g.cover.replace("{COVER_URL}", GN_COVER_URL_BASE), category: 'GN-Math', url: g.url.replace("{HTML_URL}", GN_HTML_URL_BASE) }));
                 allGames = [...strongdogGames, ...gnMathGames, ...othersGames];
             } catch (error) { 
-                console.warn("Failed to load GN-Math, falling back to others.", error);
+                console.warn("Failed to load GN-Math (both direct and proxy), falling back to others.", error);
                 allGames = [...strongdogGames, ...othersGames]; 
             }
 
