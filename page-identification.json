@@ -54,7 +54,7 @@
         "icon": "fa-solid fa-robot",
         "url": "../logged-in/vana.html"
     },
-    "vana": {
+    "vora": {
         "name": "Vora",
         "icon": "fa-solid fa-tv",
         "url": "../logged-in/vora.html"
