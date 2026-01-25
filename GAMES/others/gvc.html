@@ -480,10 +480,11 @@ UNKNOWN_ACTION=
                     const targetUrl = getProxiedUrl(url);
                     if (targetUrl !== url) {
                         try {
-                            // Use nativeFetch to bypass UV's service worker interception for these specific assets
-                            return await (window.__nativeFetch || originalFetch)(targetUrl, init);
+                            // Use nativeFetch to bypass UV's service worker interception
+                            const res = await (window.__nativeFetch || originalFetch)(targetUrl, init);
+                            if (res.ok) return res;
                         } catch (e) {
-                            console.error("[GVC] Asset load failed via bypass:", targetUrl, e);
+                            console.warn("[GVC] Asset load failed via bypass, falling back:", targetUrl, e);
                         }
                     }
 
@@ -506,55 +507,65 @@ UNKNOWN_ACTION=
                         else {
                             const targetUrl = getProxiedUrl(url);
                             if (targetUrl !== url) {
-                                // If redirected to corsproxy, use native XHR to avoid UV intercepting the proxy URL
                                 const xhr = window.__nativeXHR ? new window.__nativeXHR() : new XMLHttpRequest();
+                                
+                                // Proxy method calls
+                                this.setRequestHeader = (h, v) => xhr.setRequestHeader(h, v);
+                                this.send = (b) => xhr.send(b);
+                                this.abort = () => xhr.abort();
+                                this.getAllResponseHeaders = () => xhr.getAllResponseHeaders();
+                                this.getResponseHeader = (h) => xhr.getResponseHeader(h);
+                                if (xhr.overrideMimeType) this.overrideMimeType = (m) => xhr.overrideMimeType(m);
+
+                                // Proxy event handlers
+                                ['onload', 'onerror', 'onprogress', 'onreadystatechange', 'onloadstart', 'onloadend', 'ontimeout', 'onabort'].forEach(handler => {
+                                    Object.defineProperty(this, handler, {
+                                        set: (fn) => { xhr[handler] = fn; },
+                                        get: () => xhr[handler],
+                                        configurable: true
+                                    });
+                                });
+
+                                // Proxy response properties
+                                ['response', 'responseText', 'responseXML', 'status', 'statusText', 'readyState', 'responseURL', 'responseType'].forEach(prop => {
+                                    Object.defineProperty(this, prop, {
+                                        get: () => xhr[prop],
+                                        set: (v) => { if (prop === 'responseType') xhr.responseType = v; },
+                                        configurable: true
+                                    });
+                                });
+
                                 xhr.open(method, targetUrl, ...rest);
-                                // Transfer common event handlers to the new XHR
-                                Object.defineProperty(this, '__vern_xhr', { value: xhr });
-                                return; 
+                                this.__vern_xhr = xhr;
+                                return;
                             }
                         }
                     }
                     return originalOpen.call(this, method, url, ...rest);
                 };
 
-                // Helper to handle the shadowed XHR in other methods
+                // Helper to handle the shadowed XHR in other methods (redundant but safe)
                 const originalSend = XMLHttpRequest.prototype.send;
                 XMLHttpRequest.prototype.send = function(body) {
-                    if (this.__vern_xhr) {
-                        // Copy handlers from original XHR to the proxied one
-                        const proxy = this.__vern_xhr;
-                        ['onload', 'onerror', 'onprogress', 'onreadystatechange', 'onloadstart', 'onloadend', 'ontimeout', 'onabort'].forEach(handler => {
-                            if (this[handler]) proxy[handler] = this[handler];
-                            // Also handle property setters
-                            Object.defineProperty(this, handler, {
-                                set: (fn) => proxy[handler] = fn,
-                                get: () => proxy[handler]
-                            });
-                        });
-                        // Proxy response properties
-                        ['response', 'responseText', 'responseXML', 'status', 'statusText', 'readyState', 'responseURL'].forEach(prop => {
-                            Object.defineProperty(this, prop, {
-                                get: () => proxy[prop]
-                            });
-                        });
-                        return proxy.send(body);
-                    }
+                    if (this.__vern_xhr) return this.__vern_xhr.send(body);
                     return originalSend.call(this, body);
                 };
 
                 // Stability: Audio and Focus
+                const resumeAudio = () => {
+                    const resume = (ctx) => {
+                        if (ctx && ctx.state === 'suspended') ctx.resume().catch(e => {});
+                    };
+                    if (window.Module && window.Module.audioContext) resume(window.Module.audioContext);
+                    if (window.AL && window.AL.currentContext && window.AL.currentContext.audioContext) resume(window.AL.currentContext.audioContext);
+                };
+
                 window.addEventListener('mousedown', () => {
                     const canvas = document.getElementById('canvas');
                     if (canvas) canvas.focus();
-                    
-                    // Attempt to resume audio context on interaction
-                    if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
-                        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                        // Search for all instances if multiple exist
-                        // (Usually Emscripten creates one)
-                    }
+                    resumeAudio();
                 }, { passive: true });
+                window.addEventListener('keydown', resumeAudio, { passive: true });
 
 
 
