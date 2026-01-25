@@ -864,8 +864,8 @@
         // UPDATED: Use cdn.jsdelivr.net for GN-Math and handle content injection
         const GN_HTML_URL_BASE = "https://cdn.jsdelivr.net/npm/gn-math.github.io-main@latest/html-main";
         
-        const WORKER_ROOT = "/";
-        const GAMES_BASE_URL = "/";
+        const WORKER_ROOT = "https://dv-service-lfs.4simpleproblems.workers.dev/";
+        const GAMES_BASE_URL = "https://dv-service-lfs.4simpleproblems.workers.dev/GAMES/";
         const CARDS_DATA_URL = "https://dv-service-lfs.4simpleproblems.workers.dev/GAMES/cards-data.js";
 
         const FAVORITES_KEY = 'gameHubFavorites_v3';
@@ -1100,16 +1100,16 @@
         function getAdjustedUrls(imgSrc, page) {
             if (page && page > 1) {
                 // ../strongdog2/img/... -> exists outside GAMES dir
-                return { adjustedImgSrc: `/strongdog${page}/img/${imgSrc}` };
+                return { adjustedImgSrc: `${WORKER_ROOT}strongdog${page}/img/${imgSrc}` };
             }
             // ./img -> assumed inside GAMES dir or wherever relative
-            return { adjustedImgSrc: `/strongdog/img/${imgSrc}` }; 
+            return { adjustedImgSrc: `${GAMES_BASE_URL}img/${imgSrc}` }; 
         }
         
         function sd_getBaseURLForPage(page) {
             // Updated to point to WORKER_ROOT for numbered pages, GAMES_BASE_URL for default
-            if (page > 1) return `/strongdog${page}/`;
-            return `/strongdog/`; // Assumes default strongdog is at root/STRONGDOG? Or inside GAMES?
+            if (page > 1) return `${WORKER_ROOT}strongdog${page}/`;
+            return `${WORKER_ROOT}GAMES/`; // Assumes default strongdog is at root/STRONGDOG? Or inside GAMES?
             // Re-reading logic: "stuff like ../DOOM/ will stay in GAMES directory but strongdog# directories exit"
             // Let's assume default STRONGDOG is adjacent to strongdog2 etc. at root level based on prior naming conventions
         }
@@ -1138,12 +1138,11 @@
             try { const response = await fetch(url, { method: "HEAD" }); return response.ok; } catch { return false; }
         }
 
-        // --- URL Resolution Helper for "Others" ---
         function resolveGameUrl(relativePath) {
             if (!relativePath) return "";
             
-            // If it's already an absolute URL, return it as is
-            if (relativePath.startsWith('http') || relativePath.startsWith('//')) {
+            // If it's already an absolute URL or a root-relative path, return it as is
+            if (relativePath.startsWith('http') || relativePath.startsWith('//') || relativePath.startsWith('/')) {
                 return relativePath;
             }
 
