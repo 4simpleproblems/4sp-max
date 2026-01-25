@@ -39,26 +39,42 @@
                     console.error("SW Register Failed", e);
                 }
             }
+
+            const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+
+            const hookSW = async () => {
+                if (navigator.serviceWorker.controller) {
+                    try {
+                        const port = await connection.getInnerPort();
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'baremuxinit',
+                            port: port
+                        }, [port]);
+                        console.log("UV SW Hooked to BareMux");
+                        return true;
+                    } catch (err) {
+                        console.error("Failed to hook SW", err);
+                    }
+                }
+                return false;
+            };
+
             try {
-                const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
-                
                 await connection.setTransport("/GAMES/libcurl/index.mjs", [
                     { wisp: "wss://wisp.mercurynate.xyz/" },
                     { wisp: "wss://wisp.rhw.one/" },
                     { wisp: "wss://wisp.mercurywork.shop/" },
-                    { wisp: "wss://t9.v-v.top/wisp/" }
+                    { wisp: "wss://t9.v-v.top/wisp/" },
+                    { wisp: "wss://ruby.rubynetwork.xyz/wisp/" }
                 ]);
-                console.log("BareMux Initialized with fallback WISP servers");
+                console.log("BareMux Initialized");
 
-                // Hook UV SW to BareMux
-                if (navigator.serviceWorker.controller) {
-                    const port = await connection.getInnerPort();
-                    navigator.serviceWorker.controller.postMessage({
-                        type: 'baremuxinit',
-                        port: port
-                    }, [port]);
-                    console.log("UV SW Hooked to BareMux");
+                // Attempt hook immediately
+                if (!await hookSW()) {
+                    // If failed, retry on controller change or after a delay
+                    navigator.serviceWorker.addEventListener('controllerchange', hookSW);
+                    setTimeout(hookSW, 1000);
+                    setTimeout(hookSW, 3000);
                 }
             } catch (e) {
                 console.error("BareMux Init Failed", e);
