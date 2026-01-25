@@ -12,5 +12,6 @@
         config: basePath + "uv.config.js",
         sw: basePath + "uv.sw.js",
         stockSW: basePath + "sw.js",
+        bare: "/bare/",
     };
 })();
