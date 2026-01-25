@@ -419,9 +419,53 @@ UNKNOWN_ACTION=
                 const originalFetch = window.fetch;
                 const originalOpen = XMLHttpRequest.prototype.open;
 
+                // Robust URL handler for assets
+                function getProxiedUrl(url) {
+                    if (!url || typeof url !== 'string') return url;
+                    
+                    // Normalize backslashes to forward slashes
+                    let cleanUrl = url.replace(/\\/g, '/');
+                    
+                    // Detect sensitive domains (raw or XOR encoded)
+                    const isDosZone = cleanUrl.includes("cdn.dos.zone") || cleanUrl.includes("cfn,dms,zmng");
+                    const isJsDelivr = cleanUrl.includes("cdn.jsdelivr.net") || cleanUrl.includes("cfn,jqfgnivq,ngv");
+
+                    if (isDosZone) {
+                        // Extract target URL if already proxied by UV
+                        if (cleanUrl.includes('/uv/service/')) {
+                            try {
+                                if (window.__uv && window.__uv.codec && window.__uv.codec.xor) {
+                                    const encodedPart = cleanUrl.split('/uv/service/')[1];
+                                    const decoded = window.__uv.codec.xor.decode(encodedPart);
+                                    return 'https://corsproxy.io/?' + encodeURIComponent(decoded);
+                                }
+                            } catch(e) {
+                                console.warn("[GVC] Failed to decode UV URL:", e);
+                            }
+                        }
+                        // Fallback or raw URL
+                        const rawUrl = cleanUrl.includes("cdn.dos.zone") ? cleanUrl : null;
+                        if (rawUrl) return 'https://corsproxy.io/?' + encodeURIComponent(rawUrl);
+                    }
+                    
+                    if (isJsDelivr) {
+                        if (cleanUrl.includes('/uv/service/')) {
+                            try {
+                                if (window.__uv && window.__uv.codec && window.__uv.codec.xor) {
+                                    const encodedPart = cleanUrl.split('/uv/service/')[1];
+                                    return window.__uv.codec.xor.decode(encodedPart);
+                                }
+                            } catch(e) {}
+                        }
+                    }
+
+                    return cleanUrl;
+                }
+
                 window.fetch = async function(input, init) {
                     let url = input instanceof Request ? input.url : String(input);
                     
+                    // ADF/Data Overrides
                     if (url.includes("index.data")) return originalFetch(indexdataurl, init);
                     if (url.includes("emotion.adf")) return originalFetch(EMOTIONadfurl, init);
                     if (url.includes("espant.adf")) return originalFetch(ESPANTadfurl, init);
@@ -433,19 +477,13 @@ UNKNOWN_ACTION=
                     if (url.includes("WAVE.adf")) return originalFetch(WAVEadfurl, init);
                     if (url.includes("WILD.adf")) return originalFetch(WILDadfurl, init);
                     
-                    // Unified handler for domains where direct or corsproxy is better
-                    if (url.includes("cdn.jsdelivr.net") || url.includes("cdn.dos.zone")) {
-                        const cleanUrl = url.replace(/\\/g, '/');
-                        const targetUrl = cleanUrl.includes("cdn.dos.zone") 
-                            ? 'https://corsproxy.io/?' + encodeURIComponent(cleanUrl)
-                            : cleanUrl;
-                        
+                    const targetUrl = getProxiedUrl(url);
+                    if (targetUrl !== url) {
                         try {
-                            // Use nativeFetch to bypass any UV hooks completely
-                            const res = await (window.__nativeFetch || originalFetch)(targetUrl, init);
-                            if (res.ok) return res;
+                            // Use nativeFetch to bypass UV's service worker interception for these specific assets
+                            return await (window.__nativeFetch || originalFetch)(targetUrl, init);
                         } catch (e) {
-                            console.warn("[GVC] Native fetch failed for " + url + ", falling back to UV", e);
+                            console.error("[GVC] Asset load failed via bypass:", targetUrl, e);
                         }
                     }
 
@@ -454,6 +492,7 @@ UNKNOWN_ACTION=
 
                 XMLHttpRequest.prototype.open = function(method, url, ...rest) {
                     if (typeof url === 'string') {
+                        // ADF/Data Overrides
                         if (url.includes("index.data")) url = indexdataurl;
                         else if (url.includes("emotion.adf")) url = EMOTIONadfurl;
                         else if (url.includes("espant.adf")) url = ESPANTadfurl;
@@ -464,19 +503,58 @@ UNKNOWN_ACTION=
                         else if (url.includes("VROCK.adf")) url = VROCKadfurl;
                         else if (url.includes("WAVE.adf")) url = WAVEadfurl;
                         else if (url.includes("WILD.adf")) url = WILDadfurl;
-                        else if (url.includes("cdn.jsdelivr.net") || url.includes("cdn.dos.zone")) {
-                            const cleanUrl = url.replace(/\\/g, '/');
-                            if (cleanUrl.includes("cdn.dos.zone")) {
-                                url = 'https://corsproxy.io/?' + encodeURIComponent(cleanUrl);
-                                // For dos.zone XHR, we MUST use the native XHR to avoid UV interception of the proxy URL
-                                return (window.__nativeXHR ? new window.__nativeXHR() : new XMLHttpRequest()).open(method, url, ...rest);
-                            } else {
-                                url = cleanUrl;
+                        else {
+                            const targetUrl = getProxiedUrl(url);
+                            if (targetUrl !== url) {
+                                // If redirected to corsproxy, use native XHR to avoid UV intercepting the proxy URL
+                                const xhr = window.__nativeXHR ? new window.__nativeXHR() : new XMLHttpRequest();
+                                xhr.open(method, targetUrl, ...rest);
+                                // Transfer common event handlers to the new XHR
+                                Object.defineProperty(this, '__vern_xhr', { value: xhr });
+                                return; 
                             }
                         }
                     }
                     return originalOpen.call(this, method, url, ...rest);
                 };
+
+                // Helper to handle the shadowed XHR in other methods
+                const originalSend = XMLHttpRequest.prototype.send;
+                XMLHttpRequest.prototype.send = function(body) {
+                    if (this.__vern_xhr) {
+                        // Copy handlers from original XHR to the proxied one
+                        const proxy = this.__vern_xhr;
+                        ['onload', 'onerror', 'onprogress', 'onreadystatechange', 'onloadstart', 'onloadend', 'ontimeout', 'onabort'].forEach(handler => {
+                            if (this[handler]) proxy[handler] = this[handler];
+                            // Also handle property setters
+                            Object.defineProperty(this, handler, {
+                                set: (fn) => proxy[handler] = fn,
+                                get: () => proxy[handler]
+                            });
+                        });
+                        // Proxy response properties
+                        ['response', 'responseText', 'responseXML', 'status', 'statusText', 'readyState', 'responseURL'].forEach(prop => {
+                            Object.defineProperty(this, prop, {
+                                get: () => proxy[prop]
+                            });
+                        });
+                        return proxy.send(body);
+                    }
+                    return originalSend.call(this, body);
+                };
+
+                // Stability: Audio and Focus
+                window.addEventListener('mousedown', () => {
+                    const canvas = document.getElementById('canvas');
+                    if (canvas) canvas.focus();
+                    
+                    // Attempt to resume audio context on interaction
+                    if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+                        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                        // Search for all instances if multiple exist
+                        // (Usually Emscripten creates one)
+                    }
+                }, { passive: true });
 
 
 
