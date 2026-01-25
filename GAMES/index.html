@@ -28,24 +28,38 @@
         window.__4sp_proxy_init = (async () => {
             if ("serviceWorker" in navigator) {
                 try {
-                    await navigator.serviceWorker.register("/GAMES/sw.js?v=2.1.7", { scope: "/GAMES/" });
+                    // Added { updateViaCache: 'none' } to force fresh script versions
+                    const reg = await navigator.serviceWorker.register("/GAMES/sw.js?v=2.1.7", { 
+                        scope: "/GAMES/",
+                        updateViaCache: 'none'
+                    });
                     console.log("VERN SW Registered");
 
-                    navigator.serviceWorker.addEventListener('controllerchange', () => {
-                        if (!navigator.serviceWorker.controller) return;
-                        console.log("SW Activated, reloading...");
-                        window.location.reload();
-                    });
+                    // WAIT for the Service Worker to actually take control
+                    if (!navigator.serviceWorker.controller) {
+                        await new Promise(resolve => {
+                            const onControllerChange = () => {
+                                navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+                                resolve();
+                            };
+                            navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
+                        });
+                    }
                 } catch (e) { console.error("SW Register Failed", e); }
             }
 
             try {
-                const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                await connection.setTransport("/GAMES/libcurl/index.mjs", [
-                    { websocket: "wss://wisp.rhw.one/" },
-                    { websocket: "wss://wisp.mercurywork.shop/" }
-                ]);
-                console.log("BareMux Initialized");
+                // Initialize BareMux only after SW is ready
+                if (window.BareMux) {
+                    const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+                    await connection.setTransport("/GAMES/libcurl/index.mjs", [
+                        { websocket: "wss://wisp.rhw.one/" },
+                        { websocket: "wss://wisp.mercurywork.shop/" },
+                        { websocket: "wss://wisp.mercurynate.xyz/" },
+                        { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
+                    ]);
+                    console.log("BareMux Initialized");
+                }
             } catch (e) { console.error("BareMux Init Failed", e); }
         })();
     </script>
@@ -726,11 +740,15 @@
             
             // Ensure UV is ready for encoding
             if (window.Ultraviolet && window.__uv$config) {
-                return origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+                try {
+                    return origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+                } catch(e) {
+                    console.error("Encoding failed", e);
+                }
             }
             
             // Fallback during early boot if we know the structure
-            if (window.Ultraviolet) {
+            if (window.Ultraviolet && Ultraviolet.codec && Ultraviolet.codec.xor) {
                 return origin + "/GAMES/uv/service/" + Ultraviolet.codec.xor.encode(url);
             }
             
@@ -1557,44 +1575,40 @@
             searchDivider.style.display = "block";
         }, 250);
 
-        // --- FETCHING DATA MANUALLY (NO MODULES) ---
-        // This function fetches the JS file as text, transforms it to set a global variable, and evals it.
-        // This bypasses module loading restrictions on file:// protocols.
+        // --- FETCHING DATA MANUALLY (With Fallback) ---
         async function fetchGameData() {
             try {
-                // Fetch the file via proxy to avoid CORS
+                console.log("Attempting to load game data via Proxy...");
+                // 1. Try Proxy First
                 const response = await fetch(proxyUrl(CARDS_DATA_URL));
-                if (!response.ok) throw new Error('Failed to fetch game data');
-                let scriptText = await response.text();
-                
-                // Transform 'export default' to 'window.loadedGameData ='
-                // This assumes the file structure is simple "export default [...]"
-                if (scriptText.includes('export default')) {
-                    scriptText = scriptText.replace('export default', 'window.loadedGameData =');
-                }
-                
-                // Execute the script
-                // We use new Function instead of eval for slight isolation, though still unsafe for untrusted code
-                // (But we trust this source).
-                // However, new Function creates a local scope. We need global assignment.
-                // Standard eval or appending a script tag is better.
-                const scriptEl = document.createElement('script');
-                scriptEl.textContent = scriptText;
-                document.body.appendChild(scriptEl);
-                
-                // Wait a tick for execution
-                await new Promise(resolve => setTimeout(resolve, 0));
-                
-                if (window.loadedGameData) {
-                    return window.loadedGameData;
-                } else {
-                    console.warn("Script loaded but window.loadedGameData is undefined");
-                    return [];
-                }
+                if (!response.ok) throw new Error('Proxy fetch failed');
+                return await processGameData(await response.text());
             } catch (e) {
-                console.error("Error manual loading games:", e);
-                return [];
+                console.warn("Proxy load failed (HTTP 500?), attempting direct fetch...", e);
+                try {
+                    // 2. Try Direct Fetch (Bypass Proxy) if proxy is broken
+                    // Add timestamp to prevent caching old broken versions
+                    const directUrl = CARDS_DATA_URL + '?t=' + Date.now();
+                    const response = await fetch(directUrl);
+                    if (!response.ok) throw new Error('Direct fetch failed');
+                    return await processGameData(await response.text());
+                } catch (e2) {
+                    console.error("CRITICAL: All game data load attempts failed.", e2);
+                    return []; // Return empty so the site doesn't crash completely
+                }
             }
+        }
+
+        async function processGameData(scriptText) {
+             if (scriptText.includes('export default')) {
+                scriptText = scriptText.replace('export default', 'window.loadedGameData =');
+            }
+            const scriptEl = document.createElement('script');
+            scriptEl.textContent = scriptText;
+            document.body.appendChild(scriptEl);
+            // Wait a moment for the script to execute
+            await new Promise(resolve => setTimeout(resolve, 0));
+            return window.loadedGameData || [];
         }
 
         // --- Init ---
@@ -1652,6 +1666,16 @@
 
             categorySlider.style.width = `${categories.length * 100}%`;
             categorySlider.innerHTML = categories.map(cat => `<div class="w-64 flex-shrink-0"><h2 class="text-3xl font-bold ${categoryColors[cat] || 'text-white'}"><strong>${cat}</strong></h2></div>`).join('');
+
+            // Logic to prevent blank screen if default category fails to load
+            const currentGames = allGames.filter(g => g.category === categories[currentCategoryIndex]);
+            if (currentGames.length === 0 && allGames.length > 0) {
+                // If default category is empty, find the first one that has games (likely "Others")
+                const validCatIndex = categories.findIndex(cat => allGames.some(g => g.category === cat));
+                if (validCatIndex !== -1) {
+                    currentCategoryIndex = validCatIndex;
+                }
+            }
 
             switchCategory(currentCategoryIndex);
             renderFavorites();
