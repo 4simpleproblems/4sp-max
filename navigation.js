@@ -6,6 +6,12 @@
  * tab menu loaded from page-identification.json.
  */
 
+// Prevent multiple loads
+if (window.__4sp_nav_loaded) {
+    console.warn("Navigation.js already loaded, skipping...");
+} else {
+    window.__4sp_nav_loaded = true;
+
 // =========================================================================
 // >> ACTION REQUIRED: PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE <<
 // =========================================================================
@@ -1626,3 +1632,4 @@ let db;
     run();
 }
 })();
+}

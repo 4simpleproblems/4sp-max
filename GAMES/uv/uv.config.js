@@ -4,6 +4,7 @@
 
     self.__uv$config = {
         prefix: basePath + "service/",
+        bare: "/bare/", // Fallback bare server path
         encodeUrl: Ultraviolet.codec.xor.encode,
         decodeUrl: Ultraviolet.codec.xor.decode,
         handler: basePath + "uv.handler.js",

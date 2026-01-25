@@ -5,6 +5,10 @@
  * when adding or removing application dependencies.
  */
 (function() {
+    // Prevent multiple loads
+    if (window.__4sp_injector_loaded) return;
+    window.__4sp_injector_loaded = true;
+
     // 1. DEFINE YOUR SCRIPTS HERE
     // Update this array (and ONLY this array) to manage your application's scripts.
     const scriptsToLoad = [
