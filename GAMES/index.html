@@ -37,6 +37,11 @@
                     });
                     console.log("VERN SW Registered");
 
+                    // If already controlled, tell SW to reset proxy state for this new session
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage('VERN_PROXY_RESET');
+                    }
+
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         if (!navigator.serviceWorker.controller) return;
                         console.log("SW Activated, reloading...");
@@ -68,6 +73,7 @@
                         const port = await tempConn.getInnerPort();
                         navigator.serviceWorker.controller.postMessage({
                             type: 'baremuxinit',
+                            __uv$type: 'baremuxinit', // Match UV internal expectation
                             port: port
                         }, [port]);
                         return true;
@@ -78,7 +84,7 @@
 
                 await hookSW();
                 
-                // Wait for SW to confirm it's ready, with a 2s timeout
+                // Wait for SW to confirm it's ready
                 await Promise.race([
                     swReadyPromise,
                     new Promise(resolve => setTimeout(resolve, 2000))

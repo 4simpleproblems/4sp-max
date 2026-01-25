@@ -8,14 +8,17 @@ let bareReady = false;
 let pending = [];
 
 self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'baremuxinit') {
+    if (event.data === 'VERN_PROXY_RESET') {
+        bareReady = false;
+        console.log("VERN SW: Proxy Reset for new session");
+    } else if (event.data && (event.data.type === 'baremuxinit' || event.data.__uv$type === 'baremuxinit')) {
         try {
             uv.bareClient = new BareMux.BareClient(event.data.port);
             bareReady = true;
             console.log("VERN SW: BareMux Port Initialized");
             
             // Notify the window that the proxy is ready
-            event.source.postMessage('VERN_PROXY_READY');
+            if (event.source) event.source.postMessage('VERN_PROXY_READY');
             
             pending.forEach(resolve => resolve());
             pending = [];
