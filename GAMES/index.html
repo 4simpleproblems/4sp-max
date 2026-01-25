@@ -26,7 +26,7 @@
                 // Immediate Initialization of VERN_SYSTEM Proxy
                 window.__4sp_proxy_init = (async () => {
                     console.log("VERN Boot Sequence Started...");
-                    const swPath = "/GAMES/sw.js?v=2.1.7";
+                    const swPath = "/GAMES/sw.js";
         
                     if ("serviceWorker" in navigator) {
                         try {
@@ -37,9 +37,14 @@
                             console.log("VERN SW Registered");
         
                             // Reload if controller changes (SW activated)
+                            // Only reload if we weren't already controlled to avoid losing state
+                            const wasControlled = !!navigator.serviceWorker.controller;
                             navigator.serviceWorker.addEventListener('controllerchange', () => {
-                                if (!navigator.serviceWorker.controller) return;
-                                console.log("SW Activated, reloading...");
+                                if (wasControlled) {
+                                    console.log("VERN SW updated, skipping reload to preserve game state.");
+                                    return;
+                                }
+                                console.log("VERN SW Activated, reloading...");
                                 window.location.reload();
                             });
         

@@ -19,16 +19,14 @@
         window.__VERN_READY = (async () => {
             console.log("[VERN] Initializing Proxy Environment...");
             
-            // 1. Service Worker Registration
+            // 1. Ensure Service Worker is ready
             if ('serviceWorker' in navigator) {
                 try {
-                    const reg = await navigator.serviceWorker.register('/GAMES/sw.js', {
-                        scope: '/GAMES/'
-                    });
-                    console.log('[VERN] SW Registered');
+                    // We don't re-register here to avoid activation loops in the hub
                     await navigator.serviceWorker.ready;
+                    console.log('[VERN] Proxy Environment Ready');
                 } catch (e) {
-                    console.error('[VERN] SW Registration Failed:', e);
+                    console.error('[VERN] SW Check Failed:', e);
                 }
             }
 
@@ -50,9 +48,10 @@
 
             // 3. Ultraviolet Client & Location Emulation
             if (window.Ultraviolet) {
-                const uv = new Ultraviolet(__uv$config);
-                // Use self.__uv$config.prefix for consistency with the SW
-                const prefix = (self.__uv$config && self.__uv$config.prefix) || '/GAMES/uv/service/';
+                // In some versions, Ultraviolet is the class itself
+                const UVClass = window.Ultraviolet;
+                const uv = new UVClass(__uv$config);
+                const prefix = (__uv$config && __uv$config.prefix) || '/GAMES/uv/service/';
                 
                 // Only emulate if not already proxied (to avoid loops)
                 if (!window.location.pathname.includes(prefix) && uv.location) {
