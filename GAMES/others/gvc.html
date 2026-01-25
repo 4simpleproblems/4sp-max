@@ -301,9 +301,39 @@ UNKNOWN_ACTION=
         });
 
         async function initVernProxy() {
-            if (window.Ultraviolet) return; // Already loaded
-            await loadScript("/GAMES/uv/uv.bundle.js");
-            await loadScript("/GAMES/uv/uv.config.js");
+            // 1. Load Scripts
+            if (!window.Ultraviolet) {
+                await loadScript("/GAMES/uv/uv.bundle.js");
+                await loadScript("/GAMES/uv/uv.config.js");
+            }
+
+            // 2. Register Service Worker
+            if ("serviceWorker" in navigator) {
+                try {
+                    const swPath = "/GAMES/sw.js";
+                    const scope = "/GAMES/";
+                    
+                    const reg = await navigator.serviceWorker.register(swPath, { scope: scope });
+                    console.log("[VERN] SW Registered:", reg);
+
+                    // If active but not controlling, reload or claim? 
+                    // Usually waiting for ready is enough if we claim in SW (which GAMES/sw.js does)
+                    await navigator.serviceWorker.ready;
+                    
+                    if (!navigator.serviceWorker.controller) {
+                        console.warn("[VERN] SW ready but not controlling. Reloading to take control...");
+                        window.location.reload();
+                        return new Promise(() => {}); // Never resolve, we are reloading
+                    }
+                    console.log("[VERN] Proxy Active & Controlling");
+
+                } catch (e) {
+                    console.error("[VERN] SW Registration Failed:", e);
+                    throw e;
+                }
+            } else {
+                console.error("ServiceWorker not supported");
+            }
         }
 
         function getVernProxyUrl(url) {
@@ -374,8 +404,9 @@ UNKNOWN_ACTION=
             window.fetch = async function(input, init) {
                 let url = input instanceof Request ? input.url : String(input);
                 if (isMissingAsset(url)) {
-                    console.warn("Mocking missing asset to prevent 404:", url);
-                    return new Response(new ArrayBuffer(0), { status: 200, statusText: "OK" }); 
+                    const proxyUrl = getVernProxyUrl(url);
+                    console.log(`[VERN] Proxied fetch: ${url} -> ${proxyUrl}`);
+                    return originalFetch(proxyUrl, init);
                 }
                 if (url.includes("index.data")) return originalFetch(indexdataurl, init);
                 if (url.includes("emotion.adf")) return originalFetch(EMOTIONadfurl, init);
@@ -392,8 +423,9 @@ UNKNOWN_ACTION=
             const originalOpen = XMLHttpRequest.prototype.open;
             XMLHttpRequest.prototype.open = function(method, url, ...rest) {
                 if (isMissingAsset(url)) {
-                    console.warn("Mocking missing asset (XHR) to prevent 404:", url);
-                    url = "data:application/octet-stream;base64,";
+                    const proxyUrl = getVernProxyUrl(url);
+                    console.log(`[VERN] Proxied XHR: ${url} -> ${proxyUrl}`);
+                    url = proxyUrl;
                 } else if (url.includes("index.data")) url = indexdataurl;
                 else if (url.includes("emotion.adf")) url = EMOTIONadfurl;
                 else if (url.includes("espant.adf")) url = ESPANTadfurl;
