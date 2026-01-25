@@ -1169,6 +1169,7 @@
         // We keep the original relative paths here so the resolver logic above can handle them dynamically
         const othersGames = [
             { id: "other-eaglercraft", name: "Eaglercraft", imgSrc: "images/eaglercraft.png", description: "The classic survival and building game with authentic block-based physics and multiplayer support, accessible directly in the browser.", category: "Others", versions: [ { name: "Release 1.12.2", url: "../EAGLERCRAFT/eaglercraft-1.12.2.html", favoriteId: "other-eaglercraft_1.12.2" }, { name: "Release 1.12.2 WASM", url: "../EAGLERCRAFT/eaglercraft-1.12.2-wasm.html", favoriteId: "other-eaglercraft_wasm", wasm: true } ] },
+            { id: "other-gvc", name: "GTA: Vice City", imgSrc: "images/gvc.png", favImgSrc: "images/gvc-3-2.png", description: "Experience the 80s in Vice City. Build your criminal empire in this neon-soaked open world masterpiece.", category: "Others", url: "others/gvc.html" },
             { id: "other-gta", name: "Grand Theft Auto", imgSrc: "images/gta.png", description: "The original top-down classic. Cause chaos, complete missions, or just go for a drive in three iconic cities.", category: "Others", versions: [ { name: "Carnage3D", url: "../CARNAGE3D/web/carnage3D.html", favoriteId: "other-gta_carnage3d" }, { name: "Grand Theft Auto (JS-DOS)", url: "../GTA-JSDOS/index.html", favoriteId: "other-gta_jsdos" } ] },
             { id: "other-simcity", name: "Sim City", imgSrc: "images/simcity2000.png", description: "The original city-building classics. Design, build, and manage the city of your dreams in either the original Sim City or the detailed Sim City 2000.", category: "Others", versions: [ { name: "Sim City", url: "../SIM-CITY/index.html", favoriteId: "other-simcity_1" }, { name: "Sim City 2000", url: "../SIM-CITY-2/index.html", favoriteId: "other-simcity_2000" } ] },
             { id: "other-doom", name: "DOOM", imgSrc: "images/doom.png", description: "The legendary first-person shooter that pioneered the genre, focusing on blasting through hordes of demons in a timeless, adrenaline-fueled classic.", category: "Others", url: "../DOOM/index.html" },
@@ -1255,11 +1256,11 @@
             const isStrongdog = game.category === 'StrongdogXP';
             
             // Resolve Image Src
-            let imgSrc = game.imgSrc;
+            let imgSrc = (forceSmallCard && game.favImgSrc) ? game.favImgSrc : game.imgSrc;
             if (isStrongdog) {
-                 imgSrc = getAdjustedUrls(game.imgSrc, game.page).adjustedImgSrc;
+                 imgSrc = getAdjustedUrls(imgSrc, game.page).adjustedImgSrc;
             } else if (game.category === 'Others' || game.category === 'Gameboy Games') {
-                 imgSrc = resolveGameUrl(game.imgSrc);
+                 imgSrc = resolveGameUrl(imgSrc);
             }
 
             const isFavorite = getFavorites().map(String).includes(String(game.id));
@@ -1422,8 +1423,9 @@
 
             // --- REVISED LOGIC FOR LOADING GAMES WITH RETRY ---
             // GN-Math uses content injection. StrongdogXP and Others use standard loading.
-            // EXCEPTION: Eaglercraft uses injection to ensure keyboard focus/input works correctly as a "local" file.
-            const isStandardURLGame = (game.category === 'Others' && !isEagler) || game.category === 'StrongdogXP';
+            // EXCEPTION: Eaglercraft and GVC use injection to ensure keyboard focus/input works correctly as a "local" file.
+            const isInjectedGame = isEagler || game.id === 'other-gvc';
+            const isStandardURLGame = (game.category === 'Others' && !isInjectedGame) || game.category === 'StrongdogXP';
             
             const attemptLoad = async (retriesLeft) => {
                 try {
