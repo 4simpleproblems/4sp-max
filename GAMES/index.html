@@ -26,15 +26,14 @@
     <script>
         // Immediate Initialization of VERN_SYSTEM Proxy
         window.__4sp_proxy_init = (async () => {
+            console.log("VERN Boot Sequence Started...");
             const swPath = "/GAMES/sw.js?v=2.1.7";
             let swReadyResolve;
             const swReadyPromise = new Promise(resolve => swReadyResolve = resolve);
 
             if ("serviceWorker" in navigator) {
                 try {
-                    const reg = await navigator.serviceWorker.register(swPath, {
-                        scope: "/GAMES/"
-                    });
+                    const reg = await navigator.serviceWorker.register(swPath, { scope: "/GAMES/" });
                     console.log("VERN SW Registered");
 
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -51,35 +50,24 @@
                         }
                     });
 
-                    // Initial reset for refresh
+                    // Initial reset for refresh sessions
                     if (navigator.serviceWorker.controller) {
                         navigator.serviceWorker.controller.postMessage('VERN_PROXY_RESET');
                     }
-
-                } catch (e) {
-                    console.error("SW Register Failed", e);
-                }
+                } catch (e) { console.error("SW Register Failed", e); }
             }
 
             try {
                 const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                
-                // Use a diversified list of stable WISP servers to ensure high performance
-                const transports = [
-                    { websocket: "wss://wisp.mercurywork.shop/" },
+                await connection.setTransport("/GAMES/libcurl/index.mjs", [
                     { websocket: "wss://wisp.rhw.one/" },
-                    { websocket: "wss://wisp.mercurynate.xyz/" },
-                    { websocket: "wss://ruby.rubynetwork.xyz/wisp/" },
-                    { websocket: "wss://t9.v-v.top/wisp/" }
-                ];
-
-                await connection.setTransport("/GAMES/libcurl/index.mjs", transports);
-                console.log("BareMux Initialized with Multiple Transports");
+                    { websocket: "wss://wisp.mercurywork.shop/" }
+                ]);
+                console.log("BareMux Initialized");
 
                 const hookSW = async () => {
                     if (!navigator.serviceWorker.controller) return false;
                     try {
-                        // Use the existing connection to get a port
                         const port = await connection.getInnerPort();
                         navigator.serviceWorker.controller.postMessage({
                             type: 'baremuxinit',
@@ -87,20 +75,10 @@
                             port: port
                         }, [port]);
                         return true;
-                    } catch (err) {
-                        console.error("Failed to hook SW", err);
-                        return false;
-                    }
+                    } catch (err) { return false; }
                 };
 
-                // Ensure SW is ready to receive messages
-                if (navigator.serviceWorker.controller) {
-                    await hookSW();
-                } else {
-                    navigator.serviceWorker.addEventListener('controllerchange', hookSW);
-                }
-                
-                // Handshake retry logic
+                // Aggressive Hooking
                 const handshakeInterval = setInterval(async () => {
                     if (await hookSW()) clearInterval(handshakeInterval);
                 }, 500);
@@ -111,10 +89,9 @@
                     swReadyPromise,
                     new Promise(resolve => setTimeout(resolve, 3000))
                 ]);
+                console.log("VERN Proxy is HOT");
 
-            } catch (e) {
-                console.error("BareMux Init Failed", e);
-            }
+            } catch (e) { console.error("BareMux Init Failed", e); }
         })();
     </script>
     
@@ -790,15 +767,16 @@
         function proxyUrl(url) {
             if (!url) return url;
             const origin = window.location.origin;
-
-            // Don't double proxy
-            if (url.includes(UV_CONFIG.prefix)) return url;
-
-            // Exclude GN-Math (jsdelivr) from proxying as it has native CORS support
-            if (url.includes('cdn.jsdelivr.net')) return url;
-
-            if (url.startsWith('http')) {
-                return origin + UV_CONFIG.prefix + UV_CONFIG.encodeUrl(url);
+            if (url.startsWith(origin)) return url;
+            
+            // Ensure UV is ready for encoding
+            if (window.Ultraviolet && window.__uv$config) {
+                return origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+            }
+            
+            // Fallback during early boot if we know the structure
+            if (window.Ultraviolet) {
+                return origin + "/GAMES/uv/service/" + Ultraviolet.codec.xor.encode(url);
             }
             
             return url;
