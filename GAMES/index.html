@@ -752,7 +752,7 @@
             
             // PERFORMANCE: Direct loading for safe CORS domains
             // Workers and jsDelivr support CORS and are usually faster than proxying
-            if (url.includes('workers.dev') || url.includes('cdn.jsdelivr.net')) {
+            if ((url.includes('workers.dev') && !url.includes('gvc.html')) || url.includes('cdn.jsdelivr.net')) {
                 return url;
             }
 
