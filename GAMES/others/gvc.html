@@ -51,8 +51,11 @@
             // 3. Ultraviolet Client & Location Emulation
             if (window.Ultraviolet) {
                 const uv = new Ultraviolet(__uv$config);
+                // Use self.__uv$config.prefix for consistency with the SW
+                const prefix = (self.__uv$config && self.__uv$config.prefix) || '/GAMES/uv/service/';
+                
                 // Only emulate if not already proxied (to avoid loops)
-                if (!window.location.pathname.includes(__uv$config.prefix)) {
+                if (!window.location.pathname.includes(prefix) && uv.location) {
                     Object.defineProperty(window, 'location', {
                         value: uv.location.emulate(
                             (url) => {
