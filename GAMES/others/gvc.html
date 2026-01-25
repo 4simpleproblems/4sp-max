@@ -426,33 +426,31 @@ UNKNOWN_ACTION=
                     // Normalize backslashes to forward slashes
                     let cleanUrl = url.replace(/\\/g, '/');
                     
-                    // Detect sensitive domains (raw or XOR encoded)
-                    const isDosZone = cleanUrl.includes("cdn.dos.zone") || cleanUrl.includes("cfn,dms,zmng");
-                    const isJsDelivr = cleanUrl.includes("cdn.jsdelivr.net") || cleanUrl.includes("cfn,jqfgnivq,ngv");
+                    // Detect sensitive domains
+                    const isDosZone = cleanUrl.toLowerCase().includes("cdn.dos.zone") || cleanUrl.includes("cfn,dms,zmng");
+                    const isJsDelivr = cleanUrl.toLowerCase().includes("cdn.jsdelivr.net") || cleanUrl.includes("cfn,jqfgnivq,ngv");
 
                     if (isDosZone) {
                         // Extract target URL if already proxied by UV
                         if (cleanUrl.includes('/uv/service/')) {
                             try {
                                 if (window.__uv && window.__uv.codec && window.__uv.codec.xor) {
-                                    const encodedPart = cleanUrl.split('/uv/service/')[1];
+                                    const encodedPart = cleanUrl.split('/uv/service/')[1].split('?')[0];
                                     const decoded = window.__uv.codec.xor.decode(encodedPart);
                                     return 'https://corsproxy.io/?' + encodeURIComponent(decoded);
                                 }
-                            } catch(e) {
-                                console.warn("[GVC] Failed to decode UV URL:", e);
-                            }
+                            } catch(e) {}
                         }
-                        // Fallback or raw URL
-                        const rawUrl = cleanUrl.includes("cdn.dos.zone") ? cleanUrl : null;
-                        if (rawUrl) return 'https://corsproxy.io/?' + encodeURIComponent(rawUrl);
+                        // Fallback: If it's a raw dos.zone URL, proxy it
+                        const match = cleanUrl.match(/https?:\/\/cdn\.dos\.zone\/[^\s"]+/);
+                        if (match) return 'https://corsproxy.io/?' + encodeURIComponent(match[0]);
                     }
                     
                     if (isJsDelivr) {
                         if (cleanUrl.includes('/uv/service/')) {
                             try {
                                 if (window.__uv && window.__uv.codec && window.__uv.codec.xor) {
-                                    const encodedPart = cleanUrl.split('/uv/service/')[1];
+                                    const encodedPart = cleanUrl.split('/uv/service/')[1].split('?')[0];
                                     return window.__uv.codec.xor.decode(encodedPart);
                                 }
                             } catch(e) {}
@@ -464,27 +462,27 @@ UNKNOWN_ACTION=
 
                 window.fetch = async function(input, init) {
                     let url = input instanceof Request ? input.url : String(input);
+                    const lowerUrl = url.toLowerCase();
                     
-                    // ADF/Data Overrides
-                    if (url.includes("index.data")) return originalFetch(indexdataurl, init);
-                    if (url.includes("emotion.adf")) return originalFetch(EMOTIONadfurl, init);
-                    if (url.includes("espant.adf")) return originalFetch(ESPANTadfurl, init);
-                    if (url.includes("fever.adf")) return originalFetch(FEVERadfurl, init);
-                    if (url.includes("flash.adf")) return originalFetch(FLASHadfurl, init);
-                    if (url.includes("kchat.adf")) return originalFetch(KCHATadfurl, init);
-                    if (url.includes("VCPR.adf")) return originalFetch(VCPRadfurl, init);
-                    if (url.includes("VROCK.adf")) return originalFetch(VROCKadfurl, init);
-                    if (url.includes("WAVE.adf")) return originalFetch(WAVEadfurl, init);
-                    if (url.includes("WILD.adf")) return originalFetch(WILDadfurl, init);
+                    // ADF/Data Overrides (Case-Insensitive)
+                    if (lowerUrl.includes("index.data")) return originalFetch(indexdataurl, init);
+                    if (lowerUrl.includes("emotion.adf")) return originalFetch(EMOTIONadfurl, init);
+                    if (lowerUrl.includes("espant.adf")) return originalFetch(ESPANTadfurl, init);
+                    if (lowerUrl.includes("fever.adf")) return originalFetch(FEVERadfurl, init);
+                    if (lowerUrl.includes("flash.adf")) return originalFetch(FLASHadfurl, init);
+                    if (lowerUrl.includes("kchat.adf")) return originalFetch(KCHATadfurl, init);
+                    if (lowerUrl.includes("vcpr.adf")) return originalFetch(VCPRadfurl, init);
+                    if (lowerUrl.includes("vrock.adf")) return originalFetch(VROCKadfurl, init);
+                    if (lowerUrl.includes("wave.adf")) return originalFetch(WAVEadfurl, init);
+                    if (lowerUrl.includes("wild.adf")) return originalFetch(WILDadfurl, init);
                     
                     const targetUrl = getProxiedUrl(url);
                     if (targetUrl !== url) {
                         try {
-                            // Use nativeFetch to bypass UV's service worker interception
                             const res = await (window.__nativeFetch || originalFetch)(targetUrl, init);
                             if (res.ok) return res;
                         } catch (e) {
-                            console.warn("[GVC] Asset load failed via bypass, falling back:", targetUrl, e);
+                            console.warn("[VERN] Bypass fetch failed, falling back:", targetUrl);
                         }
                     }
 
@@ -493,17 +491,18 @@ UNKNOWN_ACTION=
 
                 XMLHttpRequest.prototype.open = function(method, url, ...rest) {
                     if (typeof url === 'string') {
-                        // ADF/Data Overrides
-                        if (url.includes("index.data")) url = indexdataurl;
-                        else if (url.includes("emotion.adf")) url = EMOTIONadfurl;
-                        else if (url.includes("espant.adf")) url = ESPANTadfurl;
-                        else if (url.includes("fever.adf")) url = FEVERadfurl;
-                        else if (url.includes("flash.adf")) url = FLASHadfurl;
-                        else if (url.includes("KCHAT.adf")) url = KCHATadfurl;
-                        else if (url.includes("VCPR.adf")) url = VCPRadfurl;
-                        else if (url.includes("VROCK.adf")) url = VROCKadfurl;
-                        else if (url.includes("WAVE.adf")) url = WAVEadfurl;
-                        else if (url.includes("WILD.adf")) url = WILDadfurl;
+                        const lowerUrl = url.toLowerCase();
+                        // ADF/Data Overrides (Case-Insensitive)
+                        if (lowerUrl.includes("index.data")) url = indexdataurl;
+                        else if (lowerUrl.includes("emotion.adf")) url = EMOTIONadfurl;
+                        else if (lowerUrl.includes("espant.adf")) url = ESPANTadfurl;
+                        else if (lowerUrl.includes("fever.adf")) url = FEVERadfurl;
+                        else if (lowerUrl.includes("flash.adf")) url = FLASHadfurl;
+                        else if (lowerUrl.includes("kchat.adf")) url = KCHATadfurl;
+                        else if (lowerUrl.includes("vcpr.adf")) url = VCPRadfurl;
+                        else if (lowerUrl.includes("vrock.adf")) url = VROCKadfurl;
+                        else if (lowerUrl.includes("wave.adf")) url = WAVEadfurl;
+                        else if (lowerUrl.includes("wild.adf")) url = WILDadfurl;
                         else {
                             const targetUrl = getProxiedUrl(url);
                             if (targetUrl !== url) {
@@ -544,21 +543,37 @@ UNKNOWN_ACTION=
                     return originalOpen.call(this, method, url, ...rest);
                 };
 
-                // Helper to handle the shadowed XHR in other methods (redundant but safe)
+                // Helper to handle the shadowed XHR in other methods
                 const originalSend = XMLHttpRequest.prototype.send;
                 XMLHttpRequest.prototype.send = function(body) {
                     if (this.__vern_xhr) return this.__vern_xhr.send(body);
                     return originalSend.call(this, body);
                 };
 
-                // Stability: Audio and Focus
+                // Stability: Audio, Focus and Pointer Lock
                 const resumeAudio = () => {
-                    const resume = (ctx) => {
-                        if (ctx && ctx.state === 'suspended') ctx.resume().catch(e => {});
-                    };
-                    if (window.Module && window.Module.audioContext) resume(window.Module.audioContext);
-                    if (window.AL && window.AL.currentContext && window.AL.currentContext.audioContext) resume(window.AL.currentContext.audioContext);
+                    try {
+                        const resume = (ctx) => {
+                            if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+                        };
+                        if (window.Module && window.Module.audioContext) resume(window.Module.audioContext);
+                        if (window.AL && window.AL.currentContext && window.AL.currentContext.audioContext) resume(window.AL.currentContext.audioContext);
+                    } catch(e) {}
                 };
+
+                // Global Pointer Lock Error Catching
+                const originalPointerLock = Element.prototype.requestPointerLock;
+                if (originalPointerLock) {
+                    Element.prototype.requestPointerLock = function() {
+                        try {
+                            const res = originalPointerLock.apply(this, arguments);
+                            if (res && res.catch) res.catch(e => console.warn("[VERN] Pointer Lock rejected:", e));
+                            return res;
+                        } catch(e) {
+                            console.warn("[VERN] Pointer Lock failed:", e);
+                        }
+                    };
+                }
 
                 window.addEventListener('mousedown', () => {
                     const canvas = document.getElementById('canvas');
