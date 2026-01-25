@@ -1141,9 +1141,14 @@
         function resolveGameUrl(relativePath) {
             if (!relativePath) return "";
             
-            // If it's already an absolute URL or a root-relative path, return it as is
-            if (relativePath.startsWith('http') || relativePath.startsWith('//') || relativePath.startsWith('/')) {
+            // If it's already an absolute URL return it
+            if (relativePath.startsWith('http') || relativePath.startsWith('//')) {
                 return relativePath;
+            }
+
+            // If it's a root-relative path, prepend the origin to make it a full absolute URL
+            if (relativePath.startsWith('/')) {
+                return window.location.origin + relativePath;
             }
 
             // Logic: 
