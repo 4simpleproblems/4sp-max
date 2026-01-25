@@ -20,7 +20,7 @@
     <script src="/GAMES/baremux/index.js?v=2.1.7"></script>
     <script>
         // Immediate Initialization of VERN_SYSTEM Proxy
-        (async () => {
+        window.__4sp_proxy_init = (async () => {
             if ("serviceWorker" in navigator) {
                 try {
                     const reg = await navigator.serviceWorker.register("/GAMES/sw.js", {
@@ -1613,6 +1613,11 @@
 
         // --- Init ---
         async function initializeApp() {
+            // Wait for proxy to be ready
+            if (window.__4sp_proxy_init) {
+                await window.__4sp_proxy_init;
+            }
+
             // Load Game Data Manually
             let gamesData = [];
             try {
