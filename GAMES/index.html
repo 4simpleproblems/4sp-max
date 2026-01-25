@@ -27,6 +27,9 @@
         // Immediate Initialization of VERN_SYSTEM Proxy
         window.__4sp_proxy_init = (async () => {
             const swPath = "/GAMES/sw.js?v=2.1.7";
+            let swReadyResolve;
+            const swReadyPromise = new Promise(resolve => swReadyResolve = resolve);
+
             if ("serviceWorker" in navigator) {
                 try {
                     const reg = await navigator.serviceWorker.register(swPath, {
@@ -40,44 +43,47 @@
                         window.location.reload();
                     });
 
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        if (event.data === 'VERN_PROXY_READY') {
+                            console.log("VERN Proxy Handshake Complete");
+                            swReadyResolve();
+                        }
+                    });
+
                 } catch (e) {
                     console.error("SW Register Failed", e);
                 }
             }
 
-            const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-            let swHooked = false;
-
-            const hookSW = async () => {
-                if (swHooked || !navigator.serviceWorker.controller) return false;
-                try {
-                    // Always get a FRESH port from a FRESH connection to avoid neutered port errors
-                    const tempConn = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                    const port = await tempConn.getInnerPort();
-                    navigator.serviceWorker.controller.postMessage({
-                        type: 'baremuxinit',
-                        port: port
-                    }, [port]);
-                    console.log("VERN SW Hooked to BareMux");
-                    swHooked = true;
-                    return true;
-                } catch (err) {
-                    console.error("Failed to hook SW", err);
-                    return false;
-                }
-            };
-
             try {
+                const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
                 const wispUrl = "wss://wisp.rhw.one/";
                 await connection.setTransport("/GAMES/libcurl/index.mjs", [{ websocket: wispUrl }]);
                 console.log("BareMux Initialized");
 
-                // Aggressive hooking with fresh ports
+                const hookSW = async () => {
+                    if (!navigator.serviceWorker.controller) return false;
+                    try {
+                        const tempConn = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+                        const port = await tempConn.getInnerPort();
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'baremuxinit',
+                            port: port
+                        }, [port]);
+                        return true;
+                    } catch (err) {
+                        return false;
+                    }
+                };
+
                 await hookSW();
-                if (!swHooked) {
-                    setTimeout(hookSW, 500);
-                    setTimeout(hookSW, 1500);
-                }
+                
+                // Wait for SW to confirm it's ready, with a 2s timeout
+                await Promise.race([
+                    swReadyPromise,
+                    new Promise(resolve => setTimeout(resolve, 2000))
+                ]);
+
             } catch (e) {
                 console.error("BareMux Init Failed", e);
             }

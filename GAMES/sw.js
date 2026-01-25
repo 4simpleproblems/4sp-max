@@ -13,6 +13,10 @@ self.addEventListener('message', (event) => {
             uv.bareClient = new BareMux.BareClient(event.data.port);
             bareReady = true;
             console.log("VERN SW: BareMux Port Initialized");
+            
+            // Notify the window that the proxy is ready
+            event.source.postMessage('VERN_PROXY_READY');
+            
             pending.forEach(resolve => resolve());
             pending = [];
         } catch (e) {
@@ -29,7 +33,7 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
 });
 
-async function waitForBare() {
+async function waitForProxy() {
     if (bareReady) return;
     return new Promise(resolve => {
         pending.push(resolve);
@@ -41,7 +45,7 @@ self.addEventListener('fetch', event => {
     if (uv.route(event)) {
         event.respondWith(
             (async () => {
-                await waitForBare();
+                await waitForProxy();
                 try {
                     return await uv.fetch(event);
                 } catch (err) {
