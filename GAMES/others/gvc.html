@@ -379,6 +379,7 @@ UNKNOWN_ACTION=
 
         function getVernProxyUrl(url) {
             if (!window.Ultraviolet) return url;
+            if (url.includes("/GAMES/uv/service/")) return url;
             return window.location.origin + "/GAMES/uv/service/" + Ultraviolet.codec.xor.encode(url);
         }
 
@@ -437,9 +438,9 @@ UNKNOWN_ACTION=
             ]).then(([indexdataurl, EMOTIONadfurl, ESPANTadfurl, FEVERadfurl, FLASHadfurl, KCHATadfurl, VCPRadfurl, VROCKadfurl, WAVEadfurl, WILDadfurl]) => {
             const originalFetch = window.fetch;
             const isMissingAsset = (url) => {
+                // Fix: Do not match already encoded URLs (hvtrs8) to prevent double encoding
                 return url.includes("vcsky/fetched/audio") || 
-                       url.includes("cdn.dos.zone") ||
-                       (url.includes("hvtrs8") && (url.includes("qfz.pau") || url.includes("intro") || url.includes("sfx.raw")));
+                       url.includes("cdn.dos.zone");
             };
 
             window.fetch = async function(input, init) {
