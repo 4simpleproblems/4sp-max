@@ -334,9 +334,15 @@ UNKNOWN_ACTION=
             mergeFiles(getParts(WASM6_BASE + "wild.adf", 1, 4), "wild.adf"),
         ]).then(([indexdataurl, EMOTIONadfurl, ESPANTadfurl, FEVERadfurl, FLASHadfurl, KCHATadfurl, VCPRadfurl, VROCKadfurl, WAVEadfurl, WILDadfurl]) => {
             const originalFetch = window.fetch;
+            const isMissingAsset = (url) => {
+                return url.includes("vcsky/fetched/audio") || 
+                       url.includes("cdn.dos.zone") ||
+                       (url.includes("hvtrs8") && (url.includes("qfz.pau") || url.includes("intro") || url.includes("sfx.raw")));
+            };
+
             window.fetch = async function(input, init) {
                 let url = input instanceof Request ? input.url : String(input);
-                if (url.includes("vcsky/fetched/audio") || url.includes("cdn.dos.zone")) {
+                if (isMissingAsset(url)) {
                     console.warn("Mocking missing asset to prevent 404:", url);
                     return new Response(new ArrayBuffer(0), { status: 200, statusText: "OK" }); 
                 }
@@ -354,7 +360,7 @@ UNKNOWN_ACTION=
             };
             const originalOpen = XMLHttpRequest.prototype.open;
             XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (url.includes("vcsky/fetched/audio") || url.includes("cdn.dos.zone")) {
+                if (isMissingAsset(url)) {
                     console.warn("Mocking missing asset (XHR) to prevent 404:", url);
                     url = "data:application/octet-stream;base64,";
                 } else if (url.includes("index.data")) url = indexdataurl;
