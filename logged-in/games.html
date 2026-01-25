@@ -19,6 +19,39 @@
     <script src="/logged-in/uv/uv.client.js"></script>
     <script src="/logged-in/uv/uv.config.js"></script>
     <script src="/logged-in/baremux/index.js"></script>
+    <script>
+        // Immediate Initialization of VERN_SYSTEM Proxy
+        (async () => {
+            if ("serviceWorker" in navigator) {
+                try {
+                    const reg = await navigator.serviceWorker.register("/logged-in/sw.js", {
+                        scope: "/logged-in/"
+                    });
+                    console.log("VERN SW Registered");
+
+                    // Reload if controller changes (SW activated)
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!navigator.serviceWorker.controller) return;
+                        console.log("SW Activated, reloading for proxy...");
+                        window.location.reload();
+                    });
+
+                } catch (e) {
+                    console.error("SW Register Failed", e);
+                }
+            }
+            try {
+                const connection = new BareMux.BareMuxConnection("/logged-in/baremux/worker.js");
+                await connection.setTransport("/logged-in/libcurl/index.mjs", [
+                    { websocket: "wss://wisp.rhw.one/" },
+                    { websocket: "wss://wisp.mercurywork.shop/" }
+                ]);
+                console.log("BareMux Initialized");
+            } catch (e) {
+                console.error("BareMux Init Failed", e);
+            }
+        })();
+    </script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
     <script>
@@ -885,6 +918,13 @@
         function proxyUrl(url) {
             if (!url) return url;
             const origin = window.location.origin;
+
+            // Only proxy if Service Worker is active and controlling the page.
+            // If it's not ready, encoded URLs will 404.
+            if (!navigator.serviceWorker.controller) {
+                console.warn("Proxy not ready, using raw URL:", url);
+                return url;
+            }
 
             // Don't double proxy
             if (url.includes(UV_CONFIG.prefix)) return url;
@@ -1763,31 +1803,6 @@
 
         // --- Init ---
         async function initializeApp() {
-            // Register VERN Service Worker
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registration = await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
-                    console.log("VERN SW Registered", registration);
-                    
-                    // Reload if controller changes (SW activated)
-                    navigator.serviceWorker.addEventListener('controllerchange', () => {
-                        if (!navigator.serviceWorker.controller) return;
-                        console.log("SW Activated, reloading for proxy...");
-                        window.location.reload();
-                    });
-
-                    // BareMux Init
-                    const conn = new BareMux.BareMuxConnection(window.location.origin + '/logged-in/baremux/worker.js');
-                    await conn.setTransport('/logged-in/libcurl/index.mjs', [
-                        { websocket: 'wss://wisp.rhw.one/' },
-                        { websocket: 'wss://wisp.mercurywork.shop/' }
-                    ]);
-                    console.log("BareMux Transport Set");
-                } catch(e) { 
-                    console.error("SW/BareMux Init Error:", e); 
-                }
-            }
-
             // Load Game Data Manually
             let gamesData = [];
             try {
