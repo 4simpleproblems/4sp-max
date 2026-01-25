@@ -16,8 +16,8 @@
     <!-- VERN Proxy Scripts (Local) -->
     <link rel="preload" href="/GAMES/uv/uv.bundle.js?v=2.1.7" as="script">
     <link rel="preload" href="/GAMES/baremux/index.js?v=2.1.7" as="script">
-    <link rel="preload" href="/GAMES/baremux/worker.js" as="worker">
-    <link rel="preload" href="/GAMES/sw.js" as="worker">
+    <link rel="preload" href="/GAMES/baremux/worker.js?v=2.1.7" as="script">
+    <link rel="preload" href="/GAMES/sw.js?v=2.1.7" as="script">
 
     <script src="/GAMES/uv/uv.bundle.js?v=2.1.7"></script>
     <script src="/GAMES/uv/uv.client.js?v=2.1.7"></script>
@@ -26,9 +26,10 @@
     <script>
         // Immediate Initialization of VERN_SYSTEM Proxy
         window.__4sp_proxy_init = (async () => {
+            const swPath = "/GAMES/sw.js?v=2.1.7";
             if ("serviceWorker" in navigator) {
                 try {
-                    const reg = await navigator.serviceWorker.register("/GAMES/sw.js", {
+                    const reg = await navigator.serviceWorker.register(swPath, {
                         scope: "/GAMES/"
                     });
                     console.log("VERN SW Registered");
@@ -50,9 +51,9 @@
             const hookSW = async () => {
                 if (swHooked || !navigator.serviceWorker.controller) return false;
                 try {
-                    // Use a fresh connection to get a new port for the SW hook
-                    const swConn = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                    const port = await swConn.getInnerPort();
+                    // Always get a FRESH port from a FRESH connection to avoid neutered port errors
+                    const tempConn = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+                    const port = await tempConn.getInnerPort();
                     navigator.serviceWorker.controller.postMessage({
                         type: 'baremuxinit',
                         port: port
@@ -71,11 +72,11 @@
                 await connection.setTransport("/GAMES/libcurl/index.mjs", [{ websocket: wispUrl }]);
                 console.log("BareMux Initialized");
 
-                // Attempt hook
-                if (!await hookSW()) {
+                // Aggressive hooking with fresh ports
+                await hookSW();
+                if (!swHooked) {
                     setTimeout(hookSW, 500);
-                    setTimeout(hookSW, 1000);
-                    setTimeout(hookSW, 2000);
+                    setTimeout(hookSW, 1500);
                 }
             } catch (e) {
                 console.error("BareMux Init Failed", e);
