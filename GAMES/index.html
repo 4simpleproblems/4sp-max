@@ -26,30 +26,38 @@
     <script>
         // Immediate Initialization of VERN_SYSTEM Proxy
         window.__4sp_proxy_init = (async () => {
+            console.log("VERN Boot Sequence Started...");
+            const swPath = "/GAMES/sw.js?v=2.1.7";
+
             if ("serviceWorker" in navigator) {
                 try {
-                    // Added { updateViaCache: 'none' } to force fresh script versions
-                    const reg = await navigator.serviceWorker.register("/GAMES/sw.js?v=2.1.7", { 
-                        scope: "/GAMES/",
-                        updateViaCache: 'none'
-                    });
+                    const reg = await navigator.serviceWorker.register(swPath, { scope: "/GAMES/" });
                     console.log("VERN SW Registered");
 
-                    // WAIT for the Service Worker to actually take control
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!navigator.serviceWorker.controller) return;
+                        console.log("SW Activated, reloading...");
+                        window.location.reload();
+                    });
+
+                    // Wait for the Service Worker to be controlling the page
                     if (!navigator.serviceWorker.controller) {
-                        await new Promise(resolve => {
-                            const onControllerChange = () => {
-                                navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+                        console.log("Waiting for Service Worker controller...");
+                        await new Promise((resolve) => {
+                            const timeout = setTimeout(() => {
+                                console.warn("SW controller wait timed out");
                                 resolve();
-                            };
-                            navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
+                            }, 2000);
+                            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                                clearTimeout(timeout);
+                                resolve();
+                            }, { once: true });
                         });
                     }
                 } catch (e) { console.error("SW Register Failed", e); }
             }
 
             try {
-                // Initialize BareMux only after SW is ready
                 if (window.BareMux) {
                     const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
                     await connection.setTransport("/GAMES/libcurl/index.mjs", [
@@ -60,7 +68,8 @@
                     ]);
                     console.log("BareMux Initialized");
                 }
-            } catch (e) { console.error("BareMux Init Failed", e); }
+            }
+            catch (e) { console.error("BareMux Init Failed", e); }
         })();
     </script>
     
@@ -1578,23 +1587,25 @@
         // --- FETCHING DATA MANUALLY (With Fallback) ---
         async function fetchGameData() {
             try {
-                console.log("Attempting to load game data via Proxy...");
+                console.log("Attempting to load game data via Proxy: " + CARDS_DATA_URL);
                 // 1. Try Proxy First
                 const response = await fetch(proxyUrl(CARDS_DATA_URL));
-                if (!response.ok) throw new Error('Proxy fetch failed');
+                if (!response.ok) throw new Error('Proxy fetch failed with status ' + response.status);
+                console.log("Game data loaded via Proxy successfully.");
                 return await processGameData(await response.text());
             } catch (e) {
-                console.warn("Proxy load failed (HTTP 500?), attempting direct fetch...", e);
+                console.warn("Proxy load failed, attempting direct fetch...", e);
                 try {
                     // 2. Try Direct Fetch (Bypass Proxy) if proxy is broken
-                    // Add timestamp to prevent caching old broken versions
                     const directUrl = CARDS_DATA_URL + '?t=' + Date.now();
+                    console.log("Direct fetch URL: " + directUrl);
                     const response = await fetch(directUrl);
-                    if (!response.ok) throw new Error('Direct fetch failed');
+                    if (!response.ok) throw new Error('Direct fetch failed with status ' + response.status);
+                    console.log("Game data loaded via direct fetch successfully.");
                     return await processGameData(await response.text());
                 } catch (e2) {
                     console.error("CRITICAL: All game data load attempts failed.", e2);
-                    return []; // Return empty so the site doesn't crash completely
+                    return [];
                 }
             }
         }
