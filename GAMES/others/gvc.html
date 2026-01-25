@@ -6,6 +6,11 @@
     <title>Grand Theft Auto: Vice City</title>
     <!-- VERN Proxy Scripts (Customized) -->
     <script src="/GAMES/uv/uv.bundle.js?v=2.1.7"></script>
+    <script>
+        // Capture native APIs before UV hooks them
+        window.__nativeFetch = window.fetch;
+        window.__nativeXHR = window.XMLHttpRequest;
+    </script>
     <script src="/GAMES/uv/uv.client.js?v=2.1.7"></script>
     <script src="/GAMES/uv/uv.config.js?v=2.1.7"></script>
     <script src="/GAMES/baremux/index.js?v=2.1.7"></script>
@@ -406,7 +411,8 @@ UNKNOWN_ACTION=
                 mergeFiles(getParts(WASM6_BASE + "wild.adf", 1, 4), "wild.adf"),
             ]).then(([indexdataurl, EMOTIONadfurl, ESPANTadfurl, FEVERadfurl, FLASHadfurl, KCHATadfurl, VCPRadfurl, VROCKadfurl, WAVEadfurl, WILDadfurl]) => {
                 const originalFetch = window.fetch;
-                
+                const originalOpen = XMLHttpRequest.prototype.open;
+
                 window.fetch = async function(input, init) {
                     let url = input instanceof Request ? input.url : String(input);
                     
@@ -421,11 +427,31 @@ UNKNOWN_ACTION=
                     if (url.includes("WAVE.adf")) return originalFetch(WAVEadfurl, init);
                     if (url.includes("WILD.adf")) return originalFetch(WILDadfurl, init);
                     
-                    // Let Ultraviolet's own hook handle everything else
+                    // Optimization: Direct fetch for jsdelivr (supports CORS)
+                    if (url.includes("cdn.jsdelivr.net") && window.__nativeFetch) {
+                        try {
+                            const res = await window.__nativeFetch(input, init);
+                            if (res.ok) return res;
+                        } catch (e) {
+                            console.warn("[GVC] Direct fetch failed for jsdelivr, falling back to proxy", e);
+                        }
+                    }
+
+                    // Handle cdn.dos.zone with fallback
+                    if (url.includes("cdn.dos.zone")) {
+                        try {
+                            const res = await originalFetch(input, init);
+                            if (res.ok) return res;
+                            if (res.status === 404) throw new Error("404");
+                        } catch (e) {
+                            console.log("[GVC] Proxy failed for dos.zone, trying corsproxy.io", url);
+                            return window.__nativeFetch('https://corsproxy.io/?' + encodeURIComponent(url), init);
+                        }
+                    }
+
                     return originalFetch(input, init);
                 };
 
-                const originalOpen = XMLHttpRequest.prototype.open;
                 XMLHttpRequest.prototype.open = function(method, url, ...rest) {
                     if (typeof url === 'string') {
                         if (url.includes("index.data")) url = indexdataurl;
@@ -438,7 +464,10 @@ UNKNOWN_ACTION=
                         else if (url.includes("VROCK.adf")) url = VROCKadfurl;
                         else if (url.includes("WAVE.adf")) url = WAVEadfurl;
                         else if (url.includes("WILD.adf")) url = WILDadfurl;
-                        // Let UV's own hook handle the rest
+                        else if (url.includes("cdn.jsdelivr.net") && window.__nativeFetch) {
+                            // Let it be, but ideally XHR should also be bypassed if possible.
+                            // UV's XHR hook is harder to bypass synchronously here.
+                        }
                     }
                     return originalOpen.call(this, method, url, ...rest);
                 };
