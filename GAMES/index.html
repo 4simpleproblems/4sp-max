@@ -50,6 +50,16 @@
                     { wisp: "wss://t9.v-v.top/wisp/" }
                 ]);
                 console.log("BareMux Initialized with fallback WISP servers");
+
+                // Hook UV SW to BareMux
+                if (navigator.serviceWorker.controller) {
+                    const port = await connection.getInnerPort();
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'baremuxinit',
+                        port: port
+                    }, [port]);
+                    console.log("UV SW Hooked to BareMux");
+                }
             } catch (e) {
                 console.error("BareMux Init Failed", e);
             }
@@ -1568,8 +1578,17 @@
         async function fetchGameData() {
             try {
                 // Fetch the file via proxy to avoid CORS
-                const response = await fetch(proxyUrl(CARDS_DATA_URL));
-                if (!response.ok) throw new Error('Failed to fetch game data');
+                // Strategy: Try proxied fetch first, fallback to direct fetch
+                let response;
+                try {
+                    response = await fetch(proxyUrl(CARDS_DATA_URL));
+                    if (!response.ok) throw new Error('Proxied fetch failed');
+                } catch (proxyError) {
+                    console.warn("Proxy fetch failed, attempting direct fetch for game data...", proxyError);
+                    response = await fetch(CARDS_DATA_URL);
+                }
+
+                if (!response.ok) throw new Error('Failed to fetch game data (both proxy and direct)');
                 let scriptText = await response.text();
                 
                 // Transform 'export default' to 'window.loadedGameData ='
