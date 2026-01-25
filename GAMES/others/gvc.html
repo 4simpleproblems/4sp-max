@@ -437,13 +437,13 @@ UNKNOWN_ACTION=
                                 if (window.__uv && window.__uv.codec && window.__uv.codec.xor) {
                                     const encodedPart = cleanUrl.split('/uv/service/')[1].split('?')[0];
                                     const decoded = window.__uv.codec.xor.decode(encodedPart);
-                                    return 'https://corsproxy.io/?' + encodeURIComponent(decoded);
+                                    return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(decoded);
                                 }
                             } catch(e) {}
                         }
                         // Fallback: If it's a raw dos.zone URL, proxy it
                         const match = cleanUrl.match(/https?:\/\/cdn\.dos\.zone\/[^\s"]+/);
-                        if (match) return 'https://corsproxy.io/?' + encodeURIComponent(match[0]);
+                        if (match) return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(match[0]);
                     }
                     
                     if (isJsDelivr) {
