@@ -28,7 +28,6 @@
                     });
                     console.log("VERN SW Registered");
 
-                    // Reload if controller changes (SW activated)
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         if (!navigator.serviceWorker.controller) return;
                         console.log("SW Activated, reloading for proxy...");
@@ -41,12 +40,10 @@
             }
 
             const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+            let swHooked = false;
 
             const hookSW = async () => {
-                if (!navigator.serviceWorker.controller) {
-                    console.warn("SW Controller is null, cannot hook yet...");
-                    return false;
-                }
+                if (swHooked || !navigator.serviceWorker.controller) return false;
                 try {
                     const port = await connection.getInnerPort();
                     navigator.serviceWorker.controller.postMessage({
@@ -54,6 +51,7 @@
                         port: port
                     }, [port]);
                     console.log("VERN SW Hooked to BareMux");
+                    swHooked = true;
                     return true;
                 } catch (err) {
                     console.error("Failed to hook SW", err);
@@ -71,13 +69,12 @@
                 ]);
                 console.log("BareMux Initialized");
 
-                // Aggressive hooking
-                hookSW();
-                setTimeout(hookSW, 500);
-                setTimeout(hookSW, 1000);
-                setTimeout(hookSW, 2000);
-                
-                navigator.serviceWorker.addEventListener('controllerchange', hookSW);
+                // Attempt hook
+                if (!await hookSW()) {
+                    navigator.serviceWorker.addEventListener('controllerchange', hookSW);
+                    setTimeout(hookSW, 1000);
+                    setTimeout(hookSW, 3000);
+                }
             } catch (e) {
                 console.error("BareMux Init Failed", e);
             }
