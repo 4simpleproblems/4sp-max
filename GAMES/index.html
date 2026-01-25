@@ -729,22 +729,13 @@
             if (!url) return url;
             const origin = window.location.origin;
 
-            // Only proxy if Service Worker is active and controlling the page.
-            // If it's not ready, encoded URLs will 404.
-            if (!navigator.serviceWorker.controller) {
-                console.warn("Proxy not ready, using raw URL:", url);
-                return url;
-            }
-
             // Don't double proxy
             if (url.includes(UV_CONFIG.prefix)) return url;
 
             // Exclude GN-Math (jsdelivr) from proxying as it has native CORS support
-            // and we use content injection for it anyway.
             if (url.includes('cdn.jsdelivr.net')) return url;
 
-            // Proxy external URLs, especially the dv-service-lfs worker
-            if (url.startsWith('http') && !url.startsWith(origin)) {
+            if (url.startsWith('http')) {
                 return origin + UV_CONFIG.prefix + UV_CONFIG.encodeUrl(url);
             }
             
