@@ -419,23 +419,8 @@ UNKNOWN_ACTION=
                 const originalFetch = window.fetch;
                 const originalOpen = XMLHttpRequest.prototype.open;
 
-                const getProxiedUrl = (url) => {
-                    if (!url || typeof url !== 'string') return url;
-                    if (url.startsWith('blob:') || url.startsWith('data:') || url.startsWith('javascript:')) return url;
-                    
-                    let cleanUrl = url.replace(/\\/g, '/');
-                    if (cleanUrl.includes("cdn.dos.zone")) {
-                        const prefix = (__uv$config && __uv$config.prefix) || '/GAMES/uv/service/';
-                        if (!cleanUrl.startsWith(window.location.origin + prefix) && !cleanUrl.startsWith(prefix)) {
-                            return window.location.origin + prefix + Ultraviolet.codec.xor.encode(cleanUrl);
-                        }
-                    }
-                    return cleanUrl;
-                };
-
                 window.fetch = async function(input, init) {
                     let url = input instanceof Request ? input.url : String(input);
-                    url = getProxiedUrl(url);
                     
                     if (url.includes("index.data")) return originalFetch(indexdataurl, init);
                     if (url.includes("emotion.adf")) return originalFetch(EMOTIONadfurl, init);
@@ -448,35 +433,27 @@ UNKNOWN_ACTION=
                     if (url.includes("WAVE.adf")) return originalFetch(WAVEadfurl, init);
                     if (url.includes("WILD.adf")) return originalFetch(WILDadfurl, init);
                     
-                    // Optimization: Direct fetch for jsdelivr (supports CORS)
-                    if (url.includes("cdn.jsdelivr.net") && window.__nativeFetch) {
+                    // Unified handler for domains where direct or corsproxy is better
+                    if (url.includes("cdn.jsdelivr.net") || url.includes("cdn.dos.zone")) {
+                        const cleanUrl = url.replace(/\\/g, '/');
+                        const targetUrl = cleanUrl.includes("cdn.dos.zone") 
+                            ? 'https://corsproxy.io/?' + encodeURIComponent(cleanUrl)
+                            : cleanUrl;
+                        
                         try {
-                            const res = await window.__nativeFetch(input, init);
+                            // Use nativeFetch to bypass any UV hooks completely
+                            const res = await (window.__nativeFetch || originalFetch)(targetUrl, init);
                             if (res.ok) return res;
                         } catch (e) {
-                            console.warn("[GVC] Direct fetch failed for jsdelivr, falling back to proxy", e);
+                            console.warn("[GVC] Native fetch failed for " + url + ", falling back to UV", e);
                         }
                     }
 
-                    // Handle fallback for already proxied cdn.dos.zone if it fails
-                    if (url.includes("cdn.dos.zone")) {
-                        try {
-                            const res = await originalFetch(url, init);
-                            if (res.ok) return res;
-                            if (res.status === 404) throw new Error("404");
-                        } catch (e) {
-                            console.log("[GVC] Proxy failed for dos.zone, trying corsproxy.io fallback", url);
-                            const rawUrl = url.includes('service/') ? Ultraviolet.codec.xor.decode(url.split('service/')[1]) : url;
-                            return window.__nativeFetch('https://corsproxy.io/?' + encodeURIComponent(rawUrl), init);
-                        }
-                    }
-
-                    return originalFetch(url, init);
+                    return originalFetch(input, init);
                 };
 
                 XMLHttpRequest.prototype.open = function(method, url, ...rest) {
                     if (typeof url === 'string') {
-                        url = getProxiedUrl(url);
                         if (url.includes("index.data")) url = indexdataurl;
                         else if (url.includes("emotion.adf")) url = EMOTIONadfurl;
                         else if (url.includes("espant.adf")) url = ESPANTadfurl;
@@ -487,9 +464,21 @@ UNKNOWN_ACTION=
                         else if (url.includes("VROCK.adf")) url = VROCKadfurl;
                         else if (url.includes("WAVE.adf")) url = WAVEadfurl;
                         else if (url.includes("WILD.adf")) url = WILDadfurl;
+                        else if (url.includes("cdn.jsdelivr.net") || url.includes("cdn.dos.zone")) {
+                            const cleanUrl = url.replace(/\\/g, '/');
+                            if (cleanUrl.includes("cdn.dos.zone")) {
+                                url = 'https://corsproxy.io/?' + encodeURIComponent(cleanUrl);
+                                // For dos.zone XHR, we MUST use the native XHR to avoid UV interception of the proxy URL
+                                return (window.__nativeXHR ? new window.__nativeXHR() : new XMLHttpRequest()).open(method, url, ...rest);
+                            } else {
+                                url = cleanUrl;
+                            }
+                        }
                     }
                     return originalOpen.call(this, method, url, ...rest);
                 };
+
+
 
             async function loadGame(data) {
                 var Module = {
