@@ -867,6 +867,10 @@
             prefix: '/logged-in/uv/service/',
             encodeUrl: (url) => {
                 if (!url) return url;
+                if (window.Ultraviolet && window.Ultraviolet.codec && window.Ultraviolet.codec.xor) {
+                    return window.Ultraviolet.codec.xor.encode(url);
+                }
+                // Fallback XOR
                 let t = "";
                 for (let r = 0; r < url.length; r++) {
                     t += r % 2 ? String.fromCharCode(url.charCodeAt(r) ^ 2) : url[r];
@@ -880,16 +884,20 @@
          */
         function proxyUrl(url) {
             if (!url) return url;
-            // Only proxy absolute URLs that are external
-            if (url.startsWith('http')) {
-                const origin = window.location.origin;
-                // If it's already proxied, don't double proxy
-                if (url.includes(UV_CONFIG.prefix)) return url;
-                // Proxy workers.dev and jsdelivr to bypass CORS
-                if (url.includes('4simpleproblems.workers.dev') || url.includes('cdn.jsdelivr.net')) {
-                    return origin + UV_CONFIG.prefix + UV_CONFIG.encodeUrl(url);
-                }
+            const origin = window.location.origin;
+
+            // Don't double proxy
+            if (url.includes(UV_CONFIG.prefix)) return url;
+
+            // Exclude GN-Math (jsdelivr) from proxying as it has native CORS support
+            // and we use content injection for it anyway.
+            if (url.includes('cdn.jsdelivr.net')) return url;
+
+            // Proxy external URLs, especially the dv-service-lfs worker
+            if (url.startsWith('http') && !url.startsWith(origin)) {
+                return origin + UV_CONFIG.prefix + UV_CONFIG.encodeUrl(url);
             }
+            
             return url;
         }
 
@@ -1459,8 +1467,8 @@
 
             // --- REVISED LOGIC FOR LOADING GAMES WITH RETRY ---
             // GN-Math uses content injection. StrongdogXP and Others use standard loading.
-            // EXCEPTION: Eaglercraft and GVC use injection to ensure keyboard focus/input works correctly as a "local" file.
-            const isInjectedGame = isEagler || game.id === 'other-gvc';
+            // EXCEPTION: Eaglercraft uses injection to ensure keyboard focus/input works correctly as a "local" file.
+            const isInjectedGame = isEagler;
             const isStandardURLGame = (game.category === 'Others' && !isInjectedGame) || game.category === 'StrongdogXP';
             
             // Ensure the game URL is proxied if it's from the workers.dev domain
@@ -1761,6 +1769,13 @@
                     const registration = await navigator.serviceWorker.register('/logged-in/sw.js', { scope: '/logged-in/' });
                     console.log("VERN SW Registered", registration);
                     
+                    // Reload if controller changes (SW activated)
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!navigator.serviceWorker.controller) return;
+                        console.log("SW Activated, reloading for proxy...");
+                        window.location.reload();
+                    });
+
                     // BareMux Init
                     const conn = new BareMux.BareMuxConnection(window.location.origin + '/logged-in/baremux/worker.js');
                     await conn.setTransport('/logged-in/libcurl/index.mjs', [
