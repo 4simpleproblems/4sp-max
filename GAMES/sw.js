@@ -14,9 +14,29 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', event => {
+
     if (uv.route(event)) {
+
         event.respondWith(uv.fetch(event));
+
     } else {
-        event.respondWith(fetch(event.request));
+
+        const url = new URL(event.request.url);
+
+        if (url.hostname === 'cdn.dos.zone') {
+
+            // Force proxying for dos.zone to fix CORS and use Bare transport
+
+            const proxiedUrl = self.location.origin + self.__uv$config.prefix + Ultraviolet.codec.xor.encode(event.request.url.replace(/\\/g, '/'));
+
+            event.respondWith(fetch(proxiedUrl));
+
+        } else {
+
+            event.respondWith(fetch(event.request));
+
+        }
+
     }
+
 });
