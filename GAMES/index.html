@@ -24,53 +24,59 @@
     <script src="/GAMES/uv/uv.config.js?v=2.1.7"></script>
     <script src="/GAMES/baremux/index.js?v=2.1.7"></script>
     <script>
-        // Immediate Initialization of VERN_SYSTEM Proxy
-        window.__4sp_proxy_init = (async () => {
-            console.log("VERN Boot Sequence Started...");
-            const swPath = "/GAMES/sw.js?v=2.1.7";
-
-            if ("serviceWorker" in navigator) {
-                try {
-                    const reg = await navigator.serviceWorker.register(swPath, { scope: "/GAMES/" });
-                    console.log("VERN SW Registered");
-
-                    navigator.serviceWorker.addEventListener('controllerchange', () => {
-                        if (!navigator.serviceWorker.controller) return;
-                        console.log("SW Activated, reloading...");
-                        window.location.reload();
-                    });
-
-                    // Wait for the Service Worker to be controlling the page
-                    if (!navigator.serviceWorker.controller) {
-                        console.log("Waiting for Service Worker controller...");
-                        await new Promise((resolve) => {
-                            const timeout = setTimeout(() => {
-                                console.warn("SW controller wait timed out");
-                                resolve();
-                            }, 2000);
+                // Immediate Initialization of VERN_SYSTEM Proxy
+                window.__4sp_proxy_init = (async () => {
+                    console.log("VERN Boot Sequence Started...");
+                    const swPath = "/GAMES/sw.js?v=2.1.7";
+        
+                    if ("serviceWorker" in navigator) {
+                        try {
+                            const reg = await navigator.serviceWorker.register(swPath, { 
+                                scope: "/GAMES/",
+                                updateViaCache: 'none'
+                            });
+                            console.log("VERN SW Registered");
+        
+                            // Reload if controller changes (SW activated)
                             navigator.serviceWorker.addEventListener('controllerchange', () => {
-                                clearTimeout(timeout);
-                                resolve();
-                            }, { once: true });
-                        });
+                                if (!navigator.serviceWorker.controller) return;
+                                console.log("SW Activated, reloading...");
+                                window.location.reload();
+                            });
+        
+                            // Wait for the worker to be ready
+                            await navigator.serviceWorker.ready;
+        
+                            // If we have no controller, we might need a reload to gain control
+                            if (!navigator.serviceWorker.controller) {
+                                const hasReloaded = sessionStorage.getItem('sw_reloaded');
+                                if (!hasReloaded) {
+                                    console.log("SW ready but not controlling. Forcing reload...");
+                                    sessionStorage.setItem('sw_reloaded', 'true');
+                                    window.location.reload();
+                                    return;
+                                }
+                                console.warn("SW still not controlling after reload.");
+                            } else {
+                                sessionStorage.removeItem('sw_reloaded');
+                            }
+        
+                        } catch (e) { console.error("SW Register Failed", e); }
                     }
-                } catch (e) { console.error("SW Register Failed", e); }
-            }
-
-            try {
-                if (window.BareMux) {
-                    const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                    await connection.setTransport("/GAMES/libcurl/index.mjs", [
-                        { websocket: "wss://wisp.rhw.one/" },
-                        { websocket: "wss://wisp.mercurywork.shop/" },
-                        { websocket: "wss://wisp.mercurynate.xyz/" },
-                        { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
-                    ]);
-                    console.log("BareMux Initialized");
-                }
-            }
-            catch (e) { console.error("BareMux Init Failed", e); }
-        })();
+        
+                    try {
+                        if (window.BareMux) {
+                            const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+                            await connection.setTransport("/GAMES/libcurl/index.mjs", [
+                                { websocket: "wss://wisp.rhw.one/" },
+                                { websocket: "wss://wisp.mercurywork.shop/" },
+                                { websocket: "wss://wisp.mercurynate.xyz/" },
+                                { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
+                            ]);
+                            console.log("BareMux Initialized");
+                        }
+                    } catch (e) { console.error("BareMux Init Failed", e); }
+                })();
     </script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
