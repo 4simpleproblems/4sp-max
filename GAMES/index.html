@@ -10,10 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+     
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- VERN Proxy Scripts (Local) -->
     <link rel="preload" href="/GAMES/uv/uv.bundle.js?v=2.1.7" as="script">
     <link rel="preload" href="/GAMES/baremux/index.js?v=2.1.7" as="script">
     <link rel="preload" href="/GAMES/baremux/worker.js?v=2.1.7" as="script">
@@ -72,12 +71,12 @@
                                                     { websocket: "wss://wisp.rhw.one/" },
                                                     { websocket: "wss://wisp.mercurynate.xyz/" },
                                                     { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
-                                                ]);                            console.log("BareMux Initialized");
+                                                ]);                                    console.log("BareMux Initialized");
                         }
                     } catch (e) { console.error("BareMux Init Failed", e); }
                 })();
     </script>
-    
+     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -118,7 +117,7 @@
             }
         }
     </script>
-    
+     
     <style>
         /* Base styles */
         :root {
@@ -616,14 +615,14 @@
         <button id="creditsBtn" class="absolute top-0 right-4 z-20 btn-toolbar-style">
             <i class="fa-solid fa-users mr-2"></i>Credits
         </button>
-        
+         
         <div class="mx-auto my-8 p-4 sm:p-6 w-full max-w-3xl relative">
             <p class="bg-card-dark text-white p-5 rounded-2xl shadow-lg border border-brand-border text-center">
                 <strong class="text-sm sm:text-base">Update: Game Collection Fixed</strong><br>
                 <span class="text-xs sm:text-sm text-gray-400">Update: GN-Math games are no longer blocked on most school networks. The games now load from a widely used file source instead of the old one, which many filters like Securly blocked by default, so everything should work normally now. Also, I have fixed a major bug where 895 games were missing from the StrongdogXP category, which have been added back.</span>
             </p>
         </div>
-        
+         
         <div id="favoritesSection">
             <h2 id="favoritesHeader" class="text-center text-3xl font-bold mt-12 mb-6 text-white" style="display: none;">
                 <strong>Favorites</strong>
@@ -644,7 +643,7 @@
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
-            
+             
             <div id="games-grid-container" class="games-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4 mt-6 transition-opacity duration-300 ease-in-out">
                 </div>
         </div>
@@ -653,7 +652,7 @@
     <div id="bottom-fixed-bar" class="fixed bottom-4 right-4 bg-black/80 backdrop-blur-xl rounded-3xl border border-brand-border shadow-2xl shadow-black/50 w-full max-w-md z-50 transition-all duration-300 flex flex-col">
         <div id="searchResults" class="search-results-container w-full" style="display: none;">
             </div>
-        
+         
         <div id="searchDivider" class="w-full h-[1px] bg-white/10" style="display: none;"></div>
 
         <div class="flex items-center w-full p-1">
@@ -663,7 +662,7 @@
             <input type="text" id="searchInput" placeholder="Search for games…" autocomplete="off" class="w-full py-3 pr-4 bg-transparent text-white placeholder-gray-500 focus:outline-none focus:ring-0 text-base" />
         </div>
     </div>
-    
+     
     <div id="zoneViewer" aria-modal="true" role="dialog">
         <div class="zone-header">
              <div class="zone-title">
@@ -680,8 +679,7 @@
     <div id="creditsModal">
         <button id="closeCreditsFixed"><i class="fas fa-times text-2xl"></i></button>
         <div id="creditsScrollContainer" class="credits-scroll-container">
-            <!-- Sections injected via JS -->
-        </div>
+            </div>
         <div class="credits-nav-bar">
             <button id="creditsPrevBtn" class="credits-nav-btn"><i class="fas fa-chevron-up"></i></button>
             <button id="creditsNextBtn" class="credits-nav-btn"><i class="fas fa-chevron-down"></i></button>
@@ -693,7 +691,7 @@
             <div class="p-6 sm:p-8 overflow-y-auto custom-scrollbar">
                 <h3 class="text-2xl font-bold mb-4 text-center">Welcome to 4SP Games</h3>
                 <p class="text-sm text-gray-400 mb-6 text-center">Please read the following information before playing.</p>
-                
+                 
                 <ul class="space-y-4 text-gray-300 text-sm sm:text-base leading-relaxed">
                     <li class="flex items-start">
                         <i class="fas fa-compass mt-1 mr-3 text-accent-indigo"></i>
@@ -717,7 +715,7 @@
                     </li>
                 </ul>
             </div>
-            
+             
             <div class="p-6 border-t border-gray-800 bg-black/20 rounded-b-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
                 <span class="text-xs text-gray-500">Type "I understand" to continue.</span>
                 <input type="text" id="instruction-input" placeholder="Type 'I understand'" class="w-full sm:w-auto px-6 py-3 border border-transparent text-base font-normal rounded-xl text-white bg-purple-500/10 ring-1 ring-purple-500/50 focus:ring-purple-500/80 focus:bg-purple-500/20 focus:outline-none placeholder-gray-400 transition-all duration-200">
@@ -1085,7 +1083,7 @@
         // We keep the original relative paths here so the resolver logic above can handle them dynamically
         const othersGames = [
             { id: "other-eaglercraft", name: "Eaglercraft", imgSrc: "images/eaglercraft.png", description: "The classic survival and building game with authentic block-based physics and multiplayer support, accessible directly in the browser.", category: "Others", versions: [ { name: "Release 1.12.2", url: "../EAGLERCRAFT/eaglercraft-1.12.2.html", favoriteId: "other-eaglercraft_1.12.2" }, { name: "Release 1.12.2 WASM", url: "../EAGLERCRAFT/eaglercraft-1.12.2-wasm.html", favoriteId: "other-eaglercraft_wasm", wasm: true } ] },
-            { id: "other-gvc", name: "GTA: Vice City", imgSrc: "images/gvc.png", favImgSrc: "images/gvc-3-2.png", description: "Experience the 80s in Vice City. Build your criminal empire in this neon-soaked open world masterpiece.", category: "Others", url: "/GAMES/others/gvc.html" },
+            { id: "other-gvc", name: "GTA: Vice City", imgSrc: "images/gvc.png", favImgSrc: "images/gvc-3-2.png", description: "Experience the 80s in Vice City. Build your criminal empire in this neon-soaked open world masterpiece.", category: "Others", url: "https://dv-service-lfs.4simpleproblems.workers.dev/GAMES/others/gvc.html" },
             { id: "other-gta", name: "Grand Theft Auto", imgSrc: "images/gta.png", description: "The original top-down classic. Cause chaos, complete missions, or just go for a drive in three iconic cities.", category: "Others", versions: [ { name: "Carnage3D", url: "../CARNAGE3D/web/carnage3D.html", favoriteId: "other-gta_carnage3d" }, { name: "Grand Theft Auto (JS-DOS)", url: "../GTA-JSDOS/index.html", favoriteId: "other-gta_jsdos" } ] },
             { id: "other-simcity", name: "Sim City", imgSrc: "images/simcity2000.png", description: "The original city-building classics. Design, build, and manage the city of your dreams in either the original Sim City or the detailed Sim City 2000.", category: "Others", versions: [ { name: "Sim City", url: "../SIM-CITY/index.html", favoriteId: "other-simcity_1" }, { name: "Sim City 2000", url: "../SIM-CITY-2/index.html", favoriteId: "other-simcity_2000" } ] },
             { id: "other-doom", name: "DOOM", imgSrc: "images/doom.png", description: "The legendary first-person shooter that pioneered the genre, focusing on blasting through hordes of demons in a timeless, adrenaline-fueled classic.", category: "Others", url: "../DOOM/index.html" },
@@ -1145,8 +1143,8 @@
             
             if (!game.versions) { 
                 card.querySelector('.group').addEventListener('click', () => {
-                     const gUrl = resolveGameUrl(game.url);
-                     openZone({...game, url: gUrl}); 
+                      const gUrl = resolveGameUrl(game.url);
+                      openZone({...game, url: gUrl}); 
                 }); 
             }
             card.querySelectorAll('.play-action').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openZone({ ...game, name: btn.dataset.versionName ? `${game.name} - ${btn.dataset.versionName}` : game.name, url: btn.dataset.url }); }));
