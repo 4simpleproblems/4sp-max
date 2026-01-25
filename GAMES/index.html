@@ -13,7 +13,12 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- VERN Proxy Scripts -->
+    <!-- VERN Proxy Scripts (Local) -->
+    <link rel="preload" href="/GAMES/uv/uv.bundle.js?v=2.1.7" as="script">
+    <link rel="preload" href="/GAMES/baremux/index.js?v=2.1.7" as="script">
+    <link rel="preload" href="/GAMES/baremux/worker.js" as="worker">
+    <link rel="preload" href="/GAMES/sw.js" as="worker">
+
     <script src="/GAMES/uv/uv.bundle.js?v=2.1.7"></script>
     <script src="/GAMES/uv/uv.client.js?v=2.1.7"></script>
     <script src="/GAMES/uv/uv.config.js?v=2.1.7"></script>
@@ -30,7 +35,7 @@
 
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         if (!navigator.serviceWorker.controller) return;
-                        console.log("SW Activated, reloading for proxy...");
+                        console.log("SW Activated, reloading...");
                         window.location.reload();
                     });
 
@@ -45,7 +50,9 @@
             const hookSW = async () => {
                 if (swHooked || !navigator.serviceWorker.controller) return false;
                 try {
-                    const port = await connection.getInnerPort();
+                    // Use a fresh connection to get a new port for the SW hook
+                    const swConn = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+                    const port = await swConn.getInnerPort();
                     navigator.serviceWorker.controller.postMessage({
                         type: 'baremuxinit',
                         port: port
@@ -60,20 +67,15 @@
             };
 
             try {
-                await connection.setTransport("/GAMES/libcurl/index.mjs", [
-                    { wisp: "wss://wisp.mercurynate.xyz/" },
-                    { wisp: "wss://wisp.rhw.one/" },
-                    { wisp: "wss://wisp.mercurywork.shop/" },
-                    { wisp: "wss://t9.v-v.top/wisp/" },
-                    { wisp: "wss://ruby.rubynetwork.xyz/wisp/" }
-                ]);
+                const wispUrl = "wss://wisp.rhw.one/";
+                await connection.setTransport("/GAMES/libcurl/index.mjs", [{ websocket: wispUrl }]);
                 console.log("BareMux Initialized");
 
                 // Attempt hook
                 if (!await hookSW()) {
-                    navigator.serviceWorker.addEventListener('controllerchange', hookSW);
+                    setTimeout(hookSW, 500);
                     setTimeout(hookSW, 1000);
-                    setTimeout(hookSW, 3000);
+                    setTimeout(hookSW, 2000);
                 }
             } catch (e) {
                 console.error("BareMux Init Failed", e);
@@ -1592,17 +1594,9 @@
         // This bypasses module loading restrictions on file:// protocols.
         async function fetchGameData() {
             try {
-                // Strategy: Try direct fetch first (worker supports CORS), fallback to proxy
-                let response;
-                try {
-                    response = await fetch(CARDS_DATA_URL);
-                    if (!response.ok) throw new Error('Direct fetch failed');
-                } catch (directError) {
-                    console.warn("Direct fetch failed, attempting proxied fetch for game data...", directError);
-                    response = await fetch(proxyUrl(CARDS_DATA_URL));
-                }
-
-                if (!response.ok) throw new Error('Failed to fetch game data (both direct and proxy)');
+                // Fetch the file via proxy to avoid CORS
+                const response = await fetch(proxyUrl(CARDS_DATA_URL));
+                if (!response.ok) throw new Error('Failed to fetch game data');
                 let scriptText = await response.text();
                 
                 // Transform 'export default' to 'window.loadedGameData ='
