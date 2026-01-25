@@ -47,7 +47,7 @@
     "games-4sp": {
         "name": "Games",
         "icon": "fa-solid fa-gamepad",
-        "url": "../GAMES/index.html"
+        "url": "../logged-in/games.html"
     },
     "vana": {
         "name": "Vana",

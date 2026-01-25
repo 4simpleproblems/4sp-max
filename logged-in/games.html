@@ -4,7 +4,7 @@
     <title>4SP - GAMES</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <link rel="icon" type="image/x-icon" href="../favicon.ico" id="faviconLink" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" id="faviconLink" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,8 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
-     <script src="../navigation.js"></script>
-     <script src="../ban-enforcer.js"></script>
+    <script src="/injector.js"></script>
 
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
@@ -865,8 +864,8 @@
         // UPDATED: Use cdn.jsdelivr.net for GN-Math and handle content injection
         const GN_HTML_URL_BASE = "https://cdn.jsdelivr.net/npm/gn-math.github.io-main@latest/html-main";
         
-        const WORKER_ROOT = "https://dv-service-lfs.4simpleproblems.workers.dev/";
-        const GAMES_BASE_URL = "https://dv-service-lfs.4simpleproblems.workers.dev/GAMES/";
+        const WORKER_ROOT = "/";
+        const GAMES_BASE_URL = "/";
         const CARDS_DATA_URL = "https://dv-service-lfs.4simpleproblems.workers.dev/GAMES/cards-data.js";
 
         const FAVORITES_KEY = 'gameHubFavorites_v3';
@@ -889,7 +888,7 @@
                     { type: 'github', url: "https://github.com/jman1593/", label: "GitHub" },
                     { type: 'discord', url: "https://discord.com/invite/strongdog", label: "Discord" }
                 ],
-                logo: "./images/credits/strongdog_logo.png",
+                logo: "/images/GAMES/credits/strongdog_logo.png",
                 color: "#FF8C00"
             },
             'GN-Math': { 
@@ -899,13 +898,13 @@
                     { type: 'github', url: "https://github.com/genizy", label: "Genizy" },
                     { type: 'discord', url: "https://discord.com/invite/gn-math", label: "Discord" }
                 ],
-                logo: "./images/credits/gn_logo.png",
+                logo: "/images/GAMES/credits/gn_logo.png",
                 color: "#FD2E59"
             },
             'Others': { 
                 desc: "A tribute to the open-source community. This section features projects like Eaglercraft, JS-DOS, and Doom, developed by talented individuals who believe in accessible software for everyone.",
                 links: [],
-                logo: "./images/credits/opensource.png",
+                logo: "/images/GAMES/credits/opensource.png",
                 color: "#d1d5db"
             }
         };
@@ -1101,16 +1100,16 @@
         function getAdjustedUrls(imgSrc, page) {
             if (page && page > 1) {
                 // ../strongdog2/img/... -> exists outside GAMES dir
-                return { adjustedImgSrc: `${WORKER_ROOT}strongdog${page}/img/${imgSrc}` };
+                return { adjustedImgSrc: `/strongdog${page}/img/${imgSrc}` };
             }
             // ./img -> assumed inside GAMES dir or wherever relative
-            return { adjustedImgSrc: `${GAMES_BASE_URL}img/${imgSrc}` }; 
+            return { adjustedImgSrc: `/strongdog/img/${imgSrc}` }; 
         }
         
         function sd_getBaseURLForPage(page) {
             // Updated to point to WORKER_ROOT for numbered pages, GAMES_BASE_URL for default
-            if (page > 1) return `${WORKER_ROOT}strongdog${page}/`;
-            return `${WORKER_ROOT}GAMES/`; // Assumes default strongdog is at root/STRONGDOG? Or inside GAMES?
+            if (page > 1) return `/strongdog${page}/`;
+            return `/strongdog/`; // Assumes default strongdog is at root/STRONGDOG? Or inside GAMES?
             // Re-reading logic: "stuff like ../DOOM/ will stay in GAMES directory but strongdog# directories exit"
             // Let's assume default STRONGDOG is adjacent to strongdog2 etc. at root level based on prior naming conventions
         }
@@ -1165,11 +1164,11 @@
         // --- Game Data (Others) ---
         // We keep the original relative paths here so the resolver logic above can handle them dynamically
         const othersGames = [
-            { id: "other-eaglercraft", name: "Eaglercraft", imgSrc: "./images/eaglercraft.png", description: "The classic survival and building game with authentic block-based physics and multiplayer support, accessible directly in the browser.", category: "Others", versions: [ { name: "Release 1.12.2", url: "../EAGLERCRAFT/eaglercraft-1.12.2.html", favoriteId: "other-eaglercraft_1.12.2" }, { name: "Release 1.12.2 WASM", url: "../EAGLERCRAFT/eaglercraft-1.12.2-wasm.html", favoriteId: "other-eaglercraft_wasm", wasm: true } ] },
-            { id: "other-gta", name: "Grand Theft Auto", imgSrc: "./images/gta.png", description: "The original top-down classic. Cause chaos, complete missions, or just go for a drive in three iconic cities.", category: "Others", versions: [ { name: "Carnage3D", url: "../CARNAGE3D/web/carnage3D.html", favoriteId: "other-gta_carnage3d" }, { name: "Grand Theft Auto (JS-DOS)", url: "../GTA-JSDOS/index.html", favoriteId: "other-gta_jsdos" } ] },
-            { id: "other-simcity", name: "Sim City", imgSrc: "./images/simcity2000.png", description: "The original city-building classics. Design, build, and manage the city of your dreams in either the original Sim City or the detailed Sim City 2000.", category: "Others", versions: [ { name: "Sim City", url: "../SIM-CITY/index.html", favoriteId: "other-simcity_1" }, { name: "Sim City 2000", url: "../SIM-CITY-2/index.html", favoriteId: "other-simcity_2000" } ] },
-            { id: "other-doom", name: "DOOM", imgSrc: "./images/doom.png", description: "The legendary first-person shooter that pioneered the genre, focusing on blasting through hordes of demons in a timeless, adrenaline-fueled classic.", category: "Others", url: "../DOOM/index.html" },
-            { id: "other-sm64", name: "Super Mario 64", imgSrc: "./images/sm64.png", description: "The iconic 3D platformer that revolutionized gaming. Run, jump, and triple-jump your way through vast worlds to collect stars and save the princess.", category: "Others", url: "../GAMES/sm64/index.html" }
+            { id: "other-eaglercraft", name: "Eaglercraft", imgSrc: "/images/GAMES/eaglercraft.png", description: "The classic survival and building game with authentic block-based physics and multiplayer support, accessible directly in the browser.", category: "Others", versions: [ { name: "Release 1.12.2", url: "../EAGLERCRAFT/eaglercraft-1.12.2.html", favoriteId: "other-eaglercraft_1.12.2" }, { name: "Release 1.12.2 WASM", url: "../EAGLERCRAFT/eaglercraft-1.12.2-wasm.html", favoriteId: "other-eaglercraft_wasm", wasm: true } ] },
+            { id: "other-gta", name: "Grand Theft Auto", imgSrc: "/images/GAMES/gta.png", description: "The original top-down classic. Cause chaos, complete missions, or just go for a drive in three iconic cities.", category: "Others", versions: [ { name: "Carnage3D", url: "../CARNAGE3D/web/carnage3D.html", favoriteId: "other-gta_carnage3d" }, { name: "Grand Theft Auto (JS-DOS)", url: "../GTA-JSDOS/index.html", favoriteId: "other-gta_jsdos" } ] },
+            { id: "other-simcity", name: "Sim City", imgSrc: "/images/GAMES/simcity2000.png", description: "The original city-building classics. Design, build, and manage the city of your dreams in either the original Sim City or the detailed Sim City 2000.", category: "Others", versions: [ { name: "Sim City", url: "../SIM-CITY/index.html", favoriteId: "other-simcity_1" }, { name: "Sim City 2000", url: "../SIM-CITY-2/index.html", favoriteId: "other-simcity_2000" } ] },
+            { id: "other-doom", name: "DOOM", imgSrc: "/images/GAMES/doom.png", description: "The legendary first-person shooter that pioneered the genre, focusing on blasting through hordes of demons in a timeless, adrenaline-fueled classic.", category: "Others", url: "../DOOM/index.html" },
+            { id: "other-sm64", name: "Super Mario 64", imgSrc: "/images/GAMES/sm64.png", description: "The iconic 3D platformer that revolutionized gaming. Run, jump, and triple-jump your way through vast worlds to collect stars and save the princess.", category: "Others", url: "../GAMES/sm64/index.html" }
         ];
 
         // --- Card Creation ---
