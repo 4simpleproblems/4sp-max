@@ -1,3 +1,4 @@
+importScripts('/GAMES/baremux/index.js');
 importScripts('/GAMES/uv/uv.bundle.js');
 importScripts('/GAMES/uv/uv.config.js');
 importScripts(__uv$config.sw || '/GAMES/uv/uv.sw.js');
@@ -6,8 +7,8 @@ const uv = new UVServiceWorker();
 
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'baremuxinit') {
-        uv.bareClient = new Ultraviolet.BareClient(event.data.port);
-        console.log("VERN SW: BareMux Port Received");
+        uv.bareClient = new BareMux.BareClient(event.data.port);
+        console.log("VERN SW: BareMux Port Received and Initialized");
     }
 });
 

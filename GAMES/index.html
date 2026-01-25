@@ -43,20 +43,22 @@
             const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
 
             const hookSW = async () => {
-                if (navigator.serviceWorker.controller) {
-                    try {
-                        const port = await connection.getInnerPort();
-                        navigator.serviceWorker.controller.postMessage({
-                            type: 'baremuxinit',
-                            port: port
-                        }, [port]);
-                        console.log("UV SW Hooked to BareMux");
-                        return true;
-                    } catch (err) {
-                        console.error("Failed to hook SW", err);
-                    }
+                if (!navigator.serviceWorker.controller) {
+                    console.warn("SW Controller is null, cannot hook yet...");
+                    return false;
                 }
-                return false;
+                try {
+                    const port = await connection.getInnerPort();
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'baremuxinit',
+                        port: port
+                    }, [port]);
+                    console.log("VERN SW Hooked to BareMux");
+                    return true;
+                } catch (err) {
+                    console.error("Failed to hook SW", err);
+                    return false;
+                }
             };
 
             try {
@@ -69,13 +71,13 @@
                 ]);
                 console.log("BareMux Initialized");
 
-                // Attempt hook immediately
-                if (!await hookSW()) {
-                    // If failed, retry on controller change or after a delay
-                    navigator.serviceWorker.addEventListener('controllerchange', hookSW);
-                    setTimeout(hookSW, 1000);
-                    setTimeout(hookSW, 3000);
-                }
+                // Aggressive hooking
+                hookSW();
+                setTimeout(hookSW, 500);
+                setTimeout(hookSW, 1000);
+                setTimeout(hookSW, 2000);
+                
+                navigator.serviceWorker.addEventListener('controllerchange', hookSW);
             } catch (e) {
                 console.error("BareMux Init Failed", e);
             }
@@ -1593,18 +1595,17 @@
         // This bypasses module loading restrictions on file:// protocols.
         async function fetchGameData() {
             try {
-                // Fetch the file via proxy to avoid CORS
-                // Strategy: Try proxied fetch first, fallback to direct fetch
+                // Strategy: Try direct fetch first (worker supports CORS), fallback to proxy
                 let response;
                 try {
-                    response = await fetch(proxyUrl(CARDS_DATA_URL));
-                    if (!response.ok) throw new Error('Proxied fetch failed');
-                } catch (proxyError) {
-                    console.warn("Proxy fetch failed, attempting direct fetch for game data...", proxyError);
                     response = await fetch(CARDS_DATA_URL);
+                    if (!response.ok) throw new Error('Direct fetch failed');
+                } catch (directError) {
+                    console.warn("Direct fetch failed, attempting proxied fetch for game data...", directError);
+                    response = await fetch(proxyUrl(CARDS_DATA_URL));
                 }
 
-                if (!response.ok) throw new Error('Failed to fetch game data (both proxy and direct)');
+                if (!response.ok) throw new Error('Failed to fetch game data (both direct and proxy)');
                 let scriptText = await response.text();
                 
                 // Transform 'export default' to 'window.loadedGameData ='
