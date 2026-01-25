@@ -301,57 +301,79 @@ UNKNOWN_ACTION=
         });
 
         async function initVernProxy() {
-            // 1. Load Scripts (UV & BareMux)
-            if (!window.Ultraviolet) {
-                await loadScript("/GAMES/uv/uv.bundle.js");
-                await loadScript("/GAMES/uv/uv.config.js");
-            }
-            if (!window.BareMux) {
-                await loadScript("/GAMES/baremux/index.js");
-            }
+            const statusEl = document.getElementById('vern-status');
+            const logVern = (msg) => {
+                console.log(`[VERN] ${msg}`);
+                if (statusEl) statusEl.textContent = `[VERN] ${msg}`;
+            };
 
-            // 2. Register Service Worker
-            if ("serviceWorker" in navigator) {
+            if ('serviceWorker' in navigator) {
                 try {
-                    const swPath = "/GAMES/sw.js";
-                    const scope = "/GAMES/";
-                    
-                    const reg = await navigator.serviceWorker.register(swPath, { scope: scope });
-                    console.log("[VERN] SW Registered:", reg);
-
-                    // Wait for the worker to be ready
-                    await navigator.serviceWorker.ready;
-                    
-                    if (!navigator.serviceWorker.controller) {
-                        console.warn("[VERN] SW ready but not controlling. Reloading to take control...");
-                        window.location.reload();
-                        return new Promise(() => {}); // Never resolve, we are reloading
+                    // Unregister existing SWs to force clean slate
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for(let registration of registrations) {
+                        if(registration.scope.includes("/GAMES/")) {
+                             await registration.unregister();
+                             logVern("Unregistered old SW");
+                        }
                     }
-                    console.log("[VERN] Proxy Active & Controlling");
 
-                } catch (e) {
-                    console.error("[VERN] SW Registration Failed:", e);
-                    throw e;
+                    const swPath = "/GAMES/sw.js?v=" + Date.now();
+                    logVern(`Registering SW: ${swPath}`);
+                    
+                    const registration = await navigator.serviceWorker.register(swPath, {
+                        scope: '/GAMES/',
+                        updateViaCache: 'none'
+                    });
+
+                    logVern("SW Registered. Waiting for activation...");
+                    
+                    await new Promise(resolve => {
+                        if (registration.active) resolve();
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'activated') resolve();
+                            });
+                        });
+                    });
+                    
+                    // Force claim
+                    if (navigator.serviceWorker.controller) {
+                        logVern("SW Controller Active.");
+                    } else {
+                        logVern("Reloading to claim controller...");
+                        window.location.reload();
+                        return; 
+                    }
+
+                } catch (error) {
+                    console.error("VERN SW Registration Failed:", error);
+                    logVern("SW Error: " + error.message);
                 }
-            } else {
-                console.error("ServiceWorker not supported");
             }
 
-            // 3. Initialize BareMux Transport (Critical for UV to fetch resources)
             try {
-                if (window.BareMux) {
-                    console.log("[VERN] Initializing BareMux Connection...");
-                    const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
-                    await connection.setTransport("/GAMES/libcurl/index.mjs", [
-                        { websocket: "wss://wisp.mercurywork.shop/" },
-                        { websocket: "wss://wisp.rhw.one/" },
-                        { websocket: "wss://wisp.mercurynate.xyz/" },
-                        { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
-                    ]);
-                    console.log("[VERN] BareMux Transport Configured");
-                }
-            } catch (e) { 
-                console.error("[VERN] BareMux Init Failed", e); 
+                logVern("Initializing BareMux...");
+                if (!window.BareMux) throw new Error("BareMux library not loaded");
+                
+                const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js?v=" + Date.now());
+                const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://wisp.mercurywork.shop/";
+                
+                logVern("Setting Transport...");
+                await connection.setTransport("/GAMES/libcurl/index.mjs", [
+                    { websocket: "wss://wisp.mercurywork.shop/" },
+                    { websocket: "wss://wisp.rhw.one/" },
+                    { websocket: "wss://wisp.mercurynate.xyz/" },
+                    { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
+                ]);
+                
+                logVern("Proxy Ready!");
+                window.VERN_PROXY_READY = true; // Signal for game loader
+
+            } catch (error) {
+                console.error("BareMux Error:", error);
+                logVern("Proxy Error: " + error.message);
             }
         }
 
