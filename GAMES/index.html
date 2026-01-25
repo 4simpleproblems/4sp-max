@@ -26,14 +26,9 @@
     <script>
         // Immediate Initialization of VERN_SYSTEM Proxy
         window.__4sp_proxy_init = (async () => {
-            console.log("VERN Boot Sequence Started...");
-            const swPath = "/GAMES/sw.js?v=2.1.7";
-            let swReadyResolve;
-            const swReadyPromise = new Promise(resolve => swReadyResolve = resolve);
-
             if ("serviceWorker" in navigator) {
                 try {
-                    const reg = await navigator.serviceWorker.register(swPath, { scope: "/GAMES/" });
+                    await navigator.serviceWorker.register("/GAMES/sw.js?v=2.1.7", { scope: "/GAMES/" });
                     console.log("VERN SW Registered");
 
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -41,19 +36,6 @@
                         console.log("SW Activated, reloading...");
                         window.location.reload();
                     });
-
-                    // Listen for handshake confirmation
-                    navigator.serviceWorker.addEventListener('message', (event) => {
-                        if (event.data === 'VERN_PROXY_READY') {
-                            console.log("VERN Proxy Handshake Complete");
-                            swReadyResolve();
-                        }
-                    });
-
-                    // Initial reset for refresh sessions
-                    if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage('VERN_PROXY_RESET');
-                    }
                 } catch (e) { console.error("SW Register Failed", e); }
             }
 
@@ -64,33 +46,6 @@
                     { websocket: "wss://wisp.mercurywork.shop/" }
                 ]);
                 console.log("BareMux Initialized");
-
-                const hookSW = async () => {
-                    if (!navigator.serviceWorker.controller) return false;
-                    try {
-                        const port = await connection.getInnerPort();
-                        navigator.serviceWorker.controller.postMessage({
-                            type: 'baremuxinit',
-                            __uv$type: 'baremuxinit',
-                            port: port
-                        }, [port]);
-                        return true;
-                    } catch (err) { return false; }
-                };
-
-                // Aggressive Hooking
-                const handshakeInterval = setInterval(async () => {
-                    if (await hookSW()) clearInterval(handshakeInterval);
-                }, 500);
-                setTimeout(() => clearInterval(handshakeInterval), 5000);
-
-                // Wait for SW to confirm it's ready
-                await Promise.race([
-                    swReadyPromise,
-                    new Promise(resolve => setTimeout(resolve, 3000))
-                ]);
-                console.log("VERN Proxy is HOT");
-
             } catch (e) { console.error("BareMux Init Failed", e); }
         })();
     </script>
