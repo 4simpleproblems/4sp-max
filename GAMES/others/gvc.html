@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en-us">
 <head>
-    <base href="https://cdn.jsdelivr.net/gh/web-ports/vice-city@796678be4ed26a13c1256be98781ca9b90beb981/">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
     <title>Grand Theft Auto: Vice City</title>
@@ -20,10 +19,11 @@
         @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/css/geist.min.css');
         html, body { background-color: black !important; background-image: none !important; margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
         .intro-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 10000; display: flex !important; align-items: center; justify-content: center; transition: opacity 1s ease-out, visibility 1s; }
-        .intro-container.fade-out { opacity: 0; visibility: hidden; }
+        .intro-container.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
         .loader-container { position: fixed; bottom: 40px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; z-index: 10001; }
         #status { color: white; font-family: 'Geist', sans-serif; font-style: italic; font-size: 14px; text-align: right; text-transform: uppercase; }
         #progress, #loading-text { display: none !important; }
+        /* Touch Controls CSS */
         .touch-control.menu { background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' viewBox='0 0 180 180' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M89.92 35.257c7.15 4.17 14.316 11.67 21.7 16.093 0-2.394-.037-6.33-.037-6.33s11.583-.057 21.54.317c-.036 5.173-.58 18.903-.58 22.408 4.25 4.548 17.08 16.882 17.08 16.882h-16.528c0 13.736.122 36.083 0 50.867h-30.498c0-8.17.037-16.686 0-24.836 0 0-15.468.115-20.28 0v24.836c-10.658-.238-21.725.052-32.42 0V85.487c-3.06 0-14.692-.42-18.733-.07 4.647-6.776 12.095-11.7 18.3-17.094C62.06 57.37 77.866 46.476 89.918 35.257z' fill='%23fff'/%3E%3Cpath d='M90 5.243c46.735 0 84.757 38.022 84.757 84.757 0 46.735-38.022 84.757-84.757 84.757-46.735 0-84.757-38.022-84.757-84.757C5.243 43.265 43.265 5.243 90 5.243zM90 0C40.294 0 0 40.294 0 90s40.294 90 90 90 90-40.294 90-90S139.706 0 90 0z' fill='%23fff'/%3E%3C/svg%3E"); width: 13vmin; height: 13vmin; top: 20vmin; left: 1vmin; }
         .touch-control.jump { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' fill='none' viewBox='0 0 180 180'%3E%3Cpath fill='%23fff' d='M121.787 67.372c-10.171-5.855-16.174-11.504-22.205-20.367-.048-.072-.055-.17-.07-.255-1.01-5.835 3.645-9.23 2.079-13.779-1.554-4.515-4.935-5.477-10.671-4.799-7.724.913-5.02 8.573-4.922 14.326.025 1.505-.323 2.963-.45 3.438a1.3 1.3 0 0 1-.119.296C79.084 57.48 60.617 57.572 56.24 64.396c-2.187 3.463.742 12.197 2.047 14.916.032.066.029.132.054.2 1.92 5.165 8.862 10.678 11.644 13.166.33.295.798.373 1.204.196 2.781-1.215 4.48-5.286 8.165-5.456.276-.013.558.089.761.275 4.97 4.54-4.437 14.808-7.902 19.622-.351.487-1.02.627-1.527.306-8.18-5.175-11.68-9.811-20.629-15.887a1.15 1.15 0 0 0-1.314.014c-6.648 4.845-11.96 11.785-14.164 19.877l.399.634c3.857.447 8.46-2.464 12.36-4.032.31-.125.662-.097.958.061 9.43 5.019 13.74 9.035 20.47 16.301.125.136.287.25.461.312 8.366 3.013 17.284-9.892 21.315-13.667 6.534-8.944 12.715 1.198 12.788 1.345 3.874 7.735-.928 20.056-.108 27.144a1.1 1.1 0 0 0 .72.896c4.581 1.728 18.64 8.512 22.398 5.977.456-.308.604-.904.388-1.41-1.446-3.37-6.348-6.845-9.537-9.005a1.14 1.14 0 0 1-.435-1.287c3.001-9.439 2.904-12.684 4.45-22.979.279-5.517-10.63-15.458-13.864-28.936-1.604-6.68-2.447-5.915-2.329-12.724.013-.77.776-1.314 1.501-1.056 7.693 2.74 20.539 12.082 23.994 6.753 1.901-2.827-1.959-4.487-8.721-8.58M75.734 80.146c-11.991-3.257-9.08-14.113-1.609-15.495 6.445 0 2.467 10.513 1.609 15.495'/%3E%3Cpath fill='%23fff' d='M90 5.243c46.735 0 84.757 38.022 84.757 84.757S136.735 174.757 90 174.757 5.243 136.735 5.243 90 43.265 5.243 90 5.243M90 0C40.294 0 0 40.294 0 90s40.294 90 90 90 90-40.294 90-90S139.706 0 90 0'/%3E%3C/svg%3E"); width: 20vmin; height: 20vmin; bottom: 10vmin; right: 22vmin; }
         .touch-control.car.getIn { background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' viewBox='0 0 180 180' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M112.826 27.04c3.368 2.647 6.287 4.85 9.743 7.38-5.187 6.85-10.147 13.085-15.288 19.41 2.753 3.265 5.108 5.824 8.002 9.566-5.86-.177-24.25 0-24.25 0-1.24-9.96-2.455-16.65-3.683-26.03 3.44 3.278 6.422 5.84 10.382 8.587 5.913-6.907 9.656-11.38 15.094-18.914z' fill='%23fff'/%3E%3Cpath d='M90 5.243c46.735 0 84.757 38.022 84.757 84.757 0 46.735-38.022 84.757-84.757 84.757-46.735 0-84.757-38.022-84.757-84.757C5.243 43.265 43.265 5.243 90 5.243zM90 0C40.294 0 0 40.294 0 90s40.294 90 90 90 90-40.294 90-90S139.706 0 90 0z' fill='%23fff'/%3E%3Cpath d='M145.936 84.723c-.15-.282-.818-.517-1.126-.597-4.66-1.21-8.292 1.697-12.74 3.443-3.497-5.626-6.708-12.57-10.783-16.874-1.344-1.344-2.684-1.356-5.115-1.53-5.38-.387-14.963-.43-24.27-.322-9.308-.107-18.892-.065-24.27.32-2.432.176-3.772.188-5.116 1.532C58.44 75 55.23 81.944 51.733 87.57c-4.448-1.747-8.08-4.654-12.74-3.444-.308.08-.977.315-1.126.597-1.606 3.04 6.236 5.984 8.977 7.433-1.56 3.096-3.625 6.33-5.157 9.312-.42.815-.645 1.705-.645 4.02v19.378c0 3.144 2.59 5.627 5.733 5.584 3.948-.053 8.017.222 11.862.128 1.656-.04 3.193-.826 4.263-2.09 2.698-3.193 4.257-3.63 9.682-2.144 6.722 1.84 12.866 2.642 19.32 2.442 6.453.2 12.597-.6 19.32-2.442 5.424-1.486 6.983-1.05 9.68 2.143 1.07 1.265 2.608 2.05 4.264 2.09 3.845.095 7.914-.18 11.862-.127 3.144.043 5.733-2.44 5.733-5.584v-19.38c0-2.313-.225-3.203-.644-4.018-1.532-2.98-3.597-6.216-5.157-9.312 2.74-1.45 10.582-4.393 8.976-7.433zm-77.32 26.443c-.565.447-1.254.725-1.97.81l-.478.054c-7.588.912-30.085-.418-18.638-13.027 1.39-2.116 32.598 3.08 21.088 12.163zm37.6 13.318c-3.366 0-8.032.032-12.428.057-.034 0-.06-.008-.092-.01-.034.002-.058.01-.093.01h-.237v-.018l-1.465.01-1.463-.01v.018H90.2c-.035 0-.06-.008-.093-.01-.033.002-.058.01-.092.01-4.396-.024-9.062-.056-12.43-.056-2.86 0-4.687-2.144-4.687-3.71 0-2.447 1.598-4.326 4.86-4.288 4.027-.078 8.115-.017 12.198 0 .048 0 .1.03.15.044.052-.014.105-.044.152-.044.548-.002 1.096-.006 1.644-.01.547.004 1.095.008 1.643.01.047 0 .1.03.15.044.05-.014.104-.044.152-.044 4.083-.017 8.17-.078 12.198 0 3.262-.038 4.86 1.84 4.86 4.288 0 1.566-1.828 3.71-4.688 3.71zm-17.8 0c-3.366 0-8.032.032-12.428.057-.034 0-.06-.008-.092-.01-.034.002-.058.01-.093.01h-.237v-.018l-1.465.01-1.463-.01v.018H54.6c-.035 0-.06-.008-.093-.01-.033.002-.058.01-.092.01-4.396-.024-9.062-.056-12.43-.056-2.86 0-4.687-2.144-4.687-3.71 0-2.447 1.598-4.326 4.86-4.288 4.027-.078 8.115-.017 12.198 0 .048 0 .1.03.15.044.052-.014.105-.044.152-.044.548-.002 1.096-.006 1.644-.01.547.004 1.095.008 1.643.01.047 0 .1.03.15.044.05-.014.104-.044.152-.044 4.083-.017 8.17-.078 12.198 0 3.262-.038 4.86 1.84 4.86 4.288 0 1.566-1.828 3.71-4.688 3.71z' fill='%23fff'/%3E%3C/svg%3E"); width: 13vmin; height: 13vmin; bottom: 50vmin; right: 4vmin; }
@@ -311,19 +311,27 @@ UNKNOWN_ACTION=
             await saveFile(name, fullBuffer.buffer); return fullBuffer.buffer;
         }
         async function mergeFiles(fileParts, namePrefix) { const buffers = []; for (let i = 0; i < fileParts.length; i++) { const buffer = await fetchWithCache(`${namePrefix}.part${i+1}`, fileParts[i], namePrefix); buffers.push(buffer); } return URL.createObjectURL(new Blob(buffers)); }
-        function getParts(file, start, end) { let parts = []; for (let i = start; i <= end; i++) parts.push(file + ".part" + i); return parts; }
+        function getParts(urlPrefix, start, end) { let parts = []; for (let i = start; i <= end; i++) parts.push(urlPrefix + ".part" + i); return parts; }
+
+        // Define base URLs for the separated packages
+        const WASM1_BASE = "https://cdn.jsdelivr.net/npm/gvc-wasm1@1.0.0/data/";
+        const WASM2_BASE = "https://cdn.jsdelivr.net/npm/gvc-wasm2@1.0.0/audio/";
+        const WASM3_BASE = "https://cdn.jsdelivr.net/npm/gvc-wasm3@1.0.0/audio/";
+        const WASM4_BASE = "https://cdn.jsdelivr.net/npm/gvc-wasm4@1.0.0/audio/";
+        const WASM5_BASE = "https://cdn.jsdelivr.net/npm/gvc-wasm5@1.0.0/audio/";
+        const WASM6_BASE = "https://cdn.jsdelivr.net/npm/gvc-wasm6@1.0.0/audio/";
 
         Promise.all([
-            mergeFiles(getParts("index.data", 1, 7), "index.data"),
-            mergeFiles(getParts("audio/emotion.adf", 1, 3), "emotion.adf"),
-            mergeFiles(getParts("audio/espant.adf", 1, 3), "espant.adf"),
-            mergeFiles(getParts("audio/fever.adf", 1, 3), "fever.adf"),
-            mergeFiles(getParts("audio/flash.adf", 1, 3), "flash.adf"),
-            mergeFiles(getParts("audio/kchat.adf", 1, 3), "kchat.adf"),
-            mergeFiles(getParts("audio/vcpr.adf", 1, 2), "vcpr.adf"),
-            mergeFiles(getParts("audio/vrock.adf", 1, 4), "vrock.adf"),
-            mergeFiles(getParts("audio/wave.adf", 1, 4), "wave.adf"),
-            mergeFiles(getParts("audio/wild.adf", 1, 4), "wild.adf"),
+            mergeFiles(getParts(WASM1_BASE + "index.data", 1, 7), "index.data"),
+            mergeFiles(getParts(WASM2_BASE + "emotion.adf", 1, 3), "emotion.adf"),
+            mergeFiles(getParts(WASM2_BASE + "espant.adf", 1, 3), "espant.adf"),
+            mergeFiles(getParts(WASM3_BASE + "fever.adf", 1, 3), "fever.adf"),
+            mergeFiles(getParts(WASM3_BASE + "flash.adf", 1, 3), "flash.adf"),
+            mergeFiles(getParts(WASM4_BASE + "kchat.adf", 1, 3), "kchat.adf"),
+            mergeFiles(getParts(WASM4_BASE + "vcpr.adf", 1, 2), "vcpr.adf"),
+            mergeFiles(getParts(WASM5_BASE + "vrock.adf", 1, 4), "vrock.adf"),
+            mergeFiles(getParts(WASM5_BASE + "wave.adf", 1, 4), "wave.adf"),
+            mergeFiles(getParts(WASM6_BASE + "wild.adf", 1, 4), "wild.adf"),
         ]).then(([indexdataurl, EMOTIONadfurl, ESPANTadfurl, FEVERadfurl, FLASHadfurl, KCHATadfurl, VCPRadfurl, VROCKadfurl, WAVEadfurl, WILDadfurl]) => {
             const originalFetch = window.fetch;
             window.fetch = async function(input, init) {
@@ -360,19 +368,38 @@ UNKNOWN_ACTION=
                     mainCalled: () => { try { Module.FS.unlink("/vc-assets/local/revc.ini"); Module.FS.createDataFile("/vc-assets/local/revc.ini", 0, revc_ini, true, true); } catch (e) { console.error('mainCalled error:', e); } },
                     syncRevcIni: () => { try { const path = Module.FS.lookupPath("/vc-assets/local/revc.ini"); if (path && path.node && path.node.contents) localStorage.setItem('vcsky.revc.ini', new TextDecoder().decode(path.node.contents)); } catch (e) { console.error('syncRevcIni error:', e); } },
                     preRun: [], postRun: [],
-                    print: (...args) => console.log(args.join(' ')),
+                    // Fix: Ensure empty arguments to prevent unexpected behavior
+                    arguments: [],
+                    // Fix: Print hook to detect when the game shell is active and hide the loader
+                    print: (...args) => {
+                        const text = args.join(' ');
+                        console.log(text);
+                        if (text.includes("cmdlist") || text.includes("Available commands")) {
+                             document.querySelector('.intro-container').classList.add('fade-out');
+                             document.getElementById('canvas').focus();
+                        }
+                    },
                     printErr: (...args) => console.error(args.join(' ')),
                     getPreloadedPackage: () => data,
                     canvas: document.getElementById('canvas'),
-                    setStatus: (text) => { if (!text) { document.querySelector('.intro-container').classList.add('fade-out'); return; } document.getElementById("status").textContent = text; },
+                    setStatus: (text) => { 
+                        // Sometimes the game engine forgets to clear the status, causing the loader to stick.
+                        if (!text || text === "") { 
+                            document.querySelector('.intro-container').classList.add('fade-out'); 
+                            return; 
+                        } 
+                        document.getElementById("status").textContent = text; 
+                    },
                     instantiateWasm: async (info, receiveInstance) => {
-                        const wasm = await (await fetch("index.wasm")).arrayBuffer();
+                        const wasm = await (await fetch(WASM1_BASE + "index.wasm")).arrayBuffer();
                         const module = await WebAssembly.instantiate(wasm, info);
                         return receiveInstance(module.instance, module);
                     }
                 };
                 window.Module = Module;
-                const script = document.createElement('script'); script.src = 'index.js'; document.body.appendChild(script);
+                const script = document.createElement('script'); 
+                script.src = WASM1_BASE + 'index.js'; 
+                document.body.appendChild(script);
                 document.body.classList.add('gameIsStarted');
                 const emulator = new GamepadEmulator(); emulator.AddEmulatedGamepad(0, true);
                 emulator.AddDisplayJoystickEventListeners(0, [{ directions: { up: true, down: true, left: true, right: true }, dragDistance: 100, tapTarget: move, xAxisIndex: 0, yAxisIndex: 1 }]);
@@ -383,7 +410,11 @@ UNKNOWN_ACTION=
 
             fetch("index.data").then(r => r.arrayBuffer()).then(buf => {
                 document.getElementById("status").textContent = "Click to continue...";
-                window.addEventListener('click', () => loadGame(buf), { once: true });
+                window.addEventListener('click', () => {
+                    // Fix: Hide mouse cursor on click and focus canvas immediately
+                    document.getElementById('canvas').focus();
+                    loadGame(buf);
+                }, { once: true });
             });
         });
     </script>
