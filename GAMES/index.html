@@ -37,23 +37,24 @@
                     });
                     console.log("VERN SW Registered");
 
-                    // If already controlled, tell SW to reset proxy state for this new session
-                    if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage('VERN_PROXY_RESET');
-                    }
-
                     navigator.serviceWorker.addEventListener('controllerchange', () => {
                         if (!navigator.serviceWorker.controller) return;
                         console.log("SW Activated, reloading...");
                         window.location.reload();
                     });
 
+                    // Listen for handshake confirmation
                     navigator.serviceWorker.addEventListener('message', (event) => {
                         if (event.data === 'VERN_PROXY_READY') {
                             console.log("VERN Proxy Handshake Complete");
                             swReadyResolve();
                         }
                     });
+
+                    // Initial reset for refresh
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage('VERN_PROXY_RESET');
+                    }
 
                 } catch (e) {
                     console.error("SW Register Failed", e);
@@ -73,7 +74,7 @@
                         const port = await tempConn.getInnerPort();
                         navigator.serviceWorker.controller.postMessage({
                             type: 'baremuxinit',
-                            __uv$type: 'baremuxinit', // Match UV internal expectation
+                            __uv$type: 'baremuxinit',
                             port: port
                         }, [port]);
                         return true;
@@ -82,12 +83,23 @@
                     }
                 };
 
+                // Wait for controller to be available
+                if (!navigator.serviceWorker.controller) {
+                    await new Promise(resolve => {
+                        const check = () => {
+                            if (navigator.serviceWorker.controller) resolve();
+                            else setTimeout(check, 100);
+                        };
+                        check();
+                    });
+                }
+
                 await hookSW();
                 
-                // Wait for SW to confirm it's ready
+                // Wait for SW to confirm it's ready (increased timeout for slow devices)
                 await Promise.race([
                     swReadyPromise,
-                    new Promise(resolve => setTimeout(resolve, 2000))
+                    new Promise(resolve => setTimeout(resolve, 3000))
                 ]);
 
             } catch (e) {

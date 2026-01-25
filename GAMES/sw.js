@@ -10,6 +10,7 @@ let pending = [];
 self.addEventListener('message', (event) => {
     if (event.data === 'VERN_PROXY_RESET') {
         bareReady = false;
+        uv.bareClient = null;
         console.log("VERN SW: Proxy Reset for new session");
     } else if (event.data && (event.data.type === 'baremuxinit' || event.data.__uv$type === 'baremuxinit')) {
         try {
@@ -33,11 +34,12 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+    bareReady = false; // Reset on activation
     event.waitUntil(self.clients.claim());
 });
 
 async function waitForProxy() {
-    if (bareReady) return;
+    if (bareReady && uv.bareClient) return;
     return new Promise(resolve => {
         pending.push(resolve);
         setTimeout(resolve, 5000); // 5s timeout fallback
