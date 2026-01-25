@@ -336,6 +336,10 @@ UNKNOWN_ACTION=
             const originalFetch = window.fetch;
             window.fetch = async function(input, init) {
                 let url = input instanceof Request ? input.url : String(input);
+                if (url.includes("vcsky/fetched/audio") || url.includes("cdn.dos.zone")) {
+                    console.warn("Mocking missing asset to prevent 404:", url);
+                    return new Response(new ArrayBuffer(0), { status: 200, statusText: "OK" }); 
+                }
                 if (url.includes("index.data")) return originalFetch(indexdataurl, init);
                 if (url.includes("emotion.adf")) return originalFetch(EMOTIONadfurl, init);
                 if (url.includes("espant.adf")) return originalFetch(ESPANTadfurl, init);
@@ -350,7 +354,10 @@ UNKNOWN_ACTION=
             };
             const originalOpen = XMLHttpRequest.prototype.open;
             XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-                if (url.includes("index.data")) url = indexdataurl;
+                if (url.includes("vcsky/fetched/audio") || url.includes("cdn.dos.zone")) {
+                    console.warn("Mocking missing asset (XHR) to prevent 404:", url);
+                    url = "data:application/octet-stream;base64,";
+                } else if (url.includes("index.data")) url = indexdataurl;
                 else if (url.includes("emotion.adf")) url = EMOTIONadfurl;
                 else if (url.includes("espant.adf")) url = ESPANTadfurl;
                 else if (url.includes("fever.adf")) url = FEVERadfurl;
