@@ -301,10 +301,13 @@ UNKNOWN_ACTION=
         });
 
         async function initVernProxy() {
-            // 1. Load Scripts
+            // 1. Load Scripts (UV & BareMux)
             if (!window.Ultraviolet) {
                 await loadScript("/GAMES/uv/uv.bundle.js");
                 await loadScript("/GAMES/uv/uv.config.js");
+            }
+            if (!window.BareMux) {
+                await loadScript("/GAMES/baremux/index.js");
             }
 
             // 2. Register Service Worker
@@ -316,8 +319,7 @@ UNKNOWN_ACTION=
                     const reg = await navigator.serviceWorker.register(swPath, { scope: scope });
                     console.log("[VERN] SW Registered:", reg);
 
-                    // If active but not controlling, reload or claim? 
-                    // Usually waiting for ready is enough if we claim in SW (which GAMES/sw.js does)
+                    // Wait for the worker to be ready
                     await navigator.serviceWorker.ready;
                     
                     if (!navigator.serviceWorker.controller) {
@@ -333,6 +335,23 @@ UNKNOWN_ACTION=
                 }
             } else {
                 console.error("ServiceWorker not supported");
+            }
+
+            // 3. Initialize BareMux Transport (Critical for UV to fetch resources)
+            try {
+                if (window.BareMux) {
+                    console.log("[VERN] Initializing BareMux Connection...");
+                    const connection = new BareMux.BareMuxConnection("/GAMES/baremux/worker.js");
+                    await connection.setTransport("/GAMES/libcurl/index.mjs", [
+                        { websocket: "wss://wisp.mercurywork.shop/" },
+                        { websocket: "wss://wisp.rhw.one/" },
+                        { websocket: "wss://wisp.mercurynate.xyz/" },
+                        { websocket: "wss://ruby.rubynetwork.xyz/wisp/" }
+                    ]);
+                    console.log("[VERN] BareMux Transport Configured");
+                }
+            } catch (e) { 
+                console.error("[VERN] BareMux Init Failed", e); 
             }
         }
 
