@@ -18,11 +18,12 @@ self.addEventListener('message', (event) => {
             bareReady = true;
             console.log("VERN SW: BareMux Port Initialized");
             
-            // Notify the window that the proxy is ready
             if (event.source) event.source.postMessage('VERN_PROXY_READY');
             
-            pending.forEach(resolve => resolve());
+            // Fast-track queued requests
+            const queue = [...pending];
             pending = [];
+            queue.forEach(resolve => resolve());
         } catch (e) {
             console.error("VERN SW: BareMux Init Failed", e);
         }
@@ -34,7 +35,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-    bareReady = false; // Reset on activation
+    bareReady = false;
     event.waitUntil(self.clients.claim());
 });
 
@@ -42,7 +43,8 @@ async function waitForProxy() {
     if (bareReady && uv.bareClient) return;
     return new Promise(resolve => {
         pending.push(resolve);
-        setTimeout(resolve, 5000); // 5s timeout fallback
+        // Fallback timeout to prevent infinite hang
+        setTimeout(resolve, 10000);
     });
 }
 
