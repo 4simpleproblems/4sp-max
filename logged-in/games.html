@@ -858,6 +858,36 @@
     <script>
         // --- Configuration & Globals ---
         
+        const UV_CONFIG = {
+            prefix: '/logged-in/uv/service/',
+            encodeUrl: (url) => {
+                if (!url) return url;
+                let t = "";
+                for (let r = 0; r < url.length; r++) {
+                    t += r % 2 ? String.fromCharCode(url.charCodeAt(r) ^ 2) : url[r];
+                }
+                return encodeURIComponent(t);
+            }
+        };
+
+        /**
+         * Proxies a URL through the VERN (Ultraviolet) system to bypass CORS.
+         */
+        function proxyUrl(url) {
+            if (!url) return url;
+            // Only proxy absolute URLs that are external
+            if (url.startsWith('http')) {
+                const origin = window.location.origin;
+                // If it's already proxied, don't double proxy
+                if (url.includes(UV_CONFIG.prefix)) return url;
+                // Proxy workers.dev and jsdelivr to bypass CORS
+                if (url.includes('4simpleproblems.workers.dev') || url.includes('cdn.jsdelivr.net')) {
+                    return origin + UV_CONFIG.prefix + UV_CONFIG.encodeUrl(url);
+                }
+            }
+            return url;
+        }
+
         const GN_ZONES_URL = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
         const GN_COVER_URL_BASE = "https://cdn.jsdelivr.net/gh/gn-math/covers@main";
         
@@ -1119,7 +1149,7 @@
             if (!cleanHref.endsWith("/")) cleanHref += "/";
             const pathsToTry = [cleanHref + "game/index.html", cleanHref + "game/base.html", cleanHref + "gamereal/index.html", cleanHref + "gamereal/base.html", cleanHref + "index.html", cleanHref + "base.html", ];
             try {
-                const response = await fetch(adjustedHref);
+                const response = await fetch(proxyUrl(adjustedHref));
                 if (response.ok) {
                     const text = await response.text();
                     const match = text.match(/embedGame\((['"])(.*?)\1,\s*(['"])(.*?)\3\)/);
@@ -1135,34 +1165,33 @@
             return adjustedHref;
         }
         async function sd_fileExists(url) {
-            try { const response = await fetch(url, { method: "HEAD" }); return response.ok; } catch { return false; }
+            try { const response = await fetch(proxyUrl(url), { method: "HEAD" }); return response.ok; } catch { return false; }
         }
 
         function resolveGameUrl(relativePath) {
             if (!relativePath) return "";
             
-            // If it's already an absolute URL return it
+            let url = relativePath;
+            // If it's already an absolute URL, proxy it if needed
             if (relativePath.startsWith('http') || relativePath.startsWith('//')) {
-                return relativePath;
+                return proxyUrl(relativePath);
             }
 
             // If it's a root-relative path, prepend the origin to make it a full absolute URL
             if (relativePath.startsWith('/')) {
-                return window.location.origin + relativePath;
-            }
-
-            // Logic: 
-            // If path starts with ../ -> Go to WORKER_ROOT + path (stripping ../)
-            // If path starts with ../GAMES/ -> It will effectively be WORKER_ROOT/GAMES/ (which matches GAMES_BASE_URL)
-            // This allows us to access root folders like ../GTA-JSDOS/ while keeping ../GAMES/sm64 intact.
-            
-            if (relativePath.startsWith('../')) {
+                url = window.location.origin + relativePath;
+            } else if (relativePath.startsWith('../')) {
+                // Logic: 
+                // If path starts with ../ -> Go to WORKER_ROOT + path (stripping ../)
+                // If path starts with ../GAMES/ -> It will effectively be WORKER_ROOT/GAMES/ (which matches GAMES_BASE_URL)
                 const pathPart = relativePath.substring(3); // Remove '../'
-                return `${WORKER_ROOT}${pathPart}`;
+                url = `${WORKER_ROOT}${pathPart}`;
+            } else {
+                // If it doesn't start with ../, assume it's relative to GAMES base
+                url = `${GAMES_BASE_URL}${relativePath.replace(/^\.\//, '')}`;
             }
             
-            // If it doesn't start with ../, assume it's relative to GAMES base
-            return `${GAMES_BASE_URL}${relativePath.replace(/^\.\//, '')}`;
+            return proxyUrl(url);
         }
 
         // --- Game Data (Others) ---
@@ -1185,8 +1214,8 @@
             card.className = 'other-zone-item bg-card-dark rounded-2xl border border-brand-border col-span-full shadow-lg'; 
             card.dataset.gameId = game.id;
 
-            // Resolve Image URL
-            const resolvedImgSrc = resolveGameUrl(game.imgSrc);
+            // Resolve Image URL and proxy it
+            const resolvedImgSrc = proxyUrl(resolveGameUrl(game.imgSrc));
 
             let gameButtonsHtml = '';
             let favoriteButtonHtml = '';
@@ -1263,6 +1292,8 @@
                  imgSrc = resolveGameUrl(imgSrc);
             }
 
+            imgSrc = proxyUrl(imgSrc);
+
             const isFavorite = getFavorites().map(String).includes(String(game.id));
 
             const card = document.createElement("div");
@@ -1306,7 +1337,7 @@
         // --- Helper for Download ---
         async function downloadResource(url, filename) {
             try {
-                const r = await fetch(url);
+                const r = await fetch(proxyUrl(url));
                 if (!r.ok) throw new Error("Fetch failed");
                 const b = await r.blob();
                 const a = document.createElement("a");
@@ -1427,15 +1458,18 @@
             const isInjectedGame = isEagler || game.id === 'other-gvc';
             const isStandardURLGame = (game.category === 'Others' && !isInjectedGame) || game.category === 'StrongdogXP';
             
+            // Ensure the game URL is proxied if it's from the workers.dev domain
+            const finalGameUrl = proxyUrl(game.url);
+
             const attemptLoad = async (retriesLeft) => {
                 try {
                     // Pre-check URL validity
-                    const check = await fetch(game.url, { method: 'HEAD' });
+                    const check = await fetch(finalGameUrl, { method: 'HEAD' });
                     if (!check.ok) throw new Error(`HTTP ${check.status}`);
                     
                     // If successful, set src
                     if (isStandardURLGame) {
-                        zoneFrame.src = game.url;
+                        zoneFrame.src = finalGameUrl;
                         // Prevent showing raw directory listing if it resolves to a folder
                         zoneFrame.onload = () => {
                             try {
@@ -1456,7 +1490,7 @@
                         };
                     } else {
                         // For embedded content fetching
-                        const response = await fetch(`${game.url}?t=${Date.now()}`);
+                        const response = await fetch(`${finalGameUrl}${finalGameUrl.includes('?') ? '&' : '?'}t=${Date.now()}`);
                         if (!response.ok) throw new Error(`HTTP error ${response.status}`);
                         const html = await response.text();
                         const doc = zoneFrame.contentWindow.document;
@@ -1609,12 +1643,13 @@
 
                 if (isStrongdog) {
                     const { adjustedImgSrc } = getAdjustedUrls(game.imgSrc, game.page);
-                    imgSrc = adjustedImgSrc;
+                    imgSrc = proxyUrl(adjustedImgSrc);
                 } else if (game.category === 'Others' || game.category === 'Gameboy Games') {
                     imgSrc = resolveGameUrl(game.imgSrc);
                     finalGameData.url = resolveGameUrl(game.url);
                 } else {
-                    imgSrc = game.imgSrc;
+                    imgSrc = proxyUrl(game.imgSrc);
+                    finalGameData.url = proxyUrl(game.url);
                 }
                 
                 const linkEl = document.createElement("a");
@@ -1678,8 +1713,8 @@
         // This bypasses module loading restrictions on file:// protocols.
         async function fetchGameData() {
             try {
-                // Fetch the file
-                const response = await fetch(CARDS_DATA_URL);
+                // Fetch the file via proxy to avoid CORS
+                const response = await fetch(proxyUrl(CARDS_DATA_URL));
                 if (!response.ok) throw new Error('Failed to fetch game data');
                 let scriptText = await response.text();
                 
@@ -1726,7 +1761,7 @@
             const strongdogGames = gamesData.map(g => ({ ...g, category: 'StrongdogXP' }));
             
             try {
-                const res = await fetch(GN_ZONES_URL);
+                const res = await fetch(proxyUrl(GN_ZONES_URL));
                 const gnMathRaw = await res.json();
                 const gnMathGames = gnMathRaw.map(g => ({ id: `gn-${g.id}`, name: g.name, imgSrc: g.cover.replace("{COVER_URL}", GN_COVER_URL_BASE), category: 'GN-Math', url: g.url.replace("{HTML_URL}", GN_HTML_URL_BASE) }));
                 allGames = [...strongdogGames, ...gnMathGames, ...othersGames];
