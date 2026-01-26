@@ -11,9 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+    <script src="firebase-config.js" type="module"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="navigation-mini.js" defer></script>
+    
+    <script src="injector.js"></script>
+    <script src="navigation.js"></script>
 
     <style>
         html { scroll-behavior: smooth; }
@@ -22,7 +24,27 @@
             --geist-background: 0, 0, 0;
         }
         .dark { color-scheme: dark; }
-        body { font-family: 'Geist', sans-serif; }
+        body { 
+            font-family: 'Geist', sans-serif; 
+            background-color: #040404; 
+            color: #c0c0c0; 
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 300;
+        }
+
+        h1, h2, h3, .font-bold, .font-semibold, strong, .tracking-widest {
+            font-weight: 400 !important;
+        }
+        
+        /* Emphasis class for slightly bolder text */
+        .text-emphasis {
+            font-weight: 500 !important; 
+            color: #ffffff;
+        }
+        #page-content {
+            padding-top: 64px;
+        }
         
         .gradient-text {
             background-image: linear-gradient(90deg, #0070f3, #f81ce5);
@@ -57,17 +79,18 @@
             color: #6b7280; /* gray-500 */
         }
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-1D4F692C1Q');
+    </script>
 </head>
 <body class="bg-black text-white min-h-screen flex flex-col">
-
-    <nav class="w-full border-b border-gray-900 py-4 px-6 flex items-center sticky top-0 bg-black/80 backdrop-blur-md z-50">
-        <a href="javascript:history.back()" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-normal rounded-xl text-white bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition text-gray-300 hover:text-white">
-            <i class="fas fa-arrow-left mr-2"></i> Back
-        </a>
-        <div class="ml-auto text-sm text-gray-500 font-light">Last Updated: December 14, 2025</div>
-    </nav>
-
-    <main class="flex-grow">
+    <div id="page-content">
+        <main class="flex-grow">
         <!-- Header Section -->
         <section class="text-center border-b border-gray-900 py-16">
             <div class="mx-auto max-w-4xl px-4">
@@ -167,6 +190,19 @@
                         <p class="text-lg text-gray-400 font-light leading-relaxed">
                             In no event shall 4simpleproblems be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
                         </p>
+                    </div>
+
+                    <!-- 5. Additional Services -->
+                    <div class="border-l border-gray-800 pl-6">
+                        <h3 class="text-2xl font-light text-white mb-4">5. Additional Services & Systems (VERN, VELIUM, VORA, VANA)</h3>
+                        <p class="text-lg text-gray-400 font-light mb-4">
+                            The 4SP platform integrates several advanced systems and services, including but not limited to VERN, VELIUM, VORA, and VANA. These systems provide enhanced functionalities and are governed by the same Terms of Service.
+                        </p>
+                        <ul class="space-y-2 text-gray-400 font-light">
+                            <li class="legal-list-item">Your interaction with these systems is subject to all rules and conduct guidelines outlined in these Terms.</li>
+                            <li class="legal-list-item">4simpleproblems is not liable for any misuse, data loss, or other negative consequences arising from the use of these integrated systems.</li>
+                            <li class="legal-list-item">Functionality and availability of these systems are not guaranteed and may be modified or discontinued at the Owner's discretion.</li>
+                        </ul>
                     </div>
                 </div>
             </section>
@@ -283,6 +319,6 @@
             <a href="#privacy-policy" class="hover:text-gray-300 transition">Privacy Policy</a>
         </div>
     </footer>
-
+    </div>
 </body>
 </html>
