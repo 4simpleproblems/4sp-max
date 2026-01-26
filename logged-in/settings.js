@@ -932,7 +932,7 @@
                                     <div class="flex items-center gap-2">
                                         <input type="text" id="faviconFetchInput" class="input-text-style" placeholder="e.g., google.com">
                                         <button type="button" id="fetchFaviconBtn" class="btn-toolbar-style btn-primary-override w-28" style="padding: 0.5rem 0.75rem;">Fetch</button>
-                                        <div id="favicon-fetch-preview-container" class="w-10 h-10 border border-[#252525] bg-[#111111] rounded-[14px] flex items-center justify-center p-1 flex-shrink-0">
+                                        <div id="favicon-fetch-preview-container" class="w-10 h-10 border border-[#252525] bg-[#111111] rounded-[16px] flex items-center justify-center p-1 flex-shrink-0">
                                             <img src="" alt="Preview" class="w-full h-full object-contain" style="display: none;">
                                         </div>
                                     </div>
@@ -1058,7 +1058,7 @@
                                             
                                             <!-- LEFT: Live Preview -->
                                             <div id="mac-preview-wrapper" class="w-1/2 flex flex-col items-center justify-center bg-[#0a0a0a] p-8 border-r border-[#333] transition-all duration-500 ease-in-out z-10">
-                                                <div class="relative h-64 md:h-80 aspect-square rounded-[16px] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
+                                                <div class="relative h-64 md:h-80 aspect-square rounded-[32px] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
                                                     <!-- Background (Static) -->
                                                     <div id="mac-preview-bg" class="absolute inset-0 w-full h-full transition-colors duration-300"></div>
                                                     
@@ -1074,14 +1074,14 @@
                                                 <div id="mac-sliders-container" class="hidden flex-col gap-6 w-full max-w-xs transition-opacity duration-300 opacity-0">
                                                     <div class="flex flex-col gap-2">
                                                         <label class="text-xs text-gray-400 uppercase tracking-wider font-bold">Size</label>
-                                                        <input type="range" id="mac-size-slider" min="50" max="150" value="100" list="mac-size-ticks" class="mac-slider w-full h-2 bg-gray-700 rounded-[14px] appearance-none cursor-pointer">
+                                                        <input type="range" id="mac-size-slider" min="50" max="150" value="100" list="mac-size-ticks" class="mac-slider w-full h-2 bg-gray-700 rounded-[16px] appearance-none cursor-pointer">
                                                         <datalist id="mac-size-ticks">
                                                             <option value="100"></option>
                                                         </datalist>
                                                     </div>
                                                     <div class="flex flex-col gap-2">
                                                         <label class="text-xs text-gray-400 uppercase tracking-wider font-bold">Rotation</label>
-                                                        <input type="range" id="mac-rotation-slider" min="-180" max="180" value="0" list="mac-rotation-ticks" class="mac-slider w-full h-2 bg-gray-700 rounded-[14px] appearance-none cursor-pointer">
+                                                        <input type="range" id="mac-rotation-slider" min="-180" max="180" value="0" list="mac-rotation-ticks" class="mac-slider w-full h-2 bg-gray-700 rounded-[16px] appearance-none cursor-pointer">
                                                         <datalist id="mac-rotation-ticks">
                                                             <option value="0"></option>
                                                         </datalist>
@@ -1327,7 +1327,7 @@
                     }
                     
                     const adminEntry = document.createElement('div');
-                    adminEntry.className = 'flex justify-between items-center bg-[#0a0a0a] border border-[#1a1a1a] rounded-[14px] p-3';
+                    adminEntry.className = 'flex justify-between items-center bg-[#0a0a0a] border border-[#1a1a1a] rounded-[16px] p-3';
                     adminEntry.innerHTML = `
                         <div>
                             <span class="font-medium text-white">${admin.username || admin.email}</span>
@@ -3668,7 +3668,7 @@ const performAccountDeletion = async (credential) => {
                     pfpColorGrid.innerHTML = '';
                     letterColors.forEach(color => {
                         const d = document.createElement('div');
-                        d.className = 'w-8 h-8 rounded-[14px] cursor-pointer border-2 transition hover:scale-110 ' + (selectedLetterColor === '#' + color ? 'border-white' : 'border-transparent');
+                        d.className = 'w-8 h-8 rounded-[16px] cursor-pointer border-2 transition hover:scale-110 ' + (selectedLetterColor === '#' + color ? 'border-white' : 'border-transparent');
                         d.style.backgroundColor = '#' + color;
                         d.onclick = () => {
                             selectedLetterColor = '#' + color;
