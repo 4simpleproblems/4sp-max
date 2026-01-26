@@ -1184,7 +1184,7 @@
             // If path starts with ../GAMES/ -> It will effectively be WORKER_ROOT/GAMES/ (which matches GAMES_BASE_URL)
             // This allows us to access root folders like ../GTA-JSDOS/ while keeping ../GAMES/sm64 intact.
             
-            if (relativePath === '../GAMES/others/balatro.html' || relativePath === '../GAMES/others/balatro.png') { // Specific exclusion for Balatro and its image
+            if (relativePath === '../GAMES/others/balatro.html' || relativePath === 'GAMES/others/balatro.png' || relativePath === 'GAMES/others/balatro-3-2.png') { // Specific exclusion for Balatro and its images
                 return relativePath;
             }
             if (relativePath.startsWith('../')) {
@@ -1288,7 +1288,9 @@
             
             // Resolve Image Src
             let imgSrc = game.imgSrc;
-            if (isStrongdog) {
+            if (game.id === 'other-balatro' && forceSmallCard) {
+                imgSrc = "GAMES/others/balatro-3-2.png";
+            } else if (isStrongdog) {
                  imgSrc = getAdjustedUrls(game.imgSrc, game.page).adjustedImgSrc;
             } else if (game.category === 'Others' || game.category === 'Gameboy Games') {
                  imgSrc = resolveGameUrl(game.imgSrc);
