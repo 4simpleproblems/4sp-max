@@ -1,5 +1,3 @@
----
-
 # 4SP Max
 
 **4SP Max** is the advanced, dynamic evolution of the 4SP platform. While the original was built for static efficiency, **Max** is a high-armor deployment designed for users who require a full suite of integrated tools, professional UI, and unblocked access across restricted networks.
@@ -61,8 +59,6 @@ Your personal AI collaborator integrated directly into the dashboard.
 | **Vora Media** | No | Yes (Curated) |
 | **Vana AI** | No | Yes (Interactive) |
 | **Design Language** | Legacy | Minimalist / Sleek |
-
----
 
 > **Developer Note:** 4SP Max is intended for deployment on dynamic platforms like **Vercel**. GitHub Pages is supported for previewing the UI, but **Vern** and **Vana** features require a dynamic backend to stay "operational".
 
