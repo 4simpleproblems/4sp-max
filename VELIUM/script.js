@@ -315,7 +315,7 @@ function openLikedSongs() {
                 <h2 class="text-4xl font-bold text-white">Liked Songs</h2>
                 <p class="text-gray-400 text-lg">${library.likedSongs.length} song${library.likedSongs.length!==1?'s':''}</p>
                 <div class="flex gap-3 mt-4 justify-center md:justify-start">
-                    <button onclick="playSong(library.likedSongs[0], 0, library.likedSongs)" class="btn-toolbar-style active px-8 py-3 rounded-full">
+                    <button onclick="playSong(library.likedSongs[0], 0, library.likedSongs)" class="btn-toolbar-style active px-8 py-3 rounded-[16px]">
                         <i class="fas fa-play"></i> Play All
                     </button>
                 </div>
@@ -343,7 +343,7 @@ function openPlaylist(playlistId) {
                 <h2 class="text-4xl font-bold text-white">${pl.name}</h2>
                 <p class="text-gray-400 text-lg">${validSongs.length} song${validSongs.length!==1?'s':''} • Updated: ${lastUpdated}</p>
                 <div class="flex gap-3 mt-4 justify-center md:justify-start">
-                    <button onclick="playSong(library.playlists.find(p => p.id === '${playlistId}').songs[0], 0, library.playlists.find(p => p.id === '${playlistId}').songs)" class="btn-toolbar-style active px-8 py-3 rounded-full" ${validSongs.length === 0 ? 'disabled' : ''}>
+                    <button onclick="playSong(library.playlists.find(p => p.id === '${playlistId}').songs[0], 0, library.playlists.find(p => p.id === '${playlistId}').songs)" class="btn-toolbar-style active px-8 py-3 rounded-[16px]" ${validSongs.length === 0 ? 'disabled' : ''}>
                         <i class="fas fa-play"></i> Play
                     </button>
                     <button onclick="openEditPlaylistModal()" class="btn-toolbar-style px-6 py-3">
@@ -366,8 +366,8 @@ function createSongRow(item, contextPlaylistId = null, index) {
     const domId = btoa(String(uniqueId)).substring(0, 16).replace(/[/+=]/g, '') + `-${index}`;
     
     let actionBtnHtml = contextPlaylistId ? 
-        `<button id="remove-${domId}" class="w-10 h-10 rounded-xl border border-[#333] flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-500 transition-all bg-black/40" title="Remove from Playlist"><i class="fas fa-minus"></i></button>` : 
-        `<button id="add-${domId}" class="w-10 h-10 rounded-xl border border-[#333] flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition-all bg-black/40" title="Add to Playlist"><i class="fas fa-plus"></i></button>`;
+        `<button id="remove-${domId}" class="w-10 h-10 rounded-[16px] border border-[#333] flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-500 transition-all bg-black/40" title="Remove from Playlist"><i class="fas fa-minus"></i></button>` : 
+        `<button id="add-${domId}" class="w-10 h-10 rounded-[16px] border border-[#333] flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition-all bg-black/40" title="Add to Playlist"><i class="fas fa-plus"></i></button>`;
 
     return `
         <div id="row-${domId}" class="song-row group flex items-center p-4 bg-[#0a0a0a] hover:bg-[#111] rounded-2xl border border-[#252525] transition-all gap-5 cursor-pointer">
@@ -384,7 +384,7 @@ function createSongRow(item, contextPlaylistId = null, index) {
             <div class="flex items-center gap-4 px-2">
                 <div class="text-gray-600 text-xs font-mono hidden sm:block">${durationStr}</div>
                 ${actionBtnHtml}
-                <button id="like-${domId}" class="w-10 h-10 rounded-xl border border-[#333] flex items-center justify-center transition-all bg-black/40 ${isLiked?'text-red-500 border-red-500':'text-gray-400 hover:text-white hover:border-white'}" title="Like">
+                <button id="like-${domId}" class="w-10 h-10 rounded-[16px] border border-[#333] flex items-center justify-center transition-all bg-black/40 ${isLiked?'text-red-500 border-red-500':'text-gray-400 hover:text-white hover:border-white'}" title="Like">
                     <i class="${isLiked?'fas':'far'} fa-heart"></i>
                 </button>
             </div>

@@ -1043,7 +1043,7 @@
                                 
                                 <!-- MAC Modal -->
                                 <div id="mibi-mac-menu" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden backdrop-blur-sm">
-                                    <div class="relative bg-black rounded-[1.25rem] shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden border border-[#333]">
+                                    <div class="relative bg-black rounded-[16px] shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden border border-[#333]">
                                         
                                         <!-- Header -->
                                         <div class="flex justify-between items-center p-6 border-b border-[#333] bg-black">
@@ -1058,7 +1058,7 @@
                                             
                                             <!-- LEFT: Live Preview -->
                                             <div id="mac-preview-wrapper" class="w-1/2 flex flex-col items-center justify-center bg-[#0a0a0a] p-8 border-r border-[#333] transition-all duration-500 ease-in-out z-10">
-                                                <div class="relative h-64 md:h-80 aspect-square rounded-[1.25rem] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
+                                                <div class="relative h-64 md:h-80 aspect-square rounded-[16px] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
                                                     <!-- Background (Static) -->
                                                     <div id="mac-preview-bg" class="absolute inset-0 w-full h-full transition-colors duration-300"></div>
                                                     
@@ -1124,11 +1124,11 @@
                                         
                                         <!-- Footer Actions -->
                                         <div class="p-6 border-t border-[#333] bg-black flex justify-end gap-4 items-center">
-                                            <button id="mac-reset-btn" class="btn-toolbar-style mr-auto px-4 py-2 rounded-[1.25rem]" title="Reset Avatar">
+                                            <button id="mac-reset-btn" class="btn-toolbar-style mr-auto px-4 py-2 rounded-[16px]" title="Reset Avatar">
                                                 <i class="fa-solid fa-rotate-left"></i>
                                             </button>
-                                            <button id="mac-cancel-btn" class="btn-toolbar-style px-6 py-2 rounded-[1.25rem]">Cancel</button>
-                                            <button id="mac-confirm-btn" class="btn-toolbar-style btn-primary-override px-6 py-2 rounded-[1.25rem]">
+                                            <button id="mac-cancel-btn" class="btn-toolbar-style px-6 py-2 rounded-[16px]">Cancel</button>
+                                            <button id="mac-confirm-btn" class="btn-toolbar-style btn-primary-override px-6 py-2 rounded-[16px]">
                                                 <i class="fa-solid fa-check mr-2"></i> Confirm Avatar
                                             </button>
                                         </div>
@@ -1140,7 +1140,7 @@
                             <div id="pfpCustomSettings" class="hidden mt-2">
                                 <div class="flex items-center gap-4">
                                     <!-- Preview -->
-                                    <div class="w-16 h-16 rounded-[1.25rem] overflow-hidden border border-gray-600 flex-shrink-0 bg-black relative">
+                                    <div class="w-16 h-16 rounded-[16px] overflow-hidden border border-gray-600 flex-shrink-0 bg-black relative">
                                         <img id="customPfpPreview" src="" class="w-full h-full object-cover" style="display: none;">
                                         <div id="customPfpPlaceholder" class="w-full h-full flex items-center justify-center text-gray-600">
                                             <i class="fa-solid fa-user"></i>
@@ -1727,8 +1727,8 @@
                 MIBI_ASSETS.colors.forEach(color => {
                     const btn = document.createElement('button');
                     const isSelected = mibiAvatarState.bgColor === color;
-                    // Style: Match X button (w-10 h-10, rounded-[1.25rem] i.e. 0.75rem) + flex-shrink-0
-                    btn.className = `w-10 h-10 rounded-[1.25rem] shadow-sm transition-transform hover:scale-110 focus:outline-none border-2 flex-shrink-0 ${isSelected ? 'border-white' : 'border-transparent'} hover:border-dashed hover:border-white`;
+                    // Style: Match X button (w-10 h-10, rounded-[16px] i.e. 0.75rem) + flex-shrink-0
+                    btn.className = `w-10 h-10 rounded-[16px] shadow-sm transition-transform hover:scale-110 focus:outline-none border-2 flex-shrink-0 ${isSelected ? 'border-white' : 'border-transparent'} hover:border-dashed hover:border-white`;
                     btn.style.backgroundColor = color;
                     
                     btn.onclick = () => {
@@ -1741,7 +1741,7 @@
                 // Add custom picker
                 const customWrapper = document.createElement('div');
                 // Match size and roundness + flex-shrink-0
-                customWrapper.className = 'w-10 h-10 rounded-[1.25rem] bg-[#333] flex items-center justify-center cursor-pointer hover:bg-[#444] relative overflow-hidden border-2 border-transparent hover:border-dashed hover:border-white flex-shrink-0';
+                customWrapper.className = 'w-10 h-10 rounded-[16px] bg-[#333] flex items-center justify-center cursor-pointer hover:bg-[#444] relative overflow-hidden border-2 border-transparent hover:border-dashed hover:border-white flex-shrink-0';
                 customWrapper.innerHTML = '<i class="fa-solid fa-eye-dropper text-white text-sm"></i><input type="color" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">';
                 const input = customWrapper.querySelector('input');
                 input.oninput = (e) => {
@@ -1757,8 +1757,8 @@
                 // "None" Option - ONLY for Hats
                 if (category === 'hats') {
                     const noneBtn = document.createElement('div');
-                    // Light grey background (bg-gray-200), More rounded (rounded-[1.25rem])
-                    noneBtn.className = `bg-gray-200 rounded-[1.25rem] p-2 flex flex-col items-center justify-center cursor-pointer border-2 hover:border-dashed hover:border-black transition-all ${!mibiAvatarState[category] ? 'border-black' : 'border-transparent'}`;
+                    // Light grey background (bg-gray-200), More rounded (rounded-[16px])
+                    noneBtn.className = `bg-gray-200 rounded-[16px] p-2 flex flex-col items-center justify-center cursor-pointer border-2 hover:border-dashed hover:border-black transition-all ${!mibiAvatarState[category] ? 'border-black' : 'border-transparent'}`;
                     noneBtn.innerHTML = `<i class="fa-solid fa-ban fa-2x text-gray-600"></i>`;
                     noneBtn.onclick = () => {
                         mibiAvatarState[category] = '';
@@ -1773,8 +1773,8 @@
                 files.forEach(file => {
                     const item = document.createElement('div');
                     const isSelected = mibiAvatarState[category] === file;
-                    // Light grey background (bg-gray-200), More rounded (rounded-[1.25rem])
-                    item.className = `bg-gray-200 rounded-[1.25rem] p-2 flex flex-col items-center justify-center cursor-pointer border-2 hover:border-dashed hover:border-black transition-all ${isSelected ? 'border-black' : 'border-transparent'}`;
+                    // Light grey background (bg-gray-200), More rounded (rounded-[16px])
+                    item.className = `bg-gray-200 rounded-[16px] p-2 flex flex-col items-center justify-center cursor-pointer border-2 hover:border-dashed hover:border-black transition-all ${isSelected ? 'border-black' : 'border-transparent'}`;
                     
                     item.innerHTML = `
                         <img src="../mibi-avatars/${category}/${file}" class="w-16 h-16 object-contain">

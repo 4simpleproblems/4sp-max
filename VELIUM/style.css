@@ -25,7 +25,7 @@ h1, h2, h3, .font-bold, .font-semibold, strong, .tracking-widest {
 .btn-toolbar-style {
     background: #000000;
     border: 1px solid #333;
-    border-radius: 0.75rem;
+    border-radius: 16px; /* Updated to 16px */
     color: #d1d5db;
     padding: 0.5rem 1rem;
     font-weight: 400; /* Max 400 */

@@ -108,7 +108,7 @@
         .btn-toolbar-style {
             background: #000000;
             border: 1px solid #333;
-            border-radius: 14px; /* Matches navigation.js */
+            border-radius: 16px; /* Matches navigation.js */
             color: #d1d5db;
             padding: 0.5rem 1rem;
             font-weight: 500;
@@ -194,7 +194,7 @@
         .player-info { display: flex; align-items: center; gap: 1rem; width: 300px; }
         .player-info img { 
             width: 56px; height: 56px; 
-            border-radius: 14px; /* Standardized radius */
+            border-radius: 16px; /* Standardized radius */
             border: 1px solid #333;
             object-fit: cover;
         }
@@ -252,13 +252,13 @@
 
         .modal-input {
             width: 100%; background: #000000; border: 1px solid #333;
-            color: #c0c0c0; padding: 0.75rem; border-radius: 14px;
+            color: #c0c0c0; padding: 0.75rem; border-radius: 16px;
             outline: none; transition: all 0.2s;
         }
         .modal-input:focus { border-color: #555; }
 
         .close-btn-round {
-            width: 2rem; height: 2rem; border-radius: 14px;
+            width: 2rem; height: 2rem; border-radius: 16px;
             background: transparent; border: 1px solid transparent; color: #9ca3af;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: all 0.2s;
@@ -271,7 +271,7 @@
             border-left: 1px solid #333;
         }
         .compact-list-item {
-            border-radius: 14px; /* Standardized radius */
+            border-radius: 16px; /* Standardized radius */
             margin-bottom: 4px;
             padding: 0.5rem; 
             transition: background-color 0.2s;
@@ -282,7 +282,7 @@
 
         /* --- Notifications --- */
         #notification-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 1000; pointer-events: none; }
-        .notification-toast { background-color: #000000; border: 1px solid #333; border-radius: 14px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
+        .notification-toast { background-color: #000000; border: 1px solid #333; border-radius: 16px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
         .notification-toast.show { transform: translateX(0); opacity: 1; }
         .notification-toast.show:hover { transform: scale(1.05) translateX(-5px); background-color: #151515; border-color: #555; box-shadow: 0 8px 25px rgba(0,0,0,0.7); }
         
@@ -321,7 +321,7 @@
                 <i class="fas fa-layer-group"></i> Library
             </button>
              <div class="relative">
-                <button id="settings-btn" class="btn-toolbar-style !w-10 !h-10 !p-0 flex items-center justify-center" style="border-radius: 14px;" title="Settings" onclick="toggleSettingsMenu()">
+                <button id="settings-btn" class="btn-toolbar-style !w-10 !h-10 !p-0 flex items-center justify-center" style="border-radius: 16px;" title="Settings" onclick="toggleSettingsMenu()">
                     <i class="fas fa-gear text-lg"></i>
                 </button>
                 <div id="settings-dropdown" class="absolute right-0 top-full mt-2 hidden z-50 transform origin-top-right transition-all duration-200">
@@ -358,7 +358,9 @@
                 <i class="fas fa-search text-gray-500 ml-4 text-lg"></i>
                 <input type="text" id="search-box" placeholder="Search songs (add artist for precision)" 
                        class="w-full bg-transparent border-none outline-none text-white px-4 py-3 text-lg placeholder-gray-600 font-light">
-                <button onclick="handleSearch()" class="btn-toolbar-style active px-8">Search</button>
+                <button onclick="handleSearch()" class="btn-toolbar-style active px-8">
+                    <i class="fas fa-search mr-2"></i> Search
+                </button>
             </div>
         </div>
 
