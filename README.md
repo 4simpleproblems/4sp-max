@@ -17,7 +17,7 @@ The backbone of the max platform. *Vern* is a dynamic proxy, which circumvents r
 
 *   **Auto-Failover**: Automatically disables on static `.github.io` URLs to prevent breaking the UI.
 
-### ???? Velium: Integrated Music
+### Velium: Integrated Music
 
 A fully integrated music player that eliminates the need to open external tabs or use the 'ass' music platform.
 
@@ -33,7 +33,7 @@ The "Movie App" for the inner circle. **Vora** offers curated content for qualit
 
 * **Optimized Player**: Low levels of buffering, even on restricted school networks.
 
-### ???? Vana: AI Chatbot
+### Vana: AI Chatbot
 
 A personal AI collaborator that can be integrated into the dashboard.
 
