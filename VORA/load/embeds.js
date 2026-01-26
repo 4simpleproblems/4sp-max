@@ -90,7 +90,7 @@ const AD_URL = "https://raw.githubusercontent.com/Himanshuxzx/test/refs/heads/ma
 // Providers Configuration
 const PROVIDERS = [
     { name: "Server 1 (Recommended)", movie: "https://player.videasy.net/movie/{id}", tv: "https://player.videasy.net/tv/{id}/{s}/{e}" },
-    { name: "Server 2", movie: "https://test.autoembed.cc/embed/movie/{id}", tv: "https://test.autoembed.cc/embed/tv/{id}/{s}/{e}" },
+    { name: "Server 2 (Ads)", movie: "https://test.autoembed.cc/embed/movie/{id}", tv: "https://test.autoembed.cc/embed/tv/{id}/{s}/{e}" },
     { name: "Server 3", movie: "https://vidrock.net/movie/{id}", tv: "https://vidrock.net/tv/{id}/{s}/{e}" },
     { name: "Server 4", movie: "https://moviesapi.club/movie/{id}", tv: "https://moviesapi.club/tv/{id}-{s}-{e}" }
 ];
