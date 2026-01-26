@@ -107,7 +107,7 @@
     </style>
 </head>
 
-<body
+<body class="dark bg-black text-white min-h-screen relative"
     data-is-touch="0"
     data-state-car="0"
     data-state-car-gun="0"
@@ -122,8 +122,11 @@
     data-state-car-with-weapon="0"
     data-state-hunter="0"
     data-state-scope-mode="0"
-    data-state-scope-gun="0"
->
+
+
+
+    <main class="min-h-screen relative">
+        <section class="text-center relative overflow-hidden" style="padding-top: 4rem; padding-bottom: 2rem;">
     <div class="wasted-container" hidden>
 
     </div>
@@ -142,7 +145,7 @@
         </div>
     </div>
 
-    <div class="start-container">
+    <div class="start-container mx-auto max-w-5xl px-4 pb-16">
         <div class="button-container">
             <div class="cover"></div>
             
@@ -178,15 +181,15 @@
             </div>
 
             <div class="click-to-play">
-                <button id="click-to-play-button">Click to play</button>
+                <button id="click-to-play-button" class="hero-btn-base btn-style-purple">Click to play</button>
                 <div id="demo-off-disclaimer"></div>
             </div>
         </div>
 
-        <div class="follow-container"><a id="follow" href="https://t.me/gamebase54" target="_blank">Подписывайтесь на новости и релизы</a></div>
+        <div class="follow-container mb-2 text-sm text-gray-400"><a id="follow" href="https://t.me/gamebase54" target="_blank">Подписывайтесь на новости и релизы</a></div>
         </br>
-        <div class="follow-container"><a id="follow" href="https://dos.zone/revcdos" target="_blank">Vice City by DOS Zone Team</a></div>
-        <div class="jsdos-key">
+        <div class="follow-container mb-2 text-sm text-gray-400"><a id="follow" href="https://dos.zone/revcdos" target="_blank">Vice City by DOS Zone Team</a></div>
+        <div class="jsdos-key mt-4 text-sm text-gray-400">
             <div>
                 <span><a id="cloud-saves-link" href="https://v8.js-dos.com/key" target="_blank">Cloud saves:</a></span>
                 <span id="cloud-saves-status" class="jsdos-key-status">checking...</span>
@@ -255,6 +258,18 @@
         <div class="touch-control fireRight"></div>
         <div class="touch-control fireLeft"></div>
     </div>
+    </section>
+    </main>
+
+    <footer class="border-t border-gray-900 py-6">
+        <div class="mx-auto max-w-7xl px-4 text-center text-gray-500 text-sm">
+            &copy; 2026 4SP Organization. The Experimental Branch.
+            <span class="mx-2">|</span>
+            <a href="legal.html#terms-of-service" class="hover:underline">Terms</a>
+            <span class="mx-2">|</span>
+            <a href="legal.html#privacy-policy" class="hover:underline">Privacy</a>
+        </div>
+    </footer>
 
     <script type='text/javascript' src="https://cdn.jsdelivr.net/gh/Lolendor/reVCDOS@main/dist/GamepadEmulator.js"></script>
     <script>
@@ -1162,60 +1177,154 @@ if (configurableMode) {
         // ignore
     }
     </script>
-</body>
 
-</html>
+    <div id="cookie-overlay" class="fixed inset-0 bg-black/70 z-[9999] transition-opacity duration-300 opacity-0" style="display: none;">
+        <div id="cookie-banner" class="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4">
+            <div class="bg-black/95 text-white p-4 sm:p-6 rounded-3xl border border-gray-700 shadow-2xl backdrop-blur-md flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0 md:space-x-6">
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-xl font-normal mb-1">4SP Uses Cookies</h3>
+                    <p class="text-sm text-gray-300 mb-2 font-light">
+                        We use cookies for authentication and to save your Velium preferences.
+                    </p>
+                    <div class="space-x-3 text-xs">
+                        <a href="https://policies.google.com/technologies/cookies" target="_blank" class="text-blue-400 hover:text-blue-300 underline transition">Details</a>
+                        <a class="text-gray-500 pointer-events-none">|</a>
+                        <a href="../legal.html#privacy-policy" class="text-blue-400 hover:text-blue-300 underline transition">Privacy Policy</a>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <button id="accept-cookies-button" class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-normal rounded-xl text-white bg-purple-500/10 ring-1 ring-purple-500/50 hover:bg-purple-500/20 transition duration-150 transform hover:scale-[1.02]">
+                        I Understand
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile-warning-overlay" class="fixed inset-0 bg-black/95 z-[10000] flex items-center justify-center p-6" style="display: none;">
+        <div class="max-w-md w-full text-center space-y-6">
+            <div class="text-5xl mb-4">🖥️</div>
+            <h2 class="text-3xl font-light text-white tracking-tight">Desktop Recommended</h2>
+            <p class="text-gray-400 text-lg font-light leading-relaxed">
+                4SP MAX features complex tools like Velium and the Fireworks Nav that are best experienced on a larger screen.
+                <br><br>
+                Please use a desktop for the intended experience.
+            </p>
+            <button id="dismiss-mobile-warning" class="inline-flex items-center justify-center px-8 py-3 border border-gray-600 text-base font-normal rounded-xl text-white bg-transparent hover:bg-white/10 transition duration-200">
+                Dismiss
+            </button>
+        </div>
+    </div>
 
     <script>
-    (function() {
-        var cdn = 'https://cdn.jsdelivr.net/gh/Lolendor/reVCDOS@main/dist/';
-        var modules = [
-            'modules/runtime.js',
-            (currentLanguage === 'ru' ? 'modules/packages/ru.js' : 'modules/packages/en.js'),
-            'modules/loader.js',
-            'modules/fs.js',
-            'modules/audio.js',
-            'modules/graphics.js',
-            'modules/events.js',
-            'modules/fetch.js',
-            (currentLanguage === 'ru' ? 'modules/asm_consts/ru.js' : 'modules/asm_consts/en.js'),
-            // 'modules/cheats.js',
-            'modules/main.js'
-        ];
+        window.addEventListener('scroll', () => {
+            const bgLayer = document.getElementById('dynamic-background');
+            const scrollPos = window.scrollY;
+            const triggerHeight = 600; 
+            let opacity = scrollPos / triggerHeight;
+            if (opacity > 1) opacity = 1;
+            if (bgLayer) bgLayer.style.opacity = opacity;
+        });
 
-        if (cheatsEnabled)
-            modules.push('modules/cheats.js');
-
-        if (typeof importScripts === 'function') {
-            var cdnModules = modules.map(function(m) { return cdn + m; });
-            importScripts.apply(null, cdnModules);
-        } else {
-            var loadNext = function(i) {
-                if (i < modules.length) {
-                    var s = document.createElement('script');
-                    s.src = cdn + modules[i];
-                    s.async = false; // Ensure order
-                    s.onload = function() { loadNext(i + 1); };
-                    s.onerror = function() { console.error('Failed to load module: ' + modules[i]); };
-                    document.body.appendChild(s);
+        (function() {
+            const mobileOverlay = document.getElementById('mobile-warning-overlay');
+            const dismissBtn = document.getElementById('dismiss-mobile-warning');
+            const STORAGE_KEY = '4sp-max-mobile-dismissed';
+            function checkAspectRatio() {
+                if (localStorage.getItem(STORAGE_KEY) === 'true') return;
+                if (window.innerHeight > window.innerWidth) {
+                    mobileOverlay.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; 
+                } else {
+                    mobileOverlay.style.display = 'none';
+                    document.body.style.overflow = ''; 
                 }
-            };
-            loadNext(0);
-        }
-    })();
+            }
+            checkAspectRatio();
+            window.addEventListener('resize', checkAspectRatio);
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', () => {
+                    mobileOverlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                    localStorage.setItem(STORAGE_KEY, 'true');
+                });
+            }
+        })();
     </script>
-    <script>
-    try {
-        // const host = window.parent.location.host;
-        // console.log("The host:", host);
-        // if ((!host.endsWith("dos.zone") || host.endsWith("cdn.dos.zone")) && !host.startsWith("localhost") &&
-        //     !host.startsWith("192.168.0.") && !host.startsWith("test.js-dos.com")) {
-        //     location.href = "https://dos.zone/ru/grand-theft-auto-vice-city/";
-        // }
-    } catch (e) {
-        // ignore
-    }
+    
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+    <script type="module" src="../firebase-config.js"></script>
+
+    <script type="module">
+        const COOKIE_KEY = '4sp-max-cookie-consent';
+        const cookieOverlay = document.getElementById('cookie-overlay');
+        const acceptCookiesButton = document.getElementById('accept-cookies-button');
+        const hideCookieBanner = () => {
+            cookieOverlay.classList.remove('opacity-100');
+            cookieOverlay.classList.add('opacity-0');
+            setTimeout(() => {
+                cookieOverlay.style.display = 'none';
+                localStorage.setItem(COOKIE_KEY, 'accepted');
+                document.body.style.overflow = '';
+            }, 300);
+        };
+        const showCookieBanner = () => {
+            cookieOverlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                cookieOverlay.classList.remove('opacity-0');
+                cookieOverlay.classList.add('opacity-100');
+            }, 10); 
+        };
+        if (localStorage.getItem(COOKIE_KEY) !== 'accepted') {
+            window.addEventListener('load', showCookieBanner);
+        }
+        if (acceptCookiesButton) acceptCookiesButton.addEventListener('click', hideCookieBanner);
+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+        import { firebaseConfig } from '../firebase-config.js';
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const authButton = document.getElementById('auth-button');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && authButton) {
+                authButton.href = '/logged-in/dashboard.html';
+                authButton.innerHTML = 'Go to Dashboard <i class="fas fa-arrow-right ml-2"></i>';
+            } else if (authButton) {
+                authButton.href = '../authentication.html';
+                authButton.innerHTML = 'Get Started Instantly <i class="fas fa-arrow-right ml-2"></i>';
+            }
+        });
+    </script>
+    <script type="module">
+        document.querySelectorAll('.image-carousel-container').forEach(container => {
+            const images = container.querySelectorAll('.carousel-image');
+            const prevButton = container.querySelector('.prev-button');
+            const nextButton = container.querySelector('.next-button');
+            let currentIndex = 0;
+            function showImage(index) {
+                images.forEach((img, i) => {
+                    img.classList.toggle('opacity-100', i === index);
+                    img.classList.toggle('opacity-0', i !== index);
+                });
+            }
+            if (prevButton && nextButton) {
+                prevButton.addEventListener('click', () => {
+                    currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+                    showImage(currentIndex);
+                });
+                nextButton.addEventListener('click', () => {
+                    currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+                    showImage(currentIndex);
+                });
+            }
+            showImage(currentIndex); 
+        });
     </script>
 </body>
 
 </html>
+
