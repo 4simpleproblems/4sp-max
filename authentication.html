@@ -16,7 +16,7 @@
     <style>
         body { 
             font-family: 'Geist', sans-serif; 
-            background-color: #040404; 
+            background-color: #000000; 
             color: #c0c0c0; 
             font-weight: 300;
         }
@@ -26,7 +26,7 @@
         }
 
         .auth-container {
-            background-color: #111111;
+            background-color: #0a0a0a;
             border: 1px solid #252525;
             border-radius: 1.25rem;
             padding: 2rem;
@@ -36,7 +36,7 @@
             width: 100%; 
             padding: 0.75rem; 
             border: 1px solid #252525; 
-            background-color: #040404; 
+            background-color: #000000; 
             border-radius: 14px; 
             color: #c0c0c0; 
             transition: all 0.2s;
@@ -60,20 +60,24 @@
             cursor: pointer;
         }
         .btn-primary {
-            background-color: #4f46e5;
-            color: white;
+            background-color: rgba(79, 70, 229, 0.1);
+            border: 1px solid #4f46e5;
+            color: #4f46e5;
         }
         .btn-primary:hover {
-            background-color: #6366f1;
+            background-color: rgba(79, 70, 229, 0.15);
+            border-color: #6366f1;
+            color: #6366f1;
         }
         .btn-secondary {
             background-color: #111111;
-            color: #c0c0c0;
-            border: 1px solid #252525;
+            color: #9ca3af;
+            border: 1px solid #333;
         }
         .btn-secondary:hover {
-            background-color: #1f1f1f;
-            border-color: #505050;
+            background-color: rgba(79, 70, 229, 0.05);
+            border-color: #d1d5db;
+            color: #ffffff;
         }
 
         .message-area { min-height: 20px; }
@@ -83,6 +87,28 @@
         
         @media (max-width: 767px) {
             .right-col { display: none; }
+        }
+
+        .auth-view {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease forwards;
         }
     </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
@@ -102,7 +128,7 @@
         <div class="w-full max-w-4xl grid md:grid-cols-2 gap-0 auth-container overflow-hidden">
             <div class="left-col flex-1 p-8 flex flex-col justify-center items-center">
 
-                <div id="loginContainer" class="w-full flex flex-col items-center">
+                <div id="loginContainer" class="w-full flex flex-col items-center auth-view">
                     <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Login to Your Account</h2>
                     <form id="loginForm" novalidate class="w-full max-w-md"> 
                         <div class="mb-5">
@@ -125,7 +151,7 @@
                     </p>
                 </div>
 
-                <div id="resetPasswordContainer" class="w-full flex-col items-center" style="display: none;">
+                <div id="resetPasswordContainer" class="w-full flex-col items-center auth-view" style="display: none;">
                     <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Reset Your Password</h2>
                     <p class="text-custom-light-gray text-base mb-6 text-center max-w-md font-normal">Enter your email address and we'll send you a link to reset your password.</p>
                     <form id="resetPasswordForm" novalidate class="w-full max-w-md">
@@ -141,7 +167,7 @@
                     </div>
                 </div>
 
-                <div id="usernameContainer" class="w-full flex-col items-center" style="display: none;">
+                <div id="usernameContainer" class="w-full flex-col items-center auth-view" style="display: none;">
                     <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Choose Your Username</h2>
                     <form id="usernameForm" novalidate class="w-full max-w-md"> 
                         <div class="mb-5">
@@ -158,7 +184,7 @@
                     </p>
                 </div>
                 
-                <div id="signupContainer" class="w-full flex-col items-center" style="display: none;">
+                <div id="signupContainer" class="w-full flex-col items-center auth-view" style="display: none;">
                     <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Set Your Credentials</h2>
                     <form id="signupForm" novalidate class="w-full max-w-md"> 
                         <div class="mb-5">
@@ -335,11 +361,33 @@
         // --- View Management ---
         const showView = (viewName) => {
             Object.values(messageDivs).forEach(div => div.innerHTML = '');
-            for (const key in containers) {
-                containers[key].style.display = (key === viewName) ? 'flex' : 'none';
-                if (key === viewName) {
-                    containers[key].style.flexDirection = 'column';
+            let activeContainer = null;
+            for(const key in containers) {
+                if (containers[key].style.display === 'flex') {
+                    activeContainer = containers[key];
+                    break;
                 }
+            }
+
+            if (activeContainer) {
+                activeContainer.classList.add('fade-out');
+                activeContainer.addEventListener('animationend', () => {
+                    activeContainer.style.display = 'none';
+                    activeContainer.classList.remove('fade-out');
+                    
+                    const newContainer = containers[viewName];
+                    newContainer.style.display = 'flex';
+                    newContainer.style.flexDirection = 'column';
+                    newContainer.classList.add('fade-in');
+                    newContainer.addEventListener('animationend', () => {
+                        newContainer.classList.remove('fade-in');
+                    }, { once: true });
+
+                }, { once: true });
+            } else {
+                const newContainer = containers[viewName];
+                newContainer.style.display = 'flex';
+                newContainer.style.flexDirection = 'column';
             }
         };
 
@@ -348,7 +396,7 @@
             element.innerHTML = text;
             element.className = `message-area w-full max-w-md mt-4 text-center text-sm ${type}-message`;
         };
-
+        
         const navigateToDashboard = () => window.location.href = '/logged-in/dashboard.html';
 
         const createUserDocument = async (user, authMethod, username) => {
