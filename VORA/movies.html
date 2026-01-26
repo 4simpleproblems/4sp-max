@@ -61,10 +61,10 @@
             theme: {
                 extend: {
                     colors: {
-                        'deep-black': '#040404',
-                        'card-dark': '#0d0d0d',
-                        'accent-red': '#a855f7',
-                        'brand-border': '#222222',
+                        'deep-black': '#000000',
+                        'card-dark': '#000000',
+                        'accent-red': '#4f46e5',
+                        'brand-border': '#333333',
                     },
                     fontFamily: {
                         sans: ['Geist', 'sans-serif'],
@@ -77,7 +77,7 @@
     <style>
         body { 
             font-family: 'Geist', sans-serif; 
-            background-color: #040404; 
+            background-color: #000000; 
             color: #c0c0c0; 
             font-weight: 300; 
             margin: 0;
@@ -89,8 +89,8 @@
         /* Sidebar Styles */
         .sidebar {
             width: 260px;
-            background-color: #080808;
-            border-right: 1px solid #1a1a1a;
+            background-color: #000000;
+            border-right: 1px solid #333;
             height: calc(100vh - 64px);
             position: fixed;
             left: 0;
@@ -116,15 +116,16 @@
             padding: 12px 16px;
             color: #888;
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 14px;
             margin-bottom: 4px;
             font-size: 14px;
             transition: all 0.2s ease;
         }
 
         .nav-link:hover, .nav-link.active {
-            background-color: rgba(168, 85, 247, 0.1);
-            color: #a855f7;
+            background-color: rgba(79, 70, 229, 0.1);
+            color: #4f46e5;
+            border: 1px solid #4f46e5;
         }
 
         .nav-link i {
@@ -155,17 +156,17 @@
         }
 
         .video-item {
-            background-color: #0d0d0d;
-            border: 1px solid #222;
-            border-radius: 16px;
+            background-color: #000000;
+            border: 1px solid #333;
+            border-radius: 1.25rem;
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .video-item:hover {
-            border-color: #a855f7;
+            border-color: #4f46e5;
             transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.15);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15);
         }
 
         .thumbnail-container {
@@ -200,24 +201,25 @@
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #040404; }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #333; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
 
         .search-input {
-            background: #0d0d0d;
-            border: 1px solid #222;
+            background: #000000;
+            border: 1px solid #333;
             color: white;
             transition: all 0.3s ease;
+            border-radius: 14px;
         }
         .search-input:focus {
-            border-color: #a855f7;
+            border-color: #4f46e5;
             outline: none;
-            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
         }
 
         button, a, .rounded-xl {
-            border-radius: 12px !important;
+            border-radius: 14px !important;
             transition: all 0.2s ease;
         }
     </style>
@@ -225,7 +227,7 @@
     <script src="./cachedFetch.js"></script>
     <script src="./utils.js"></script>
     <script src="./load/embeds.js"></script>
-    <script src="/navigation.js"></script>
+    <script src="../navigation.js"></script>
     <script src="/injector.js"></script>
 </head>
 <body class="bg-deep-black text-white">

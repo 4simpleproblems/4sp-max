@@ -80,14 +80,14 @@
 
     <style>
         :root {
-            --bg-color: #040404;
+            --bg-color: #000000;
             --toolbar-bg: #000000;
             --item-border: #333;
             --accent: #4f46e5;
             --text-main: #e5e7eb;
             --text-muted: #9ca3af;
             
-            --menu-bg: #0a0a0a;
+            --menu-bg: #000000;
             --menu-border: #333;
             --menu-text: #d1d5db;
             --menu-item-hover-bg: rgba(79, 70, 229, 0.1);
@@ -248,7 +248,7 @@
         
         .avatar {
             width: 36px; height: 36px;
-            border-radius: 10px;
+            border-radius: 14px; /* Standardized radius */
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
             font-size: 0.9rem;
@@ -257,10 +257,10 @@
         .avatar.user { background: #222; border: 1px solid #333; color: #ccc; }
 
         .bubble {
-            background: #111;
+            background: #000000; /* Deep black bubbles */
             border: 1px solid #333;
             padding: 1rem 1.5rem;
-            border-radius: 1rem;
+            border-radius: 1.25rem; /* Standardized container radius */
             font-size: 0.95rem;
             line-height: 1.6;
             color: #e5e7eb;
@@ -283,14 +283,14 @@
 
         /* Code/Chart Block Wrapper */
         .code-block-wrapper, .chart-block-wrapper {
-            background-color: #0d0d0d; border-radius: 12px; margin: 15px 0;
-            overflow: hidden; border: 1px solid #1a1a1a;
+            background-color: #000000; border-radius: 14px; margin: 15px 0;
+            overflow: hidden; border: 1px solid #333;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .code-block-header, .chart-block-header {
             display: flex; justify-content: space-between; align-items: center; 
             padding: 6px 12px; background-color: rgba(0,0,0,0.2);
-            border-bottom: 1px solid #222;
+            border-bottom: 1px solid #333;
         }
         .code-metadata, .chart-metadata { font-size: 0.8em; color: #aaa; font-family: monospace; }
         
@@ -305,7 +305,7 @@
         .gemini-file-creation-card {
             background: linear-gradient(135deg, rgba(66, 133, 244, 0.1), rgba(52, 168, 83, 0.05));
             border: 1px solid rgba(66, 133, 244, 0.2);
-            border-radius: 12px; padding: 12px; width: 220px; margin-top: 10px;
+            border-radius: 14px; padding: 12px; width: 220px; margin-top: 10px;
             display: flex; flex-direction: column; gap: 8px;
         }
         .file-header { display: flex; justify-content: space-between; align-items: center; }
@@ -325,7 +325,7 @@
         }
 
         .input-box {
-            background: #0d0d0d;
+            background: #000000;
             border: 1px solid #333;
             border-radius: 26px;
             padding: 14px;
@@ -359,7 +359,7 @@
         .send-btn {
             height: 38px; width: 38px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+            border-radius: 14px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
             background: #1e1b4b; /* Dark Purple */
             border: 1px solid var(--accent); /* Purple Outline */
             color: #fff;
@@ -412,10 +412,10 @@
             bottom: 25px;
             right: 25px;
             width: 45px; height: 45px;
-            background: #111;
+            background: #000000;
             border: 1px solid #333;
             color: #ef4444; /* Red */
-            border-radius: 16px;
+            border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);

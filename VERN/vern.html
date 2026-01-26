@@ -34,6 +34,7 @@
         };
     </script>
     <script src="baremux/index.js"></script>
+    <script src="../navigation.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -42,7 +43,7 @@
     <style>
         /* ... existing styles ... */
         :root {
-            --bg-color: #040404;
+            --bg-color: #000000;
             --toolbar-bg: #000000;
             --item-bg: #000000;
             --item-border: #333;
@@ -50,7 +51,7 @@
             --accent: #4f46e5;
             --text-main: #e5e7eb;
             --text-muted: #d1d5db;
-            --radius: 1rem; /* Increased from 0.75rem for more rounded look */
+            --radius: 14px; /* Standardized button radius */
             --control-size: 42px;
         }
 
@@ -130,7 +131,7 @@
         
         /* URL Bar */
         #urlbar {
-            background-color: #0d0d0d;
+            background-color: #000000;
             border: 1px solid var(--item-border);
             color: var(--text-main);
             height: var(--control-size);
@@ -182,10 +183,10 @@
         #custom-modal.active { opacity: 1; pointer-events: auto; }
         
         .modal-content {
-            background: #0d0d0d; 
+            background: #000000; 
             border: 1px solid #333; 
             padding: 0;
-            border-radius: 1rem; 
+            border-radius: 1.25rem; 
             width: 90%; max-width: 400px;
             display: flex; flex-direction: column; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -196,22 +197,22 @@
         
         .modal-header {
             padding: 1.25rem; border-bottom: 1px solid #333;
-            background: #040404;
+            background: #000000;
         }
         .modal-title { font-size: 1.1rem; color: #fff; font-weight: 500; }
         
         .modal-body-container { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
 
         .modal-input {
-            background: #111; border: 1px solid #333; padding: 0.75rem;
-            border-radius: 0.5rem; color: #c0c0c0; outline: none; width: 100%; transition: all 0.2s;
+            background: #000000; border: 1px solid #333; padding: 0.75rem;
+            border-radius: 14px; color: #c0c0c0; outline: none; width: 100%; transition: all 0.2s;
         }
         .modal-input:focus { border-color: #555; }
         
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px; }
         
         .modal-btn {
-            padding: 0.5rem 1rem; border-radius: 0.75rem; cursor: pointer; font-size: 0.9rem; font-weight: 500;
+            padding: 0.5rem 1rem; border-radius: 14px; cursor: pointer; font-size: 0.9rem; font-weight: 500;
             border: 1px solid transparent; transition: all 0.2s;
         }
         .modal-btn.cancel { background: transparent; color: #9ca3af; border: 1px solid transparent; }
@@ -226,7 +227,7 @@
 
         /* --- Notifications --- */
         #notification-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 1000; pointer-events: none; }
-        .notification-toast { background-color: #0a0a0a; border: 1px solid #333; border-radius: 14px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
+        .notification-toast { background-color: #000000; border: 1px solid #333; border-radius: 14px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
         .notification-toast.show { transform: translateX(0); opacity: 1; }
         .notification-toast.show:hover { transform: scale(1.05) translateX(-5px); background-color: #151515; border-color: #555; box-shadow: 0 8px 25px rgba(0,0,0,0.7); }
         .notification-icon { font-size: 1.1rem; }

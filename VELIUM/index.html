@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../navigation.js"></script>
 
     <!-- VERN_SYSTEM Proxy Scripts (Local) -->
     <link rel="preload" href="/VELIUM/uv/uv.bundle.js" as="script">
@@ -88,7 +89,7 @@
     <style>
         body { 
             font-family: 'Geist', sans-serif; 
-            background-color: #040404; 
+            background-color: #000000; 
             color: #c0c0c0; /* Matches notes.html text color */
             font-weight: 300; 
             padding-bottom: 120px; /* Space for player */
@@ -108,7 +109,7 @@
         .btn-toolbar-style {
             background: #000000;
             border: 1px solid #333;
-            border-radius: 0.75rem; /* 12px */
+            border-radius: 14px; /* Matches navigation.js */
             color: #d1d5db;
             padding: 0.5rem 1rem;
             font-weight: 500;
@@ -128,7 +129,7 @@
         }
         .btn-toolbar-style.active {
             background-color: rgba(79, 70, 229, 0.1);
-            border-color: #4f46e5;
+            border: 1px solid #4f46e5;
             color: #4f46e5;
         }
 
@@ -157,17 +158,11 @@
         /* --- Search Bar --- */
         #search-container {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 1rem; /* 16px - rounded-2xl */
-            padding: 0.5rem; /* Reduced outer padding */
+            border-radius: 14px; /* Standardized radius */
+            padding: 0.5rem; 
         }
         #search-container input {
-            padding: 0.5rem 1rem; /* Equalized inner padding */
-        }
-        /* Highlight removed as requested */
-        #search-container:focus-within {
-            /* transform: translateY(-2px); */
-            /* box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15); */
-            /* border-color: #4f46e5; */
+            padding: 0.5rem 1rem; 
         }
 
         /* --- Settings Dropdown (Match Auth Menu) --- */
@@ -186,7 +181,7 @@
             position: fixed;
             bottom: 0; left: 0; right: 0;
             height: 90px;
-            background-color: #040404; /* Matches body bg */
+            background-color: #000000; /* Deep black */
             border-top: 1px solid #333;
             backdrop-filter: blur(20px);
             z-index: 100;
@@ -199,7 +194,7 @@
         .player-info { display: flex; align-items: center; gap: 1rem; width: 300px; }
         .player-info img { 
             width: 56px; height: 56px; 
-            border-radius: 0.75rem; /* More rounded image */
+            border-radius: 14px; /* Standardized radius */
             border: 1px solid #333;
             object-fit: cover;
         }
@@ -240,9 +235,9 @@
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-content {
-            background: #0d0d0d; 
+            background: #000000; 
             border: 1px solid #333;
-            border-radius: 1.5rem; /* More rounded modals */
+            border-radius: 1.25rem; /* Standardized container radius */
             width: 90%; max-width: 450px;
             overflow: hidden;
             display: flex; flex-direction: column;
@@ -251,19 +246,19 @@
 
         .modal-header {
             padding: 1.25rem; border-bottom: 1px solid #333;
-            background: #040404; display: flex; justify-content: space-between; align-items: center;
+            background: #000000; display: flex; justify-content: space-between; align-items: center;
         }
-        .modal-body { padding: 1.5rem; background: #0d0d0d; display: flex; flex-direction: column; gap: 1rem; }
+        .modal-body { padding: 1.5rem; background: #000000; display: flex; flex-direction: column; gap: 1rem; }
 
         .modal-input {
-            width: 100%; background: #111; border: 1px solid #333;
-            color: #c0c0c0; padding: 0.75rem; border-radius: 0.75rem;
+            width: 100%; background: #000000; border: 1px solid #333;
+            color: #c0c0c0; padding: 0.75rem; border-radius: 14px;
             outline: none; transition: all 0.2s;
         }
         .modal-input:focus { border-color: #555; }
 
         .close-btn-round {
-            width: 2rem; height: 2rem; border-radius: 0.5rem;
+            width: 2rem; height: 2rem; border-radius: 14px;
             background: transparent; border: 1px solid transparent; color: #9ca3af;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: all 0.2s;
@@ -272,11 +267,11 @@
 
         /* --- Library Drawer --- */
         #library-drawer {
-            background: #040404;
+            background: #000000;
             border-left: 1px solid #333;
         }
         .compact-list-item {
-            border-radius: 0.75rem; /* More rounded list items */
+            border-radius: 14px; /* Standardized radius */
             margin-bottom: 4px;
             padding: 0.5rem; 
             transition: background-color 0.2s;
@@ -287,7 +282,7 @@
 
         /* --- Notifications --- */
         #notification-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 1000; pointer-events: none; }
-        .notification-toast { background-color: #0a0a0a; border: 1px solid #333; border-radius: 14px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
+        .notification-toast { background-color: #000000; border: 1px solid #333; border-radius: 14px; padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; min-width: 200px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s; opacity: 0; pointer-events: auto; cursor: default; }
         .notification-toast.show { transform: translateX(0); opacity: 1; }
         .notification-toast.show:hover { transform: scale(1.05) translateX(-5px); background-color: #151515; border-color: #555; box-shadow: 0 8px 25px rgba(0,0,0,0.7); }
         
