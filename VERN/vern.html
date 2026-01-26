@@ -267,7 +267,7 @@
         </form>
         <div class="flex items-center gap-2">
              <button onclick="pinCurrent()" class="control-btn" title="Pin Current Page"><i class="fas fa-thumbtack"></i></button>
-             <button onclick="full()" class="control-btn" title="Open in New Window"><i class="fas fa-external-link"></i></button>
+             <button onclick="fullscreen()" class="control-btn" title="Fullscreen"><i class="fas fa-expand"></i></button>
         </div>
     </header>
 
@@ -845,19 +845,15 @@
         function b() { document.querySelector(`.viewframe[data-frame-id="${aTab}"]`)?.contentWindow.history.back(); }
         function f() { document.querySelector(`.viewframe[data-frame-id="${aTab}"]`)?.contentWindow.history.forward(); }
         function r() { document.querySelector(`.viewframe[data-frame-id="${aTab}"]`)?.contentWindow.location.reload(); }
-        function full() { 
+        function fullscreen() { 
              const frame = document.querySelector(`.viewframe[data-frame-id="${aTab}"]`);
              if (frame) {
-                 const win = window.open("about:blank", "_blank");
-                 if(win) {
-                     win.document.body.style.margin = "0";
-                     win.document.body.style.height = "100vh";
-                     const iframe = win.document.createElement("iframe");
-                     iframe.style.border = "none";
-                     iframe.style.width = "100%";
-                     iframe.style.height = "100%";
-                     iframe.src = frame.src;
-                     win.document.body.appendChild(iframe);
+                 if (frame.requestFullscreen) {
+                     frame.requestFullscreen();
+                 } else if (frame.webkitRequestFullscreen) { /* Safari */
+                     frame.webkitRequestFullscreen();
+                 } else if (frame.msRequestFullscreen) { /* IE11 */
+                     frame.msRequestFullscreen();
                  }
              }
         }
