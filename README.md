@@ -15,7 +15,7 @@ The backbone of the max platform. *Vern* is a dynamic proxy, which circumvents r
 * **Dynamic Routing**: Needs a dynamic host, e.g., Vercel or Railway.
 * **Protocol**: Optimized for speed and low-latency browsing.
 
-*   **Auto-Failover**: Automatically disables on static `*.github.io` URLs to prevent breaking the UI.
+*   **Auto-Failover**: Automatically disables on static `.github.io` URLs to prevent breaking the UI.
 
 ### ???? Velium: Integrated Music
 
