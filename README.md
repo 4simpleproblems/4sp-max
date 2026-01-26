@@ -2,7 +2,7 @@
 
 **4SP Max** is the next-generation, evolutionary enhancement of the renowned **4SP** platform. While the original 4SP is designed for static efficiency, 4SP Max is a high-powered deployment for those who need a range of integrated tools, a professional interface, and unhindered access to restricted networks.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/4simpleproblems-v5/4sp-max/)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/4simpleproblems/4sp-max/)
 
 ---
 
@@ -56,10 +56,10 @@ A personal AI collaborator integrated into the dashboard.
 | Feature             | 4SP (Standard) | 4SP Max                    |
 | ------------------- | -------------- | -------------------------- |
 | **Hosting Mode**    | Fully Static   | Dynamic Required           |
-| **Vern Proxy**      | Basic          | Advanced (High Reliability)|
-| **Velium Music**    | No             | Yes (Integrated)           |
-| **Vora Media**      | No             | Yes (Curated)              |
-| **Vana AI**         | No             | Yes (Interactive)          |
-| **Design Language** | Legacy         | Minimalist & Sleek         |
+| **Vern Proxy**      | No             | Yes                        |
+| **Velium Music**    | No             | Yes                        |   
+| **Vora Media**      | No             | Yes                        |
+| **Vana AI**         | No             | Yes                        |
+| **Design Language** | Original       | Designed like DV           |
 
 > **Developer Note:** 4SP Max is designed to run on dynamic environments like **Vercel**. GitHub Pages can be used to preview the UI; however, for **Vern** and **Vana** to be operational, a dynamic backend is required.
