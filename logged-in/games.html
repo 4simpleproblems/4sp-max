@@ -1138,17 +1138,45 @@
             try { const response = await fetch(url, { method: "HEAD" }); return response.ok; } catch { return false; }
         }
 
+        function proxyUrl(url) {
+            if (!url) return url;
+            const origin = window.location.origin;
+            if (url.startsWith(origin)) return url;
+            
+            // PERFORMANCE: Direct loading for safe CORS domains
+            // Workers and jsDelivr support CORS and are usually faster than proxying
+            if ((url.includes('workers.dev') && !url.includes('gvc.html')) || url.includes('cdn.jsdelivr.net')) {
+                return url;
+            }
+
+            // Ensure UV is ready for encoding
+            if (window.Ultraviolet && window.__uv$config) {
+                try {
+                    return origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+                } catch(e) {
+                    console.error("Encoding failed", e);
+                }
+            }
+            
+            // Fallback during early boot
+            if (window.Ultraviolet && Ultraviolet.codec && Ultraviolet.codec.xor) {
+                return origin + "/GAMES/uv/service/" + Ultraviolet.codec.xor.encode(url);
+            }
+            
+            return url;
+        }
+
         function resolveGameUrl(relativePath) {
             if (!relativePath) return "";
             
             // If it's already an absolute URL return it
             if (relativePath.startsWith('http') || relativePath.startsWith('//')) {
-                return relativePath;
+                return proxyUrl(relativePath);
             }
 
             // If it's a root-relative path, prepend the origin to make it a full absolute URL
             if (relativePath.startsWith('/')) {
-                return window.location.origin + relativePath;
+                return proxyUrl(window.location.origin + relativePath);
             }
 
             // Logic: 
@@ -1158,11 +1186,11 @@
             
             if (relativePath.startsWith('../')) {
                 const pathPart = relativePath.substring(3); // Remove '../'
-                return `${WORKER_ROOT}${pathPart}`;
+                return proxyUrl(`${WORKER_ROOT}${pathPart}`);
             }
             
             // If it doesn't start with ../, assume it's relative to GAMES base
-            return `${GAMES_BASE_URL}${relativePath.replace(/^\.\//, '')}`;
+            return proxyUrl(`${GAMES_BASE_URL}${relativePath.replace(/^\.\//, '')}`);
         }
 
         // --- Game Data (Others) ---
