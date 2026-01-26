@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../navigation.js"></script>
 
     <!-- VERN_SYSTEM Proxy Scripts (Local) -->
     <link rel="preload" href="/VELIUM/uv/uv.bundle.js" as="script">
@@ -158,8 +157,9 @@
         /* --- Search Bar --- */
         #search-container {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 14px; /* Standardized radius */
+            border-radius: 18px; /* Standardized to 18px as requested */
             padding: 0.5rem; 
+            background-color: #000000; /* Pure black background */
         }
         #search-container input {
             padding: 0.5rem 1rem; 
@@ -354,7 +354,7 @@
         
         <!-- Search Hero -->
         <div class="max-w-3xl mx-auto mb-12">
-            <div id="search-container" class="relative flex items-center bg-[#0d0d0d] border border-[#333] rounded-xl p-2 group transition-all">
+            <div id="search-container" class="relative flex items-center border border-[#333] p-2 group transition-all">
                 <i class="fas fa-search text-gray-500 ml-4 text-lg"></i>
                 <input type="text" id="search-box" placeholder="Search songs (add artist for precision)" 
                        class="w-full bg-transparent border-none outline-none text-white px-4 py-3 text-lg placeholder-gray-600 font-light">
