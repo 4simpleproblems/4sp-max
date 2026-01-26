@@ -1058,7 +1058,7 @@
                                             
                                             <!-- LEFT: Live Preview -->
                                             <div id="mac-preview-wrapper" class="w-1/2 flex flex-col items-center justify-center bg-[#0a0a0a] p-8 border-r border-[#333] transition-all duration-500 ease-in-out z-10">
-                                                <div class="relative h-64 md:h-80 aspect-square rounded-[32px] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
+                                                <div class="relative h-64 md:h-80 aspect-square rounded-[48px] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
                                                     <!-- Background (Static) -->
                                                     <div id="mac-preview-bg" class="absolute inset-0 w-full h-full transition-colors duration-300"></div>
                                                     
@@ -1140,7 +1140,7 @@
                             <div id="pfpCustomSettings" class="hidden mt-2">
                                 <div class="flex items-center gap-4">
                                     <!-- Preview -->
-                                    <div class="w-16 h-16 rounded-[16px] overflow-hidden border border-gray-600 flex-shrink-0 bg-black relative">
+                                    <div class="w-16 h-16 rounded-[24px] overflow-hidden border border-gray-600 flex-shrink-0 bg-black relative">
                                         <img id="customPfpPreview" src="" class="w-full h-full object-cover" style="display: none;">
                                         <div id="customPfpPlaceholder" class="w-full h-full flex items-center justify-center text-gray-600">
                                             <i class="fa-solid fa-user"></i>
