@@ -1,734 +1,1508 @@
-Changelog
-=========
+**Changelog for 4sp-max (Last Year)**
 
-## 2025-12-07
-- Update test.html
-- Update dashboard.html
-- Update index.html
-- Update settings.js
-- Update soundboard.html
-- Create third-party-soundboard.html
+**Features:**
+*   2026-01-26 15:38:45 - feat(Velium): enhance library sidebar and playlist view UI
+*   2026-01-26 06:17:36 - feat: update GAMES/index.html to redirect based on auth and refine UI in Velium/Vern
+*   2026-01-26 04:55:41 - feat(Vora): update Server 2 label to include (Ads)
+*   2026-01-26 03:41:59 - feat: update legal.html with new services and remove .bak files
+*   2026-01-26 00:05:12 - feat(vern): remove roblox from games and add shortcuts to vern
+*   2026-01-25 23:23:23 - feat(games): add Roblox to Others and disable popups
+*   2026-01-25 20:45:47 - feat(games, readme): hide specified games and update README
+*   2026-01-24 22:08:25 - feat: isolate games hub and implement dedicated proxy system
+*   2026-01-24 21:47:44 - feat: integrate VERN proxy architecture for CORS bypass in games.html
+*   2026-01-24 21:05:02 - Add GTA: Vice City to games collection and implement support for custom favorite card images
+*   2026-01-24 17:11:37 - Add VORA (moved from heartive repository)
+*   2026-01-21 20:30:43 - Add proxied Roblox loader
+*   2026-01-21 01:17:58 - Implement Universal Page Observer for Vana
+*   2026-01-20 18:42:56 - Enhance Admin Keybinds and Settings: Matching UI styles, updated shortcuts, and provider animations
+*   2026-01-20 15:48:28 - Add Messenger Web category with D3.js topology visualization and clique mode
+*   2026-01-18 01:54:19 - Implement user tags in Daily Photo modal and comments
+*   2026-01-17 23:43:46 - Implement global admin keybinds and user tagging system
+*   2026-01-17 01:11:54 - Implement custom styled time picker in schedule.html
+*   2026-01-17 01:08:42 - Add clock icons to period time inputs in schedule.html
+*   2026-01-17 00:41:10 - Add Schedule Clock page and notification system
+*   2026-01-14 19:37:35 - Enhance Credits UI: refined close button and added scene navigation
+*   2026-01-14 19:33:17 - Update Games Credits with specific branding colors and links
+*   2026-01-14 18:49:39 - Enhance Eaglercraft download & input handling; add Velium disclaimer
+*   2026-01-14 18:28:57 - Implement VERN_SYSTEM proxy in VELIUM for bypass
+*   2026-01-13 23:13:44 - Create VERN_TEST and add Test Vern admin tab
+*   2026-01-13 16:13:18 - feat: add leviumProxy function and update iframe to use it
+*   2026-01-13 15:58:25 - feat: enhance others page styling, remove settings page management links, rename Vern to Levium
+*   2026-01-13 15:40:29 - feat: public release of new navigation and others page
+*   2026-01-13 15:31:22 - feat: setup test dashboard with new navigation and others tab, fix securly CORS
+*   2026-01-12 18:21:12 - Add loading animation to VELIUM play button
+*   2026-01-04 15:49:13 - Add VELIUM music player to navigation
+*   2026-01-04 09:41:40 - Update navigation.js with fireworks, rounded auth button, and LEVIUM support
+*   2025-12-14 18:16:40 - Enhance analytics dashboard with user details in recent sessions, system health tab, and integrity check
+*   2025-12-14 18:10:00 - Add Firestore rules for analytics collection
+*   2025-12-13 23:03:21 - feat: Implement Firebase Storage for daily photo uploads and server timestamps for comments
+*   2025-12-05 22:16:27 - feat: add admin keybind (Ctrl+Alt+E) to toggle explicit sounds globally
+*   2025-12-09 22:53:48 - feat: Implement admin-only access for Levium page and tab
+*   2025-12-09 22:07:02 - feat: Enhance others.html, add Levium card visibility, and improve pinning
+*   2025-12-08 20:41:07 - feat: add Playground section to admin settings and create proxy page
+*   2025-12-07 11:58:00 - feat: enable smooth scrolling and url hash updates on changelog
+*   2025-12-07 11:55:37 - feat: enhance changelog with scrollspy, active styling, and formatted dates
+*   2025-12-07 11:41:42 - feat: add interactive changelog page
+*   2025-11-30 06:24:25 - feat: Add trailer.html for 4SP
+*   2025-11-30 05:52:32 - feat: Enhance feature sections with image carousels and styled navigation
+*   2025-11-30 05:47:37 - feat: Update QOL & Discreet Features section in index.html
+*   2025-11-30 05:41:08 - feat: Update index.html with QOL & Personalization features and image carousels
+*   2025-11-30 21:02:35 - feat: Implement admin and superadmin management in settings
+*   2025-11-29 21:36:39 - feat: Update Storage rules to allow read access to Soundboard assets
+*   2025-11-29 21:33:43 - feat: Add Firestore and Storage security rules
+*   2025-11-29 20:53:34 - feat: Apply updated footer to all root HTML files (excluding test.html)
+*   2025-11-29 20:50:39 - feat: Add Terms of Service and Privacy Policy links to footer
+*   2025-11-29 18:41:56 - Implement logo tinting feature and correct Pink theme logo
+*   2025-11-29 18:35:28 - Implement theme sorting and Mibi Avatar initialization in settings page
+*   2025-11-29 18:29:34 - Add 4 new themes to themes.json and sort them
+*   2025-11-29 17:24:55 - feat: Add missing getAboutContent, getDataManagementContent, and loadGeneralTab functions
+*   2025-11-29 04:47:56 - feat: Implement hash-based tab navigation in settings.html and update themes.json
+*   2025-11-29 04:15:41 - feat: Implement navigation bar enhancements
+*   2025-11-28 19:15:37 - feat: Enhance Mibi Avatar Creation Menu UI
+*   2025-11-28 17:39:22 - feat: Implement Mibi Avatar Creation Menu
+*   2025-11-28 17:16:05 - feat: Allow setting primary provider in account management
+*   2025-11-28 00:25:33 - feat: replace letter avatar with Mibi avatar, add sparkle effect and intro menu
+*   2025-11-27 22:07:26 - feat: Implement Letter Avatar functionality
+*   2025-11-27 16:05:20 - feat: Implement comprehensive user banning system
+*   2025-11-27 15:32:45 - feat: Improve letter avatar display and consistency in navigation-mini.js
+*   2025-11-27 02:58:16 - Feat: Finalize letter avatar dynamic styling and globalize color utils
+*   2025-11-27 02:15:03 - Feat: Enhance letter avatar with dynamic text color, font size, and new gradients
+*   2025-11-27 01:59:18 - Feat: Implement correct Google PFP retrieval for linked accounts
+*   2025-11-27 01:29:45 - Feat: Add auto-scrolling marquee for long usernames/emails in dropdown
+*   2025-11-27 01:14:31 - Feat: Add larger profile picture to auth dropdown menu header
+*   2025-11-27 01:05:03 - Feat: Enhance PFP customization with constraints, gradients, and instant fade updates
+*   2025-11-27 00:50:25 - Feat: Add profile picture customization (Custom Upload, Letter w/ Color, Google) with cropping tool
+*   2025-11-26 12:14:06 - feat: improve documentation.html layout and content
+*   2025-11-26 11:55:59 - feat: update documentation with new design and images
+*   2025-11-26 10:55:45 - feat: add discord provider
+*   2025-11-26 00:01:12 - feat: darken background color
+*   2025-11-25 18:16:53 - feat: Improve soundboard UI/UX and remove logout button
+*   2025-11-25 18:07:57 - feat: Update donate button and force left-align username in navbar
+*   2025-11-25 17:42:51 - feat: implement 'Show More' dropdown and update release text
+*   2025-11-24 21:42:52 - Create sound-creation.html
+*   2025-11-24 20:31:56 - Create soundboard.html
+*   2025-11-19 00:35:27 - Create music.html
+*   2025-11-18 21:08:22 - Create weather.html
+*   2025-11-18 20:07:32 - Create countdowns.html
+*   2025-11-17 20:31:25 - feat: Add AdSense code to specified logged-in HTML files
+*   2025-11-17 19:27:01 - feat: update humanity-agent styling and graphing
+*   2025-11-17 18:52:23 - feat: force Christmas logo for Christmas theme
+*   2025-11-15 15:06:10 - feat: implement browser notifications for social events
+*   2025-11-13 20:12:09 - feat: Adjust message history limit and input styling
+*   2025-11-13 20:03:18 - feat: Implement image attachments and viewer
+*   2025-11-13 19:52:03 - feat: Implement chat deletion and real-time kick
+*   2025-11-09 16:00:56 - feat: Implement Tab Disguiser and Panic Key settings
+*   2025-11-08 22:45:40 - feat: Add Google Analytics and clean up pages
+*   2025-10-31 16:32:56 - Enhance file cards and fix graphing functionality
+*   2025-10-30 22:00:41 - Add logo theme changing functionality
+*   2025-10-13 17:56:09 - Create smart-scheduler.html
+*   2025-10-12 20:05:36 - Create test-dashboard.html
+*   2025-10-12 20:04:42 - Create navigation-test.js
+*   2025-10-12 14:59:26 - Create authentication.html
+*   2025-10-11 23:25:35 - Create settings.html
+*   2025-10-11 23:04:43 - Create injector.js
+*   2025-10-11 22:27:53 - Create artificial-integration.js
+*   2025-10-11 14:13:43 - Create test.html
+*   2025-10-11 00:09:05 - Create dictionary.html
+*   2025-10-04 05:18:14 - Create signup.html
+*   2025-10-04 05:14:18 - Create verify.html
+*   2025-10-04 03:59:31 - Create auth-logic.js
+*   2025-10-04 03:53:11 - Create dashboard.html
+*   2025-10-04 03:36:19 - Create page-identification.json
+*   2025-10-04 02:42:52 - Create navigation-mini.js
+*   2025-10-04 01:18:28 - Create login.html
+*   2025-10-03 23:52:32 - Create index.html
+*   2025-10-03 22:34:09 - Create url-tab-title-changer.js
+*   2025-10-03 22:18:39 - Update and rename navbar-loading.js to navigation.js
+*   2025-09-30 18:03:50 - Create dashboard.js
+*   2025-09-30 17:51:53 - Create Pages.json
+*   2025-09-05 11:29:40 - Create firebase-config.js
+*   2025-09-05 11:15:47 - Create injector.js
+*   2025-09-05 09:12:15 - Create navbar-loading.js
+*   2025-09-05 09:11:43 - Create index.html
+*   2025-09-05 09:11:03 - Create main.css
+*   2025-09-05 09:10:34 - Create fontface.css
 
-## 2025-12-06
-- Update soundboard_names.json
-- Revert weather API to ipapi.co and remake AdSense with responsive units and min-size
-- Fix AdSense 'No slot size' error with fixed-size ads and resolve ipapi.co CORS with ip-api.com
-- Remove Google Weather API, switch to NWS/Open-Meteo only, and harden AdSense loader
-- Fix AdSense 'No slot size' error by initializing on load only if visible
-- Implement specific AdSense units in test.html sidebars
-- Update dashboard.html with weather/clock widgets, add AdSense sidebar to test.html
-- Log detailed Google Weather API error for debugging
-- Fix Firebase warning by reusing navigation.js instance
-- Fix navigation.js double-loading error
-- Update weather fallback: Google -> NWS -> OpenMeteo, freeze location text
-- Update test.html
-- Create test.html
+**Fixes:**
+*   2026-01-25 23:29:10 - fix(games): proxy absolute URLs in resolveGameUrl
+*   2026-01-25 18:12:40 - fix(gvc): Fix audio loading by replacing CORS proxy
+*   2026-01-25 18:00:10 - fix(gvc): case-insensitive asset matching and pointer lock error handling
+*   2026-01-25 17:56:12 - fix(gvc): further refine XHR/Fetch proxying and audio context stability
+*   2026-01-25 17:51:32 - fix(gvc): robust asset loading for dos.zone via corsproxy and UV bypass
+*   2026-01-25 17:44:43 - Final GVC fix: Stable SW, robust native fetch/XHR overrides with corsproxy.io fallback
+*   2026-01-25 17:40:18 - Final GVC CORS fixes: Force proxying for dos.zone in SW and refine client-side hooks
+*   2026-01-25 17:30:51 - Refine SW activation and initialization to prevent reload loops and fix GVC TypeErrors
+*   2026-01-25 17:18:12 - Fix TypeError in gvc.html location emulation and improve SW compatibility
+*   2026-01-25 17:16:32 - Fix GVC 404 errors: Bypass hub proxy, direct jsdelivr loading, and corsproxy.io fallback for dos.zone
+*   2026-01-25 15:21:34 - Fix double encoding of proxy URLs in gvc.html
+*   2026-01-25 15:03:49 - Initialize BareMux in gvc.html to fix VERN proxy 404s
+*   2026-01-25 14:42:49 - Fix GTA VC 404s by mocking missing audio assets
+*   2026-01-25 02:16:05 - fix: resolve refresh bug with robust SW control guarantee and clean boot sequence
+*   2026-01-25 02:14:05 - fix: resolve boot sequence stall and improve fallback logging for game data
+*   2026-01-25 02:03:39 - fix: implement robust proxy boot sequence and fallback data loading to resolve 404s and blank screens
+*   2026-01-25 01:49:31 - fix: resolve version mismatch and restore stability using simplified Velium proxy pattern
+*   2026-01-25 01:45:32 - fix: resolve 404s and slowness with optimized handshake and focused WISP transport
+*   2026-01-25 01:37:01 - fix: resolve refresh bug with session-aware proxy init and robust handshake
+*   2026-01-25 01:33:06 - fix: resolve refresh-induced 404s by resetting SW proxy state on new session
+*   2026-01-25 01:29:20 - fix: implement robust proxy handshake between window and SW to ensure ready state before fetching
+*   2026-01-25 01:29:13 - fix: restore and verify GVC script inlining with correct execution order
+*   2026-01-25 01:05:38 - fix: match Velium proxy stability, fix neutered port error, and remove 404 fallback
+*   2026-01-25 01:03:02 - fix: match Velium proxy init, resolve neutered port error, and queue SW fetches until ready
+*   2026-01-25 00:53:15 - fix: resolve DataCloneError by ensuring SW hook is sent once and add detailed proxy error logging
+*   2026-01-25 00:50:35 - fix: resolve BareMux version mismatch and race conditions in SW hook
+*   2026-01-25 00:48:18 - fix: correctly hook UV SW to BareMux via sw.js listener and improve init reliability
+*   2026-01-25 00:44:13 - fix: hook UV service worker to BareMux and add fetch fallback for game data
+*   2026-01-25 00:18:02 - fix: correctly inline mini-proxy into gvc.html and resolve syntax errors
+*   2026-01-25 00:12:02 - fix: force proxy for all absolute URLs and remove ready check
+*   2026-01-24 22:51:48 - fix: resolve race condition by waiting for proxy transport before app init
+*   2026-01-24 22:50:30 - fix: add trailing slash to wisp URL to resolve libcurl TypeError
+*   2026-01-24 22:48:12 - fix: resolve duplicate script loading and improve proxy reliability in Games hub
+*   2026-01-24 21:49:19 - fix: resolve 404s by delaying proxy until SW is active and moving init to head
+*   2026-01-24 21:15:47 - Fix loading issue in games.html by registering Ultraviolet service worker and initializing BareMux
+*   2026-01-24 20:09:13 - Fix games.html: Use dv-service for Others category assets and Credits logos
+*   2026-01-24 20:02:03 - Fix games.html image paths by explicitly using window.location.origin
+*   2026-01-24 20:00:59 - Fix games.html image paths and restore worker connectivity
+*   2026-01-24 18:28:40 - Fix vora.html issues: stable Wisp server, resolve navigation conflict, and SPA improvements
+*   2026-01-24 18:26:55 - VORA: Fix media card links to prevent redirects in SPA mode
+*   2026-01-24 18:22:04 - Fix vora.html paths and consolidate VORA into SPA
+*   2026-01-24 17:25:42 - Fix VORA paths and add missing navigation-mini.js
+*   2026-01-24 17:22:55 - Fix VORA paths using absolute-style root-relative URLs
+*   2026-01-24 17:17:31 - Fix BareMux transport path resolution in VORA subfolder
+*   2026-01-24 17:15:06 - Fix VORA VERN_SYSTEM paths for subfolder deployment
+*   2026-01-21 21:06:46 - Fix Roblox proxy errors by loading uv.client.js
+*   2026-01-21 20:57:22 - Fix Securly Tester proxy initialization by forcing reload on SW activation
+*   2026-01-21 20:49:58 - Fix Roblox proxy 404s by forcing reload on SW activation
+*   2026-01-21 18:41:13 - Fix duplicate searchWeb function declaration in Vana
+*   2026-01-21 01:07:41 - Fix BareMux init in securly-tester.html
+*   2026-01-21 01:05:06 - Fix BareMux initialization with absolute path
+*   2026-01-21 00:27:49 - Fix race condition in BareMux transport initialization
+*   2026-01-21 00:22:15 - Fix Vana proxy setup: Init BareMux & ServiceWorker
+*   2026-01-20 20:18:58 - Fix redundant navigation.js inclusion and missing loading-overlay in weather.html
+*   2026-01-20 18:56:30 - Fix settings page layout: Force all sections to fill the full container width
+*   2026-01-20 18:49:58 - Fix settings page CSS: Standardize provider row layout and spacing in Link New Providers section
+*   2026-01-20 15:53:51 - Fix Clique Mode crash, add nickname search/interaction, and improve graph visualization
+*   2026-01-17 01:06:54 - Fix notification layout for long titles
+*   2026-01-14 19:12:41 - Fix TypeError in Eaglercraft check
+*   2026-01-14 19:11:17 - Fix double-resolution of URLs in Games hub
+*   2026-01-14 19:10:40 - Fix Soundboard options menu toggle
+*   2026-01-14 19:09:40 - Fix Eaglercraft keyboard input; port Games search bar to Soundboard
+*   2026-01-14 19:01:27 - Fix Games favorite error and update Soundboard search UI
+*   2026-01-13 23:19:38 - Fix BareMux initialization in VERN_TEST
+*   2026-01-13 22:46:32 - Fix BareMux paths to be absolute
+*   2026-01-13 21:48:52 - Fix VERN paths to be relative to avoid 404 errors
+*   2026-01-13 16:39:57 - Fix VELIUM playback by parsing Argon API JSON response and proxying resolved streams
+*   2026-01-12 18:37:27 - Fix duplicate song ID collision in VELIUM playlists by appending index
+*   2026-01-12 18:33:59 - Fix VELIUM playback retry AbortError loop and filter invalid playlist songs
+*   2026-01-12 18:14:59 - Fix VELIUM playback by removing crossorigin and adding load() + retry logic
+*   2026-01-12 18:12:30 - Fix Velium search focus highlight and sync like button state
+*   2026-01-12 18:06:14 - Restore deleted functions in VELIUM script to fix ReferenceErrors
+*   2026-01-12 17:18:00 - Fix VELIUM playback logic, prioritize Saavn search, and correct page title
+*   2026-01-12 01:49:28 - Revert StrongdogXP games to standard loading to fix ERR_INTERNET_DISCONNECTED
+*   2026-01-11 22:58:21 - Revert VELIUM search bar radius and fix securly-tester auth
+*   2026-01-11 22:24:25 - Fix syntax error in LEVIUM homepage script and increase button rounding
+*   2026-01-11 18:53:56 - Fix ReferenceError: container is not defined in navigation.js
+*   2026-01-11 18:28:32 - Fix WebGL game initialization by ensuring viewer is visible before load, and cleanup allow attribute
+*   2026-01-11 16:05:18 - Fix Upload Image button visibility in settings
+*   2026-01-11 11:11:58 - Fix syntax error in settings.js regex
+*   2026-01-15 10:50:30 - Fix Securly Tester proxy with dynamic absolute paths
+*   2026-01-15 10:22:11 - Fix Securly Tester proxy paths to be relative
+*   2026-01-04 10:27:27 - fix: remove duplicated code in navigation.js causing syntax error
+*   2026-01-04 10:14:06 - fix: redirect home pages to dashboard and overhaul navigation.js to match v5 style
+*   2026-01-04 09:54:50 - fix: hardcode UV paths to resolve service worker 404 error
+*   2026-01-04 09:53:36 - fix: increase navbar z-index and make buttons rounder
+*   2026-01-04 09:51:26 - fix: resolve service worker registration and CORS issues in LEVIUM
+*   2025-12-14 19:20:31 - Revert "Deploy Dailyphoto 2.0 and add announcement popup to dashboard"
+*   2025-12-13 20:21:50 - Fix: Robust data injection and placeholder replacement for downloadable client
+*   2025-12-12 22:41:52 - Fix media loading in test2.html using dailyphoto.html logic
+*   2025-12-12 18:12:23 - Optimize ban enforcer loading speed and refine settings provider linking error messages
+*   2025-12-12 17:49:37 - Fix ban design to Overlay and ensure it runs on all pages (excluded messenger)
+*   2025-12-12 17:45:21 - Revert ban design to v4.1 (with v5 strength) and add Ban Modal with presets
+*   2025-12-12 17:38:46 - Fix nav gap and harden ban enforcer
+*   2025-12-12 17:33:06 - Fix navigation bar gradient gap and add Analytics tab for admins
+*   2025-12-11 19:42:25 - Update logged-in/test.html: Fix sidebar layout and feed container width
+*   2025-12-11 19:36:31 - Update test.html: Restore sidebar fixed layout, fix feed container width, set default sidebar tab to posts
+*   2025-12-11 19:29:02 - Update logged-in/test.html: UI Refactor for Sidebar, Modals, and Tooltips
+*   2025-12-11 19:11:07 - Update test.html: UI Refactor (Sidebar, Modal, Tooltips)
+*   2025-12-11 18:10:36 - fix(test.html): Corrected HTML structure and JS references for sidebar views
+*   2025-12-10 21:18:24 - fix: Update cleanupOldPosts query to satisfy Firestore security rules
+*   2025-12-10 16:17:36 - Fix dailyphoto errors: CreatePostBtn, Storage Config, Cleanup Logic, and add Storage Rules
+*   2025-12-09 23:10:42 - fix: Glide arrows consistency across pages
+*   2025-12-09 22:59:36 - fix: Glide arrows scroll to ends of navigation menu
+*   2025-12-09 22:36:32 - fix: Remove duplicate checkAdminStatus declaration in settings.js
+*   2025-12-09 22:24:35 - fix: Load correct page identification config in navigation.js
+*   2025-12-09 22:22:10 - fix: Corrected sub-page pinning and highlighting in navigation bar
+*   2025-12-09 16:36:23 - fix: leviumProxy rewrite absolute paths in HTML to use proxy
+*   2025-12-09 16:25:29 - fix: leviumProxy relative path handling and header spoofing
+*   2025-12-06 02:02:41 - Fix AdSense 'No slot size' error with fixed-size ads and resolve ipapi.co CORS with ip-api.com
+*   2025-12-06 01:51:12 - Fix AdSense 'No slot size' error by initializing on load only if visible
+*   2025-12-06 01:10:07 - Fix Firebase warning by reusing navigation.js instance
+*   2025-12-06 01:06:00 - Fix navigation.js double-loading error
+*   2025-12-05 23:31:48 - fix: resolve duplicate content in legal.html and ensure single clean structure
+*   2025-12-05 22:47:13 - fix: use default firebase app instance to ensure correct auth state
+*   2025-12-05 22:44:03 - fix: add owner overwrite to firestore rules and robustify creation logic
+*   2025-12-05 22:39:52 - fix: allow superadmin access via robust role check and case-insensitivity
+*   2025-12-05 22:27:54 - fix: hardcode owner perms, add chrome compat, add visual toaster
+*   2025-12-05 22:23:46 - fix: enhance admin_keybinds.js robustness with real-time role checks
+*   2025-12-05 22:21:09 - fix(rules): update firestore rules for admin config/soundboard access
+*   2025-12-03 15:13:12 - Fix authentication race condition and enable explicit redirection for social logins
+*   2025-12-03 02:28:19 - Fix Intermediate Thesaurus endpoint to ithesaurus
+*   2025-12-03 02:13:52 - Fix dictionary JSON parse error by handling invalid API responses gracefully
+*   2025-12-03 01:16:17 - Fix authentication error, update soundboard to local, and dictionary to direct API
+*   2025-12-02 09:52:22 - Fix console errors in dictionary.html: navigation script conflict, auth restriction, and CORS
+*   2025-12-02 08:56:22 - Fix auth blocking spinner and add mobile aspect ratio warning
+*   2025-12-01 10:18:28 - Fix: Authentication redirection, ban enforcer loading, and navigation-mini theme sync
+*   2025-12-01 08:44:05 - Handle bans collection permission error gracefully in fetchUsersAndAdmins
+*   2025-12-01 08:24:01 - Fix admin role check and remove redundant script tags
+*   2025-12-01 08:06:10 - Fix race condition in admin status check
+*   2025-12-01 06:00:47 - Fix navigation-mini.js styling to use CSS variables for theming support
+*   2025-12-01 05:58:17 - Fix syntax error in navigation-mini.js
+*   2025-11-30 23:57:32 - Fix: Account creation 400 error - Minimal client-side validation
+*   2025-11-30 23:52:48 - Fix: Account creation 400 error - Added lowercase requirement
+*   2025-11-30 23:48:20 - Fix: Account creation 400 error in authentication.html
+*   2025-11-30 21:47:57 - Fix: Uncaught SyntaxError in settings.js
+*   2025-11-30 01:02:20 - Fix race condition in ban-enforcer.js where firestore was undefined
+*   2025-11-29 21:41:19 - fix: Further refine Firestore rules username regex to prevent syntax errors
+*   2025-11-29 21:38:45 - fix: Correct Firestore rules syntax for username regex and daily_photos update
+*   2025-11-29 07:23:19 - Fix: ReferenceError in settings.js by reordering initialization
+*   2025-11-29 07:18:04 - Fix: ReferenceError in settings.js
+*   2025-11-29 07:12:22 - Fix: Regex syntax in getCurrentSiteKey and normalizeDomainKey
+*   2025-11-29 05:43:22 - Fix: Loading spinner consistency and timing
+*   2025-11-29 05:32:41 - Fix: General tab loading with spinner
+*   2025-11-29 05:18:32 - Fix personalization tab Mibi avatar loading
+*   2025-11-29 04:50:29 - fix: Add null check to switchTab in settings.js
+*   2025-11-29 04:29:15 - fix: Navigation-mini.js pin button logic and display enhancements
+*   2025-11-29 04:23:43 - fix: Pin display and login redirection fixes
+*   2025-11-29 04:18:24 - fix: Resolve duplicate setupEventListeners declaration in navigation-mini.js
+*   2025-11-29 01:36:57 - Force fixed square dimensions for MAC live preview in orientation mode to fix pill bug
+*   2025-11-29 00:59:19 - Fix MAC preview shape bug and add asset preloading
+*   2025-11-29 00:55:57 - Fix Mibi Avatar Creator UI issues: circular preview, orientation mode layout, hide preview text, and remove black color option
+*   2025-11-29 00:08:32 - Fix MAC orientation sizing, drag constraints, Cropper Modal styling, and Pin Button alignment
+*   2025-11-28 23:17:25 - Fix Mibi Avatar Creator alignment and scaling issues by using percentage-based offsets for translation in both the editor and navigation bars
+*   2025-11-28 23:04:51 - Enhance Mibi Avatar Creator: fix circular preview shape, separate background from transform layers, square X button, and consistent dark theme/styling
+*   2025-11-28 18:23:03 - feat: Refactor Mibi Avatar UI and fix TypeError
+*   2025-11-28 17:43:01 - fix: Resolve ReferenceError in updatePfpUi
+*   2025-11-27 05:30:22 - Enhance panic key logic: Prevent activation in typing containers
+*   2025-11-27 01:40:00 - Refactor: Improve auth error messages and implement proper Firebase action handler in verify.html
+*   2025-11-26 21:19:16 - Fix: Pass Discord email and username as URL parameters from Cloud Function
+*   2025-11-26 21:14:26 - Fix: Resolve serverTimestamp ReferenceError and null email for Discord new users
+*   2025-11-26 21:11:24 - Fix: Populate email field for Discord new user creation
+*   2025-11-26 21:08:07 - Fix: Improve Discord account creation in auth-handler.html
+*   2025-11-26 11:11:00 - fix: update discord icon path and style
+*   2025-11-25 19:45:09 - fix: Resolve JavaScript 'already declared' errors
+*   2025-11-25 19:40:14 - fix: Add missing appId definition to settings.html
+*   2025-11-25 18:33:22 - fix: Preserve sound button order after hard clear
+*   2025-11-25 18:26:19 - fix: Soundboard hard clear and button re-render
+*   2025-11-25 18:20:27 - fix: Correctly update sound button active states
+*   2025-11-25 18:10:00 - fix: Force email display to left in navbar dropdown
+*   2025-11-17 19:33:23 - fix: handle non-array data in drawCustomGraph
+*   2025-11-15 15:22:00 - fix: ensure service worker is active before getting fcm token
+*   2025-11-15 15:11:47 - fix: resolve console errors related to script loading
+*   2025-10-31 18:13:13 - Fix input padding and file type badge positioning
+*   2025-10-31 18:07:18 - Fix UI issues: equal padding, chart rendering, and file type badge positioning
+*   2025-10-31 16:03:27 - Fix JSON blocks, enhance file creation, and redesign memories modal
+*   2025-10-31 15:44:56 - Revert loading animation and reduce message padding
+*   2025-10-31 15:37:46 - Fix z-index issue for settings and memories modals
+*   2025-10-30 23:13:33 - Fix Humanity Agent API and UI issues, enhance settings with privacy controls and user profiles
+*   2025-10-30 22:38:29 - Fix logo theming system and enhance Humanity Agent UI/UX
 
-## 2025-12-05
-- feat: darken clanker theme grey and red colors
-- fix: resolve duplicate content in legal.html and ensure single clean structure
-- style: refine legal.html buttons for smooth scroll, wider sections, and correct name
-- style: refine legal.html buttons to match index.html and inject navigation-mini.js
-- style: completely redesign legal.html to match index.html aesthetics
-- docs: update legal.html with comprehensive terms and privacy policy covering all features
-- style: update admin toast notification to match site design
-- fix: use default firebase app instance to ensure correct auth state
-- fix: add owner overwrite to firestore rules and robustify creation logic
-- fix: allow superadmin access via robust role check and case-insensitivity
-- fix: hardcode owner perms, add chrome compat, add visual toaster
-- fix: enhance admin_keybinds.js robustness with real-time role checks
-- fix(rules): update firestore rules for admin config/soundboard access
-- feat: add admin keybind (Ctrl+Alt+E) to toggle explicit sounds globally
+**Styles:**
+*   2026-01-26 16:03:31 - style: further enhance PFP previews and Letter PFP interactivity
+*   2026-01-26 15:58:17 - style: further enhance preview rounding
+*   2026-01-26 15:53:42 - style: enhance rounding for Mibi and Cropper previews
+*   2026-01-26 15:47:46 - style: standardize button rounding to 16px and add search icon
+*   2026-01-20 20:24:22 - Revert roundness for dashboard and soundboard; confirm 14px for dailyphoto internal elements
+*   2026-01-20 20:16:49 - Standardize UI roundness across logged-in pages (14px for items, 1.25rem for containers)
+*   2026-01-11 22:47:32 - Update VELIUM settings button style and refine securly-tester rounded UI
+*   2026-01-11 22:23:28 - Update VELIUM settings button to be square and rounded
+*   2026-01-11 22:18:01 - Refine VELIUM styling: rounder search bar and cards, square settings icon
+*   2026-01-04 12:06:04 - style: refine navbar styling and structure in navigation.js to match client exactly
+*   2025-12-14 18:35:11 - Capitalize all titles and update securly-tester UI/UX
+*   2025-12-05 23:15:52 - style: refine legal.html buttons for smooth scroll, wider sections, and correct name
+*   2025-12-05 23:08:20 - style: refine legal.html buttons to match index.html and inject navigation-mini.js
+*   2025-12-05 23:04:01 - style: completely redesign legal.html to match index.html aesthetics
+*   2025-12-05 22:53:46 - style: update admin toast notification to match site design
+*   2025-11-29 03:54:50 - Lighten grey colors in Clanker theme
+*   2025-11-28 23:51:20 - Refine Mibi Avatar Creator UI/UX and Navigation buttons: scale preview in orientation mode, improve color picker layout, enhance menu slide animation, and enlarge navigation buttons
+*   2025-11-28 23:29:29 - Update Mibi Avatar Creator UI: custom styled range sliders with snapping ticks and fixed preview dimensions
+*   2025-11-28 22:55:05 - Enhance Mibi Avatar Creator: Orientation mode with drag/scale/rotate, darker theme, new UI animations, and mandatory eyes/mouth selection
+*   2025-11-28 22:42:54 - Revamp Mibi Avatar Creator: simplified UI, fixed duplicate buttons, added Firestore persistence, and implemented avatar rendering in navigation bars
+*   2025-11-27 00:02:37 - Refactor: Capitalize HTML titles and update Font Awesome to v6.5.2
+*   2025-11-16 20:17:05 - Update Gradient to Christmas themed
+*   2025-11-13 21:23:58 - style: Adjust ID font size, button roundness, and input focus style
+*   2025-11-13 21:19:58 - style: Unify button styles and resize chat controls
+*   2025-11-13 21:15:32 - style: Revert message bubble roundness to 2xl
+*   2025-11-10 22:00:24 - Refactor dictionary page styles and title
 
-## 2025-12-04
-- Update injex.html
-- Create injex.html
-- Update soundboard_names.json
-- Add files via upload
-- Update Firestore rules to support Dailyphoto interactions, Mibi Avatars, and Friend Requests
+**Refactors:**
+*   2026-01-26 06:11:01 - refactor: update Vora navigation and harmonize UIs for Velium, Vern, Vana, and Vora
+*   2026-01-26 04:18:15 - refactor(auth): update styling and add animations
+*   2026-01-26 03:58:10 - refactor: restyle authentication and legal pages
+*   2026-01-25 16:46:01 - Refactor gvc.html to use Ultraviolet proxying and mock file:/// protocol
+*   2026-01-21 21:12:59 - Refactor Roblox loader to use async asset loading after SW activation
+*   2026-01-13 21:31:02 - Rebrand Levium to Vern: Rename folders, update UI/branding, move logo
+*   2026-01-11 11:22:14 - Refactor settings theme picker to match navigation tab style
+*   2026-01-11 18:02:19 - Refine header container rounding and text hierarchy in GAMES hub
+*   2025-12-13 17:48:42 - Refactor settings to remove sound and banned user management, rename to Admin Management, and show time in analytics
+*   2025-12-11 22:00:13 - Refactor styles and enhance user interaction features
+*   2025-12-11 17:53:36 - refactor(test.html): update UI/UX for sidebar, modal, tooltips, and toggle buttons
+*   2025-12-10 19:01:22 - Refactor error messages and add re-authentication
+*   2025-12-01 06:39:41 - Refactor: Integrate Sound Management into Settings page
+*   2025-11-29 21:49:13 - refactor: Rename Firestore and Storage rules files to .rules extension
+*   2025-11-28 16:17:18 - Update settings.js
+*   2025-11-27 01:49:38 - Refactor: Implement custom dropdowns and conditional Google PFP option
+*   2025-11-27 01:23:44 - Refactor: Improve cropping UX (auto-center on zoom, dashed lines) and resize menu avatar
+*   2025-11-13 21:11:13 - refactor: Adjust message bubble roundness
+*   2025-11-13 21:06:28 - refactor: Update message bubble and button styling
+*   2025-11-13 20:26:18 - refactor: Update message bubble styling
+*   2025-11-13 20:17:09 - refactor: Update button styling and remove tooltips
 
-## 2025-12-03
-- Create firestore.rules to allow user account deletion including legacy collections
-- Fix authentication race condition and enable explicit redirection for social logins
-- Fix Intermediate Thesaurus endpoint to ithesaurus
-- Update Dictionary API endpoints to Intermediate (sd3/ithes) to match keys
-- Fix dictionary JSON parse error by handling invalid API responses gracefully
-- Add missing soundboard configuration and sound files
-- Fix authentication error, update soundboard to local, and dictionary to direct API
+**Documentation:**
+*   2026-01-25 20:47:32 - Update README.md
+*   2026-01-25 20:38:49 - Update README.md
+*   2026-01-25 20:38:33 - Update README.md
+*   2026-01-25 20:38:20 - Update README.md
+*   2026-01-25 20:35:19 - Update README.md
+*   2026-01-25 20:35:05 - Update README.md
+*   2026-01-12 19:20:29 - Revise README for 4SP Max introduction and features
+*   2026-01-15 20:32:01 - Update README.md
+*   2025-12-27 23:17:38 - Update README.md
+*   2025-12-27 23:16:42 - Update README.md
+*   2025-12-27 23:16:11 - Update README.md
+*   2025-12-27 23:15:09 - Update README.md
+*   2025-12-27 23:14:24 - Update README.md
+*   2025-12-27 23:11:04 - Update README.md
+*   2025-12-27 23:08:35 - Update README.md
+*   2025-12-27 23:07:26 - Update README.md
+*   2025-12-27 23:06:27 - Update README.md
+*   2025-12-27 23:04:55 - Update README.md
+*   2025-12-27 23:04:42 - Update README.md
+*   2025-12-27 23:04:22 - Update README.md
+*   2025-12-27 23:01:39 - Update README.md
+*   2025-12-27 23:00:29 - Update README.md
+*   2025-12-27 22:59:24 - Update README.md
+*   2025-12-27 22:57:54 - Create README.md
+*   2025-12-07 11:30:40 - docs: update changelog with full release history
+*   2025-12-05 23:01:37 - docs: update legal.html with comprehensive terms and privacy policy covering all features
+*   2025-11-25 17:54:28 - docs: Add DMCA Takedown Notice section to legal.html
+*   2025-10-26 16:53:28 - Update documentation.html
+*   2025-10-26 16:50:43 - Update documentation.html
+*   2025-10-26 16:49:37 - Update documentation.html
+*   2025-10-26 15:58:09 - Update documentation.html
+*   2025-10-26 15:55:34 - Update documentation.html
+*   2025-10-26 15:54:44 - Update documentation.html
+*   2025-10-26 15:47:20 - Update documentation.html
+*   2025-10-26 15:39:32 - Update documentation.html
+*   2025-10-26 15:30:36 - Update documentation.html
+*   2025-10-26 15:27:28 - Update documentation.html
+*   2025-10-26 15:20:22 - Update documentation.html
+*   2025-10-26 14:59:47 - Update documentation.html
+*   2025-10-26 14:56:26 - Update documentation.html
+*   2025-10-26 14:53:22 - Create documentation.html
 
-## 2025-12-02
-- Create ph
-- Upgrade functions to Gen 2 syntax and update dependencies
-- Create functions directory with index.js and package.json for getWordData Cloud Function
-- Fix console errors in dictionary.html: navigation script conflict, auth restriction, and CORS
-- Fix auth blocking spinner and add mobile aspect ratio warning
+**Performance:**
+*   2026-01-25 02:43:34 - perf: speed up StrongdogXP and GN-Math loading by prioritizing direct fetch for CORS-supporting domains
+*   2026-01-25 01:41:23 - perf: speed up game loading by adding diversified WISP servers and optimizing worker overhead
+*   2026-01-13 23:43:56 - Optimize VERN_TEST for maximum speed
 
-## 2025-12-01
-- Update dashboard.html
-- Update index.html
-- Update navigation-mini.js
-- Fix: Authentication redirection, ban enforcer loading, and navigation-mini theme sync
-- Handle bans collection permission error gracefully in fetchUsersAndAdmins
-- Fix admin role check and remove redundant script tags
-- Fix race condition in admin status check
-- Update settings.html
-- Refactor: Integrate Sound Management into Settings page
-- Delete logged-in/beta-settings.html
-- Delete logged-in/test.html
-- Delete logged-in/test.js
-- Delete logged-in/heartive.html
-- Delete favicons/example
-- Delete images/example
-- Update verify.html
-- Delete trailer.html
-- Update authentication.html
-- Delete storage.rules
-- Delete navigation-test.js
-- Delete firestore.rules
-- Delete color-picker.js
-- Delete auth-handler.html
-- Fix navigation-mini.js styling to use CSS variables for theming support
-- Fix syntax error in navigation-mini.js
-- Add theme applying and logo tinting to navigation-mini.js
-- Update dailyphoto to use root-level friend_codes Firestore collection
-- Lighten grey colors in Clanker theme
-- Replace Teal Dream theme with Clanker and update theme sorting
-- Update theme sorting in settings to use rainbow color order and type
-- Update settings.js
-- Improve Mibi Avatar Creator: Sort colors by rainbow spectrum and enable multi-row layout
-- Update test.html
-
-## 2025-11-30
-- Fix: Account creation 400 error - Minimal client-side validation
-- Fix: Account creation 400 error - Added lowercase requirement
-- Fix: Account creation 400 error in authentication.html
-- Update: Firestore Rules for comprehensive access control
-- Update: Firestore Rules for Account Creation and Username Check
-- Update: Relax password requirements
-- Update index.html
-- Fix: Uncaught SyntaxError in settings.js
-- feat: Implement admin and superadmin management in settings
-- Update dictionary.html
-- Add files via upload
-- feat: Add trailer.html for 4SP
-- feat: Enhance feature sections with image carousels and styled navigation
-- feat: Update QOL & Discreet Features section in index.html
-- feat: Update index.html with QOL & Personalization features and image carousels
-- Update authentication.html
-- Update provider icon sizing on authentication and settings pages for improved aspect ratio handling
-- Remove auth button highlights and unify pin menu style
-- Update account deletion logic to wipe local storage, IndexedDB, and Firestore data
-- Use provider username for new accounts via social auth
-- Fix race condition in ban-enforcer.js where firestore was undefined
-- Sync navbar theme selection to Firestore
-- Switch Admin Settings from Cloud Functions to Client-Side Firestore
-
-## 2025-11-29
-- Update ban UI style and inject injector.js into heartive.html
-- Update ban-enforcer.js: Implement invisible barrier and improve real-time UI updates
-- Update admin UI: Filter admins, square buttons, add Make Admin feature
-- Update ban enforcement UI/logic and add Admin settings tab
-- Update ban-enforcer.js
-- refactor: Rename Firestore and Storage rules files to .rules extension
-- fix: Further refine Firestore rules username regex to prevent syntax errors
-- fix: Correct Firestore rules syntax for username regex and daily_photos update
-- feat: Update Storage rules to allow read access to Soundboard assets
-- feat: Add Firestore and Storage security rules
-- feat: Apply updated footer to all root HTML files (excluding test.html)
-- feat: Add Terms of Service and Privacy Policy links to footer
-- Update navigation.js
-- Implement logo tinting feature and correct Pink theme logo
-- Implement theme sorting and Mibi Avatar initialization in settings page
-- Add 4 new themes to themes.json and sort them
-- Update settings.html
-- Update settings.js
-- Update test.js
-- Update test.html
-- Create test.js
-- feat: Add missing getAboutContent, getDataManagementContent, and loadGeneralTab functions
-- Fix: ReferenceError in settings.js by reordering initialization
-- Fix: ReferenceError in settings.js
-- Fix: Regex syntax in getCurrentSiteKey and normalizeDomainKey
-- Align settings.html with provided settings.js
-- Revert: settings.js to a previous commit
-- Remove: Hash-based navigation and loading animation from settings page
-- Refactor: Enhanced loading and hash navigation in settings
-- Fix: Loading spinner consistency and timing
-- Enhance: Loading animation and consistency
-- Fix: General tab loading with spinner
-- Enhance: Settings page and Navigation bar theming improvements
-- Delete .gitignore
-- Update index.html
-- Fix personalization tab Mibi avatar loading
-- fix: Add null check to switchTab in settings.js
-- feat: Implement hash-based tab navigation in settings.html and update themes.json
-- fix: Navigation-mini.js pin button logic and display enhancements
-- fix: Pin display and login redirection fixes
-- fix: Resolve duplicate setupEventListeners declaration in navigation-mini.js
-- feat: Implement navigation bar enhancements
-- Add files via upload
-- Delete images/discord.png
-- Delete images/logo.png
-- Delete images/logo-dark.png
-- Delete images/logo-christmas.png
-- Force fixed square dimensions for MAC live preview in orientation mode to fix pill bug
-- Enable dynamic MAC slider width and add revert-on-cancel logic for orientation mode
-- Ensure MAC live preview rules are identical in normal and orientation modes
-- Enforce square aspect ratio for MAC live preview in orientation mode
-- Fix MAC preview shape bug and add asset preloading
-- Fix Mibi Avatar Creator UI issues: circular preview, orientation mode layout, hide preview text, and remove black color option
-- Enhance MAC UI: dropdown auto-select, orientation sliders reposition, and cancel button logic
-- Add new hat options to Mibi Avatar Creator
-- Add Reset Button to MAC, adjust orientation preview, and refine color palette layout
-- Fix MAC orientation sizing, drag constraints, Cropper Modal styling, and Pin Button alignment
-- Update Mibi Avatar Creator UI: Collapse menu in orientation mode, light backgrounds for options, rounded styles, and compact color palette
-
-## 2025-11-28
-- Refine Mibi Avatar Creator UI/UX and Navigation buttons: scale preview in orientation mode, improve color picker layout, enhance menu slide animation, and enlarge navigation buttons
-- Update Mibi Avatar Creator UI: custom styled range sliders with snapping ticks and fixed preview dimensions
-- Fix Mibi Avatar Creator alignment and scaling issues by using percentage-based offsets for translation in both the editor and navigation bars
-- Enhance Mibi Avatar Creator: fix circular preview shape, separate background from transform layers, square X button, and consistent dark theme/styling
-- Enhance Mibi Avatar Creator: Orientation mode with drag/scale/rotate, darker theme, new UI animations, and mandatory eyes/mouth selection
-- Revamp Mibi Avatar Creator: simplified UI, fixed duplicate buttons, added Firestore persistence, and implemented avatar rendering in navigation bars
-- Update navigation.js
-- feat: Enhance Mibi Avatar Creation Menu UI
-- feat: Refactor Mibi Avatar UI and fix TypeError
-- fix: Resolve ReferenceError in updatePfpUi
-- feat: Implement Mibi Avatar Creation Menu
-- feat: Allow setting primary provider in account management
-- Create settings.js
-- Delete logged-in/settings.js
-- Update settings.js
-- Create settings.html
-- Delete logged-in/settings.html
-- Update settings.html
-- Delete logged-in/mibi-avatar-creation.js
-- Update test.html
-- Create mibi-avatar-creation.js
-- feat: replace letter avatar with Mibi avatar, add sparkle effect and intro menu
-- Add files via upload
-- Create ph
-
-## 2025-11-27
-- feat: Implement Letter Avatar functionality
-- Update settings.js
-- Update settings.js for X (Twitter) provider and logo size
-- Create settings.js
-- Update settings.html
-- Update authentication.html
-- Add files via upload
-- Create site-mapping.js
-- Update documentation.html
-- Delete doc-images/authentication.png
-- Update index.html
-- Delete site-mapping.js
-- Delete sw.js
-- Delete notifications.js
-- Delete firebase-messaging-sw.js
-- Delete LOGO_THEMING_README.md
-- Delete functions directory
-- feat: Implement comprehensive user banning system
-- Update dashboard.html
-- feat: Improve letter avatar display and consistency in navigation-mini.js
-- Update humanity-agent.js
-- Refactor: Harmonize navigation spacing and dropdown position
-- Refactor: Reduce font weight of username and email displays
-- Refactor: Standardize dropdown menu styling and spacing
-- Enhance panic key logic: Prevent activation in typing containers
-- Refactor: Adjust spacing and widen user info in navigation menus
-- Remove large profile picture from dropdown menus
-- Update navigation.js
-- Update test.html
-- Update navigation-test.js
-- Feat: Finalize letter avatar dynamic styling and globalize color utils
-- Feat: Enhance letter avatar with dynamic text color, font size, and new gradients
-- Feat: Implement correct Google PFP retrieval for linked accounts
-- Refactor: Implement custom dropdowns and conditional Google PFP option
-- Refactor: Improve auth error messages and implement proper Firebase action handler in verify.html
-- Feat: Add auto-scrolling marquee for long usernames/emails in dropdown
-- Refactor: Improve cropping UX (auto-center on zoom, dashed lines) and resize menu avatar
-- Feat: Add larger profile picture to auth dropdown menu header
-- Feat: Enhance PFP customization with constraints, gradients, and instant fade updates
-- Feat: Add profile picture customization (Custom Upload, Letter w/ Color, Google) with cropping tool
-- Refactor: Capitalize HTML titles and update Font Awesome to v6.5.2
-
-## 2025-11-26
-- Update settings.html
-- Update authentication.html
-- Revert: functions/index.js to original state
-- Fix: Pass Discord email and username as URL parameters from Cloud Function
-- Fix: Resolve serverTimestamp ReferenceError and null email for Discord new users
-- Fix: Populate email field for Discord new user creation
-- Fix: Improve Discord account creation in auth-handler.html
-- Update auth-handler.html
-- Update navigation-mini.js
-- Delete logged-in/music.html
-- feat: improve documentation.html layout and content
-- feat: update documentation with new design and images
-- fix: update discord icon path and style
-- feat: add discord provider
-- Create test.html
-- Rename test.html to securly-tester.html
-- Add files via upload
-- Update test.html
-- Create auth-handler.html
-- feat: darken background color
-
-## 2025-11-25
-- Update test.html
-- Update dictionary.html
-- Update dashboard.html
-- Update navigation.js
-- Update navigation-test.js
-- Update beta-settings.html
-- Create beta-settings.html
-- Update settings.html
-- fix: Resolve JavaScript 'already declared' errors
-- fix: Add missing appId definition to settings.html
-- feat: Integrate beta-settings.html into settings.html
-- Update soundboard.html
-- fix: Preserve sound button order after hard clear
-- fix: Soundboard hard clear and button re-render
-- fix: Correctly update sound button active states
-- feat: Improve soundboard UI/UX and remove logout button
-- fix: Force email display to left in navbar dropdown
-- feat: Update donate button and force left-align username in navbar
-- docs: Add DMCA Takedown Notice section to legal.html
-- feat: implement 'Show More' dropdown and update release text
-
-## 2025-11-24
-- Update sound-creation.html
-- Create sound-creation.html
-- Update soundboard.html
-- Create soundboard.html
-
-## 2025-11-20
-- Update heartive.html
-- Update humanity-agent.js
-
-## 2025-11-19
-- Create heartive.html
-- Update music.html
-- Update test.html
-- Create music.html
-- Update messenger-tutorial.html
-
-## 2025-11-18
-- Update test.html
-- Update and rename clock.html to test.html
-- Update navigation.js
-- Rename dailyphoto (1).html to dailyphoto.html
-- Add files via upload
-- Update messenger-v2.html
-- Update countdowns.html
-- Update notes.html
-- Update weather.html
-- Create weather.html
-- Create countdowns.html
-- Update humanity-agent.js
-
-## 2025-11-17
-- Delete logged-in/test.html
-- Delete logged-in/dailyphoto.html
-- Delete logged-in/base-template.html
-- Update index.html
-- feat: Add AdSense code to specified logged-in HTML files
-- fix: handle non-array data in drawCustomGraph
-- feat: update humanity-agent styling and graphing
-- feat: force Christmas logo for Christmas theme
-- Update navigation.js
-- Update navigation-mini.js
-- Update authentication.html
-- Update themes.json
-
-## 2025-11-16
-- Update navigation.js
-- Update navigation-mini.js
-- Update test.html
-- Add files via upload
-- Delete images/christmas-logo.png
-- Update index.html
-- Update Gradient to Christmas themed
-- Update url-changer.js
-- Update settings.html
-
-## 2025-11-15
-- Update test.html
-- Add files via upload
-- Update settings.html
-- Update url-changer.js
-- Update dashboard.html
-- Update themes.json
-- Update injector.js
-- Delete url-tab-title-changer.js
-- Delete panic-key.js
-- Update firebase-messaging-sw.js
-- fix: ensure service worker is active before getting fcm token
-- fix: resolve console errors related to script loading
-- feat: implement browser notifications for social events
-- Update dailyphoto.html
-- Create firebase-messaging-sw.js
-- Update index.js
-- Create package.json
-- Create index.js
-- Create sw.js
-- Update authentication.html
-- Update messenger-tutorial.html
-- Create test.html
-- Update index.html
-
-## 2025-11-14
-- Create clock.html
-- Update test.html
-- Update messenger-v2.html
-- Update page-identification.json
-- Update messenger-tutorial.html
-- Create messenger-tutorial.html
-- Update injector.js
-
-## 2025-11-13
-- Update messenger-v2.html
-- style: Adjust ID font size, button roundness, and input focus style
-- style: Unify button styles and resize chat controls
-- style: Revert message bubble roundness to 2xl
-- refactor: Adjust message bubble roundness
-- refactor: Update message bubble and button styling
-- refactor: Update message bubble styling
-- refactor: Update button styling and remove tooltips
-- feat: Adjust message history limit and input styling
-- feat: Implement image attachments and viewer
-- feat: Implement chat deletion and real-time kick
-- Update test.html
-
-## 2025-11-12
-- Update print statement from 'Hello' to 'Goodbye'
-- Enhance textarea and message sending behavior
-- Update messenger-v2.html
-- Update dailyphoto.html
-- Update dashboard.html
-- Update notes.html
-
-## 2025-11-11
-- Update test.html
-- Update url-tab-title-changer.js
-- Update fmt.Println message from 'Hello' to 'Goodbye'
-- Update navigation.js
-
-## 2025-11-10
-- Update dictionary.html
-- Refactor dictionary page styles and title
-
-## 2025-11-09
-- Update settings.html
-- feat: Implement Tab Disguiser and Panic Key settings
-- Create panic-key.js
-- Update injector.js
-- Update messenger-v2.html
-- Update index.html
-
-## 2025-11-08
-- feat: Add Google Analytics and clean up pages
-- Update notes.html
-- Create notes.html
-- Delete logged-in/notes.html
-- Create color-picker.js
-
-## 2025-11-07
-- Update notes.html
-
-## 2025-11-05
-- Update page-identification.json
-
-## 2025-11-04
-- Update 404.html
-
-## 2025-11-03
-- Create 404.html
-
-## 2025-10-31
-- Remove empty container and improve file card layout
-- Update Gemini response styling and file creation card layout
-- Fix input padding and file type badge positioning
-- Fix UI issues: equal padding, chart rendering, and file type badge positioning
-- Enhance file cards and fix graphing functionality
-- Fix JSON blocks, enhance file creation, and redesign memories modal
-- Revert loading animation and reduce message padding
-- Fix z-index issue for settings and memories modals
-
-## 2025-10-30
-- Fix Humanity Agent API and UI issues, enhance settings with privacy controls and user profiles
-- Fix logo theming system and enhance Humanity Agent UI/UX
-- Merge branch 'main' of https://github.com/v5-4simpleproblems/v5-4simpleproblems.github.io
-- Add logo theme changing functionality
-- Update navigation-test.js
-- Update test.html
-- Create navigation-test.js
-- Update navigation.js
-- Update humanity-agent.js
-
-## 2025-10-29
-- Update navigation.js
-- Create navigation.js
-- Delete navigation.js
-
-## 2025-10-28
-- Update settings.html
-- Update navigation.js
-- Update navigation.js\
-- Create navigation.js
-- Delete navigation.js
-- Update themes.json
-- Update humanity-agent.js
-- Create themes.json
-- Update index.html
-- Update dailyphoto.html
-
-## 2025-10-27
-- Update authentication.html
-- Update index.html
-- Update settings.html
-- Delete test-navigation.js
-- Update navigation.js
-- Update page-identification.json
-- Create navigation.js
-- Delete navigation.js
-- Update beta-settings.html
-
-## 2025-10-26
-- Update settings.html
-- Update navigation.js
-- Update test.html
-- Update test-navigation.js
-- Update documentation.html
-- Update navigation-mini.js
-- Update legal.html
-- Create legal.html
-- Add files via upload
-- Delete doc-images/dailyphoto.png
-- Create ph
-- Delete docs-images directory
-- Update humanity-agent.js
-- Create placeholder
-- Create documentation.html
-- Update page-identification.json
-
-## 2025-10-25
-- Update humanity-agent.js
-- Update dashboard.html
-- Update and rename agent-activation.js to humanity-agent.js
-- Update test.html
-- Update test-navigation.js
-
-## 2025-10-24
-- Update test-navigation.js
-- Rename logged-in/test-navigation.js to test-navigation.js
-- Update test.html
-- Update and rename test-dashboard.html to test.html
-- Create test-navigation.js
-- Update settings.html
-- Delete logged-in/idontknow.html
-- Update agent-activation.js
-- Update navigation.js
-- Update beta-settings.html
-- Update authentication.html
-- Create beta-settings.html
-
-## 2025-10-22
-- Update agent-activation.js
-- Update authentication.html
-- Update navigation.js
-- Update notes.html
-- Update dailyphoto.html
-- Update settings.html\
-- ]
-
-## 2025-10-21
-- Update index.html
-- Create music.html
-- Update messenger-v2.html
-- Update and rename test.html to messenger-v2.html
-- Update test.html
-- Update dictionary.html
-
-## 2025-10-20
-- Update agent-activation.js
-
-## 2025-10-19
-- Update agent-activation.js
-- Update navigation-mini.js
-- Update navigation.js
-
-## 2025-10-18
-- Update page-identification.json
-- Create idontknow.html
-- Update test.html
-
-## 2025-10-17
-- Update test.html
-- Update settings.html
-
-## 2025-10-16
-- Update test.html
-- Update agent-activation.js
-- Update dashboard.html
-- Update index.html
-
-## 2025-10-15
-- Update navigation.js
-- Incorporate 4SP history into AI agent instructions
-- Update agent-activation.js
-- Update fmt.Println message from 'Hello' to 'Goodbye'
-- Update print statement from 'Hello' to 'Goodbye'
-- Update test-dashboard.html
-
-## 2025-10-14
-- Update agent-activation.js
-
-## 2025-10-13
-- Update agent-activation.js
-- Update test-dashboard.html
-- Rename navigation-test.js to agent-activation.js
-- Update navigation-test.js
-- Update smart-scheduler.html
-- Create smart-scheduler.html
-
-## 2025-10-12
-- Update test-dashboard.html
-- Update navigation-test.js
-- Create test-dashboard.html
-- Create navigation-test.js
-- Update navigation.js
-- Update authentication.html
-- Update injector.js
-- Update dictionary.html
-- Update navigation-mini.js
-- Create authentication.html
-- Delete artificial-integration.js
-
-## 2025-10-11
-- Update settings.html
-- Create settings.html
-- Update navigation.js
-- Update dashboard.html
-- Create injector.js
-- Create artificial-integration.js
-- Update test.html
-- Create test.html
-- Update notes.html
-- Update index.html
-- Update dictionary.html
-- Create dictionary.html
-
-## 2025-10-10
-- Update verify.html
-- Update signup.html
-- Update login.html
-- Update index.html
-- Update navigation.js
-- Update page-identification.json
-- Update navigation-mini.js
-- Update dashboard.html
-- Delete logged-in/test.html
-- Update base-template.html
-- Update dailyphoto.html
-- Delete logged-in/music.html
-- Delete logged-in/weather.html
-- Delete logged-in/messenger.html
-- Update notes.html
-- Update messenger.html
-- Create messenger.html
-- Update test.html
-
-## 2025-10-09
-- Update test.html
-- Update navigation.js
-- Update dailyphoto.html
-- Update and rename testshort.html to test.html
-- Update page-identification.json
-- Create dailyphoto.html
-- Delete logged-in/test.html
-
-## 2025-10-08
-- Update test.html
-- Update testshort.html
-- Create weather.html
-- Update notes.html
-- Create notes.html
-- Update base-template.html
-- Create base-template.html
-
-## 2025-10-07
-- Update testshort.html
-- Create testshort.html
-- Update test.html
-- Create test.html
-- Delete logged-in/test.html
-- Update page-identification.json
-
-## 2025-10-06
-- Update music.html
-
-## 2025-10-05
-- Create music.html
-- Update dashboard.html
-
-## 2025-10-04
-- Update navigation.js
-- Update page-identification.json
-- Update login.html
-- Update signup.html
-- Update index.html
-- Update navigation-mini.js
-- Create navigation-mini.js
-- Delete navigation-mini.js
-- Update dashboard.html
-- Update firebase-config.js
-- Delete main.css
-- Delete Pages.json
-- Delete injector.js
-- Delete auth-logic.js
-- Create signup.html
-- Create verify.html
-- Create auth-logic.js
-- Create dashboard.html
-- Create page-identification.json
-- Delete fontface.css
-- Delete dashboard.html
-- Rename favicon.png to favicon.ico
-- Add files via upload
-- Create login.html
-
-## 2025-10-03
-- Create index.html
-- Delete dashboard.js
-- Update navigation.js
-- Delete fonts directory
-- Add files via upload
-- Create example
-- Create url-tab-title-changer.js
-- Update injector.js
-- Update and rename index.html to dashboard.html
-- Update and rename navbar-loading.js to navigation.js
-- Update navbar-loading.js
-
-## 2025-09-30
-- Update navbar-loading.js
-- Update Pages.json
-- Update index.html
-- Create dashboard.js
-- Create Pages.json
-
-## 2025-09-05
-- Update navbar-loading.js
-- Update main.css
-- Update index.html
-- Create example
-- Update injector.js
-- Create firebase-config.js
-- Create injector.js
-- Add files via upload
-- Create navbar-loading.js
-- Create index.html
-- Create main.css
-- Create fontface.css
-
+**Other:**
+*   2026-01-26 15:34:16 - Update index.html
+*   2026-01-26 15:33:33 - Update index.html
+*   2026-01-26 05:47:46 - Update navigation.js
+*   2026-01-26 04:07:19 - Update legal.html
+*   2026-01-26 04:04:44 - Update authentication.html
+*   2026-01-26 04:03:35 - Update legal.html
+*   2026-01-26 04:03:22 - Delete 4simpleproblems-v5.html
+*   2026-01-26 04:03:11 - Update authentication.html
+*   2026-01-25 23:18:48 - Update authentication.html
+*   2026-01-25 20:28:23 - Update gta-vc.html
+*   2026-01-25 20:12:58 - Update gta-vc.html
+*   2026-01-25 18:49:25 - Create gta-vc.html
+*   2026-01-25 18:25:56 - Update games.html
+*   2026-01-25 18:23:48 - Update games.html
+*   2026-01-25 15:18:17 - Add cache busting and detailed logs to gvc.html proxy init
+*   2026-01-25 15:09:31 - Update GAMES/sw.js timestamp to force SW update
+*   2026-01-25 15:07:13 - Add missing 'bare' config to GAMES/uv/uv.config.js
+*   2026-01-25 15:00:20 - Force proxying of dynamic game assets via VERN in gvc.html
+*   2026-01-25 14:58:21 - Update index.html
+*   2026-01-25 14:47:49 - Enhance GTA VC audio mocking to handle UV proxy encoded URLs
+*   2026-01-25 04:14:52 - Proxy gvc.html via VERN in GAMES/index.html
+*   2026-01-25 03:47:52 - Update index.html
+*   2026-01-25 03:40:23 - Update index.html
+*   2026-01-25 03:38:22 - Create gvc.html
+*   2026-01-25 03:36:35 - Delete GAMES/gvc.html
+*   2026-01-25 03:35:54 - Create gvc.html
+*   2026-01-25 03:35:47 - Delete GAMES/others/gvc.html
+*   2026-01-25 03:35:16 - Update gvc.html
+*   2026-01-25 03:24:57 - Update index.html
+*   2026-01-25 03:15:56 - Update gvc.html
+*   2026-01-25 01:30:45 - Update gvc.html
+*   2026-01-24 19:59:27 - Add redirector in GAMES/index.html to handle auth-based routing
+*   2026-01-24 19:58:20 - Move games to logged-in/games.html and fix all paths to root-relative
+*   2026-01-24 19:04:11 - Update page-identification.json
+*   2026-01-24 18:58:46 - Update page-identification.json
+*   2026-01-24 18:47:19 - VORA: Fix media type mismatch by using typed hashes (e.g. #movie/ID)
+*   2026-01-24 18:42:12 - VORA: Strict language filter to hide non-English titles
+*   2026-01-24 18:40:14 - VORA: Filter TMDB results to English only
+*   2026-01-24 18:37:16 - VORA: Hide header and content sections when media player is active
+*   2026-01-24 18:34:00 - VORA: Prevent player from closing on initial load and search, and revert Wisp server for stability
+*   2026-01-24 18:30:15 - VORA: Fix View All redirects and update Wisp server for better stability
+*   2026-01-24 18:23:48 - logged-in/vora.html: Consolidate into SPA (combine movies/series/index)
+*   2026-01-24 18:22:18 - Cleanup and fix VORA paths
+*   2026-01-24 18:19:08 - Create vora.html
+*   2026-01-24 18:06:42 - VORA: Combine index, movies, and series into single_file.html (SPA mode)
+*   2026-01-24 18:02:23 - VORA: Adjust layout for injected navbar
+*   2026-01-24 18:00:50 - VORA: Remove MAX from logo and inject navigation/injector scripts
+*   2026-01-22 16:39:32 - Update index.html
+*   2026-01-21 20:22:45 - Update vana.html
+*   2026-01-21 20:17:11 - Create vana.html
+*   2026-01-21 20:16:56 - Delete logged-in/vana.html
+*   2026-01-21 20:16:44 - Update vana.html
+*   2026-01-21 20:02:07 - Update vana.html
+*   2026-01-21 19:58:17 - Update vana.html
+*   2026-01-21 19:56:47 - Update vana.html
+*   2026-01-21 19:56:02 - Update vana.html
+*   2026-01-21 19:52:16 - Update vana.html
+*   2026-01-21 19:08:55 - Update index.html
+*   2026-01-21 19:06:38 - Update dashboard.html
+*   2026-01-21 19:06:03 - Update dashboard.html
+*   2026-01-21 19:05:05 - Update index.html
+*   2026-01-21 19:03:46 - Update index.html
+*   2026-01-21 18:54:26 - Update index.html: Rounded dashboard button and added organization links
+*   2026-01-21 18:46:04 - Add files via upload
+*   2026-01-21 18:45:41 - Update vana.html
+*   2026-01-21 18:39:01 - Update admin keybinds to capture events globally and add Vana to navigation
+*   2026-01-21 18:36:10 - Remove Vana Page Observer feature and fix dropdown behavior
+*   2026-01-21 01:28:20 - Fix Vana Page Observer injection using inline script to bypass proxy rewriting
+*   2026-01-21 00:55:06 - Enhance chart visibility and fix search proxy path
+*   2026-01-21 00:49:57 - Add reload-on-activation for Vana Service Worker
+*   2026-01-21 00:11:24 - Update vana.html to use proxied DuckDuckGo search
+*   2026-01-20 23:30:02 - Update vana.html
+*   2026-01-20 22:18:08 - Update vana.html
+*   2026-01-20 21:56:43 - Create vana.html
+*   2026-01-20 18:23:42 - Standardize loading animation: Update remaining key logged-in pages to use universal-loader
+*   2026-01-20 18:05:42 - Standardize loading animation: Implement universal-loader in navigation.js and key logged-in pages
+*   2026-01-20 16:09:54 - Refine Messenger Search: Highlight recipients of nicknames and their connecting links
+*   2026-01-20 15:59:16 - Enhance Messenger Web: Nickname containers now zoom to the user who saved the nickname
+*   2026-01-20 15:40:46 - Update analytics.html: Add Data and Analytics category with re-authentication and user deep inspection
+*   2026-01-19 02:39:50 - Update analytics.html
+*   2026-01-19 02:38:36 - Update analytics.html
+*   2026-01-19 02:37:47 - Update analytics.html
+*   2026-01-18 20:12:48 - Update analytics.html
+*   2026-01-17 13:32:55 - Refactor soundboard search to filter in-place
+*   2026-01-17 11:51:04 - Add files via upload
+*   2026-01-17 11:50:29 - Update index.html
+*   2026-01-17 11:49:33 - Delete GAMES/images/credits/opensource_logo.png
+*   2026-01-17 11:49:17 - Delete images/credits directory
+*   2026-01-17 11:48:50 - Rename opensource_logo_logo.png to opensource_logo.png
+*   2026-01-17 11:48:30 - Add files via upload
+*   2026-01-17 11:48:13 - Delete GAMES/images/credits/opensource_logo.png
+*   2026-01-17 11:48:02 - Rename opensource_logo_logo.png to opensource_logo.png
+*   2026-01-17 11:46:43 - Add files via upload
+*   2026-01-17 10:34:13 - Rename strongdog_logo_logo.png to strongdog_logo.png
+*   2026-01-17 10:33:04 - Add files via upload
+*   2026-01-17 10:32:35 - Create ph
+*   2026-01-17 10:30:20 - Create disintegrate.js
+*   2026-01-17 01:15:07 - Match Time Picker buttons to notes.html style
+*   2026-01-17 01:07:45 - Revert notification clock to purple and add white clock to schedule page
+*   2026-01-17 01:05:16 - Make the notification clock icon white
+*   2026-01-17 01:03:53 - Smooth out auto-scroll while dragging periods
+*   2026-01-17 00:59:49 - Update schedule.html: adjust fade position and add auto-scroll on drag
+*   2026-01-17 00:57:56 - Enhance schedule page with scroll fades, period limits, and auto-scrolling
+*   2026-01-17 00:54:55 - Make periods list scrollable in schedule.html
+*   2026-01-17 00:52:15 - Update schedule notifications logic and redesign schedule page
+*   2026-01-17 00:48:48 - Update schedule notification styling to match soundboard UI
+*   2026-01-16 01:04:42 - Update index.html
+*   2026-01-16 00:55:40 - Update index.html
+*   2026-01-16 00:50:37 - Update analytics.html
+*   2026-01-16 00:44:24 - Update analytics.html
+*   2026-01-16 00:37:58 - Update analytics.html
+*   2026-01-16 00:33:59 - Update analytics.html
+*   2026-01-16 00:31:44 - Update analytics.html
+*   2026-01-15 22:51:56 - Update analytics.html
+*   2026-01-15 20:25:51 - Update VERN URL to point to logged-in directory
+*   2026-01-15 20:25:28 - Update vern.html
+*   2026-01-15 20:25:11 - Update velium.html
+*   2026-01-15 12:23:29 - Update settings cropper and previews to squircle style
+*   2026-01-15 12:14:09 - Update VERN UI: Move title, italicize, set logo favicon
+*   2026-01-15 11:43:45 - Update all themes to color arrow buttons and fix New Year background
+*   2026-01-15 11:36:02 - Update theme sorting and button styling for better visibility
+*   2026-01-15 11:16:06 - Fix settings.js theme logic and admin check
+*   2026-01-15 11:14:01 - Remove duplicate function definitions in settings.js
+*   2026-01-15 11:05:30 - Update Settings UI to match rounded design style
+*   2026-01-15 10:50:30 - Switch Securly Tester back to root-relative paths and rhw.one
+*   2026-01-15 10:40:30 - Switch to mercurywork.shop wisp and simplify BareMux paths
+*   2026-01-15 10:27:46 - Remove hardcoded 4sp-max paths for root deployment
+*   2026-01-15 10:19:22 - Update Securly Tester to use VERN proxy system
+*   2026-01-14 21:00:45 - Add files via upload
+*   2026-01-14 20:10:09 - Create ph
+*   2026-01-14 19:51:46 - Refine Credits UI: smaller X button and pill-shaped nav bar
+*   2026-01-14 19:44:36 - Refine Credits navigation buttons and scroll logic
+*   2026-01-14 19:23:42 - Redesign Games Credits menu & Refine Soundboard Options style
+*   2026-01-13 23:03:08 - Update configuration and references from LEVIUM to VERN
+*   2026-01-13 21:58:48 - Add missing db.js and script.js to VERN
+*   2026-01-13 21:57:25 - Create script.js
+*   2026-01-13 21:55:23 - Migrate LEVIUM to VERN
+*   2026-01-13 16:41:31 - Remove admin restriction from logged-in/levium.html
+*   2026-01-13 16:25:04 - Force proxying of SoundCloud URLs via corsproxy.io in Velium
+*   2026-01-13 15:33:05 - Allow everyone access to Levium, fix game redirect bug, and proxy SoundCloud in Velium
+*   2026-01-12 18:27:44 - Remove search bar focus highlight in VELIUM
+*   2026-01-12 17:59:08 - Update index.html
+*   2026-01-12 02:11:53 - Remove custom fullscreen and triple ESC shortcut
+*   2026-01-12 02:02:19 - Restore advanced fullscreen logic and implement scroll prevention for arrow keys in game player
+*   2026-01-12 01:38:59 - Update GN-Math to use jsDelivr CDN and implement content injection for GN-Math and StrongdogXP
+*   2026-01-12 01:24:16 - Update index.html
+*   2026-01-12 01:22:16 - Add files via upload
+*   2026-01-12 01:19:18 - Update index.html
+*   2026-01-12 01:17:56 - Update index.html
+*   2026-01-12 01:16:05 - Update index.html
+*   2026-01-12 01:13:56 - Add files via upload
+*   2026-01-12 01:13:37 - Update index.html
+*   2026-01-11 23:31:49 - Update index.html
+*   2026-01-11 22:54:59 - Enhance Securly Tester email sync, redesign Soundboard options with search, and refine VELIUM styling
+*   2026-01-11 22:28:51 - Unify notification system across VELIUM and LEVIUM, override alert(), and ensure search suggestions
+*   2026-01-11 22:21:20 - Update LEVIUM: Integrated Google Autocomplete suggestions and refined homepage script
+*   2026-01-11 21:37:33 - Update index.html
+*   2026-01-11 20:50:31 - Update index.html
+*   2026-01-11 19:43:55 - Restore missing fullscreen logic and button listener
+*   2026-01-11 19:40:46 - Improve keyboard forwarding with capture phase for reliable custom fullscreen exit
+*   2026-01-11 19:28:40 - Implement global keyboard capture and forwarding overlay for custom fullscreen
+*   2026-01-11 19:25:00 - Switch to 4-side focus trap strategy for custom fullscreen
+*   2026-01-11 19:21:07 - Enable global input capture by blocking game frame interaction in custom fullscreen
+*   2026-01-11 19:16:08 - Implement advanced focus regaining logic for custom fullscreen exit
+*   2026-01-11 19:00:33 - Replace fullscreen exit button with invisible overlay and triple-ESC logic
+*   2026-01-11 18:58:42 - Add floating exit button for custom fullscreen fallback
+*   2026-01-11 18:51:52 - Add global notification and sound logic to navigation scripts
+*   2026-01-11 18:39:32 - Implement triple-ESC to exit custom fullscreen and ensure notifications show above game
+*   2026-01-11 18:25:51 - Update GAMES player layout, add custom fullscreen with ESC support, and add menu closing animations
+*   2026-01-11 17:58:27 - Update index.html
+*   2026-01-11 17:54:08 - Change default strongdog URL to GAMES directory
+*   2026-01-11 17:01:55 - Update index.html
+*   2026-01-11 16:51:39 - Update print statement from 'Hello' to 'Goodbye'
+*   2026-01-11 16:45:03 - Revise meta description and enhance UI elements
+*   2026-01-11 16:20:57 - Hide pin button when logged out and unify auth menu width
+*   2026-01-11 16:16:01 - Remove logout redirect in navigation-mini.js
+*   2026-01-11 16:08:02 - Convert navigation-mini.js to fixed dark theme without tabs
+*   2026-01-11 16:02:48 - Update levium.html
+*   2026-01-11 16:02:03 - Create velium.html
+*   2026-01-11 16:01:42 - Update page-identification.json
+*   2026-01-11 15:59:57 - Update levium.html
+*   2026-01-11 15:58:22 - Update securly-tester.html
+*   2026-01-11 15:58:03 - Update securly-tester.html
+*   2026-01-11 15:54:42 - Update themes.json: Move 'The New Year' after 'Christmas' and populate missing variables
+*   2026-01-11 15:48:55 - Update navigation.js with animations and logo tinting, create navigation-mini.js
+*   2026-01-11 15:45:02 - Merge branch 'main' of https://github.com/4simpleproblems-v5/4sp-max into main -- accepting local changes
+*   2026-01-11 15:44:46 - Update VELIUM component from velium-music repository
+*   2026-01-06 16:19:07 - Update navigation.js
+*   2026-01-06 16:06:37 - Update navigation.js
+*   2026-01-06 15:42:36 - Update page-identification.json
+*   2026-01-06 15:41:15 - Update index.html
+*   2026-01-06 15:41:03 - Update index.html
+*   2026-01-06 15:38:08 - Update index.html
+*   2026-01-04 15:40:24 - Update soundboard.html
+*   2026-01-04 15:38:48 - Update soundboard.html
+*   2026-01-04 15:37:48 - Update soundboard.html
+*   2026-01-04 15:17:34 - Update soundboard.html
+*   2026-01-04 15:03:54 - Update navigation.js
+*   2026-01-04 14:54:13 - Update navigation.js
+*   2026-01-04 14:51:19 - Update levium.html
+*   2026-01-04 14:44:59 - Update dashboard.html
+*   2026-01-04 14:29:07 - Update index.html
+*   2026-01-04 14:07:47 - Update navigation.js
+*   2026-01-04 09:46:41 - Update levium.html
+*   2026-01-04 08:57:35 - 1.0.1
+*   2026-01-04 08:57:35 - Update to v5 client style and features
+*   2026-01-04 08:28:39 - Merge branch 'main' of https://github.com/4simpleproblems-v5/4sp-max into main -- accepting local changes
+*   2026-01-04 08:22:29 - Create index.html
+*   2025-12-30 19:10:38 - Update index.html
+*   2025-12-30 18:51:12 - Update navigation-mini.js
+*   2025-12-30 18:50:54 - Update index.html
+*   2025-12-23 17:22:45 - Create CNAME
+*   2025-12-15 13:57:59 - Update dailyphoto.html
+*   2025-12-14 21:41:26 - Create dashboard.html
+*   2025-12-14 21:40:50 - Delete logged-in/dashboard.html
+*   2025-12-14 21:40:37 - Update dashboard.html
+*   2025-12-14 20:04:02 - Create dailyphoto.html
+*   2025-12-14 20:03:45 - Delete logged-in/dailyphoto.html
+*   2025-12-14 20:01:37 - Update dailyphoto.html
+*   2025-12-14 19:09:21 - Deploy Dailyphoto 2.0 and add announcement popup to dashboard
+*   2025-12-14 18:32:07 - Update securly-tester.html
+*   2025-12-14 01:41:16 - Update test2.html
+*   2025-12-14 01:36:21 - Update test2.html
+*   2025-12-14 01:34:27 - Update test2.html
+*   2025-12-14 01:29:08 - Update test2.html
+*   2025-12-14 01:22:10 - Update test2.html
+*   2025-12-14 01:22:04 - Update soundboard.html
+*   2025-12-14 01:15:07 - Update soundboard.html
+*   2025-12-14 01:13:02 - Update soundboard.html
+*   2025-12-14 01:12:01 - Update test2.html
+*   2025-12-14 00:53:08 - Update dailyphoto.html
+*   2025-12-14 00:49:17 - Update soundboard.html
+*   2025-12-13 20:16:09 - Finish downloadable client implementation with data export and auth bypass
+*   2025-12-13 19:21:23 - Switch to downloadable HTML file for client
+*   2025-12-13 18:04:52 - Update test.html
+*   2025-12-13 18:02:57 - Update test.js
+*   2025-12-13 17:38:49 - Update and rename test1.html to test.js
+*   2025-12-13 17:37:56 - Update test.html
+*   2025-12-13 17:03:46 - Update dailyphoto.html
+*   2025-12-13 16:56:44 - Update test1.html
+*   2025-12-13 15:32:57 - Create test1.html
+*   2025-12-13 15:30:23 - Update test2.html
+*   2025-12-13 14:53:22 - Update test2.html
+*   2025-12-13 14:28:48 - Update test2.html
+*   2025-12-13 14:22:49 - Update test2.html
+*   2025-12-13 14:22:13 - Update test2.html
+*   2025-12-13 14:21:36 - Update test2.html
+*   2025-12-13 14:16:15 - Update test2.html
+*   2025-12-13 14:06:05 - Update test2.html
+*   2025-12-13 13:54:40 - Update test2.html
+*   2025-12-13 01:34:12 - Create ads.txt
+*   2025-12-13 01:25:56 - Update test2.html
+*   2025-12-13 01:15:50 - Update test2.html
+*   2025-12-13 01:12:19 - Update index.html
+*   2025-12-13 00:47:29 - Update test2.html
+*   2025-12-13 00:33:16 - Update test.html
+*   2025-12-13 00:30:55 - Update test.html
+*   2025-12-13 00:14:23 - Update test.html
+*   2025-12-12 23:38:10 - Update test.html
+*   2025-12-12 23:27:39 - Update test.html
+*   2025-12-12 23:06:31 - Update test2.html with emoji picker, title limit, and search functionality
+*   2025-12-12 22:52:45 - Update post creation UI in test2.html with readonly username, updated fields, and custom public toggle
+*   2025-12-12 19:27:55 - Update ban-enforcer.js
+*   2025-12-12 19:25:20 - Update ban-enforcer.js
+*   2025-12-12 19:21:18 - Update ban-enforcer.js
+*   2025-12-12 19:20:01 - Update ban-enforcer.js
+*   2025-12-12 19:16:51 - Update ban-enforcer.js
+*   2025-12-12 19:14:30 - Update ban-enforcer.js
+*   2025-12-12 19:12:51 - Update ban-enforcer.js
+*   2025-12-12 19:08:37 - Upgrade ban-enforcer.js to v6.3 with logging enhancements
+*   2025-12-12 19:00:55 - Update ban-enforcer.js
+*   2025-12-12 18:51:47 - Update ban-enforcer.js
+*   2025-12-12 18:38:16 - Update ban-enforcer.js
+*   2025-12-12 17:14:45 - Change output message to 'Goodbye World'
+*   2025-12-12 00:12:52 - Update test.html
+*   2025-12-11 23:28:56 - Update test2.html
+*   2025-12-11 23:10:54 - Update test2.html
+*   2025-11-11 20:24:34 - Update test.html
+*   2025-11-11 19:55:10 - Update test.html
+*   2025-11-11 19:42:57 - Update url-tab-title-changer.js
+*   2025-11-11 19:32:30 - Update test.html
+*   2025-11-11 19:22:40 - Update test.html
+*   2025-11-11 18:59:52 - Update fmt.Println message from 'Hello' to 'Goodbye'
+*   2025-11-11 18:25:57 - Update navigation.js
+*   2025-11-11 18:20:00 - Update navigation.js
+*   2025-11-11 18:13:43 - Update navigation.js
+*   2025-11-11 17:54:31 - Update navigation.js
+*   2025-11-10 23:08:20 - Update dictionary.html
+*   2025-11-10 22:06:15 - Update dictionary.html
+*   2025-11-09 15:20:48 - Create panic-key.js
+*   2025-11-09 15:18:54 - Update injector.js
+*   2025-11-09 13:50:16 - Update messenger-v2.html
+*   2025-11-09 13:42:26 - Update messenger-v2.html
+*   2025-11-09 13:36:47 - Update messenger-v2.html
+*   2025-11-09 13:29:43 - Update messenger-v2.html
+*   2025-11-09 13:24:03 - Update messenger-v2.html
+*   2025-11-09 13:20:16 - Update messenger-v2.html
+*   2025-11-09 13:13:27 - Update messenger-v2.html
+*   2025-11-09 12:44:49 - Update index.html
+*   2025-11-09 12:43:35 - Update index.html
+*   2025-11-08 22:18:38 - Update notes.html
+*   2025-11-08 19:57:04 - Update notes.html
+*   2025-11-08 19:44:38 - Create notes.html
+*   2025-11-08 19:44:28 - Delete logged-in/notes.html
+*   2025-11-08 19:43:00 - Update notes.html
+*   2025-11-08 19:37:31 - Update notes.html
+*   2025-11-08 19:26:05 - Update notes.html
+*   2025-11-08 18:35:27 - Update notes.html
+*   2025-11-08 18:30:55 - Update notes.html
+*   2025-11-08 18:26:02 - Update notes.html
+*   2025-11-08 18:22:28 - Update notes.html
+*   2025-11-08 18:01:22 - Update notes.html
+*   2025-11-08 17:53:49 - Update notes.html
+*   2025-11-08 17:28:58 - Create color-picker.js
+*   2025-11-07 19:44:23 - Update notes.html
+*   2025-11-07 19:29:57 - Update notes.html
+*   2025-11-07 19:11:20 - Update notes.html
+*   2025-11-07 19:01:43 - Update notes.html
+*   2025-11-05 15:17:53 - Update page-identification.json
+*   2025-11-04 21:47:53 - Update 404.html
+*   2025-11-04 21:47:44 - Update 404.html
+*   2025-11-04 21:46:37 - Update 404.html
+*   2025-11-03 21:40:55 - Create 404.html
+*   2025-10-31 18:24:08 - Remove empty container and improve file card layout
+*   2025-10-31 18:18:29 - Update Gemini response styling and file creation card layout
+*   2025-10-30 21:40:23 - Update navigation-test.js
+*   2025-10-30 21:31:47 - Update navigation-test.js
+*   2025-10-30 21:28:14 - Update test.html
+*   2025-10-30 21:27:20 - Create navigation-test.js
+*   2025-10-30 21:15:37 - Update navigation.js
+*   2025-10-30 21:11:37 - Update navigation.js
+*   2025-10-30 21:07:57 - Update navigation.js
+*   2025-10-30 21:05:37 - Update navigation.js
+*   2025-10-30 20:55:45 - Update humanity-agent.js
+*   2025-10-30 20:43:10 - Update humanity-agent.js
+*   2025-10-29 17:08:04 - Update navigation.js
+*   2025-10-29 17:00:28 - Update navigation.js
+*   2025-10-29 16:54:21 - Update navigation.js
+*   2025-10-29 16:43:31 - Update navigation.js
+*   2025-10-29 16:19:11 - Update navigation.js
+*   2025-10-29 16:15:10 - Update navigation.js
+*   2025-10-29 16:12:23 - Create navigation.js
+*   2025-10-29 16:12:10 - Delete navigation.js
+*   2025-10-29 16:11:59 - Update navigation.js
+*   2025-10-29 16:11:26 - Update navigation.js
+*   2025-10-29 16:06:59 - Update navigation.js
+*   2025-10-29 15:50:13 - Create navigation.js
+*   2025-10-29 15:50:01 - Delete navigation.js
+*   2025-10-29 15:49:51 - Update navigation.js
+*   2025-10-29 15:48:15 - Update navigation.js
+*   2025-10-28 23:56:29 - Update settings.html
+*   2025-10-28 23:40:05 - Update settings.html
+*   2025-10-28 23:30:53 - Update settings.html
+*   2025-10-28 23:12:50 - Update navigation.js
+*   2025-10-28 22:57:05 - Update navigation.js
+*   2025-10-28 22:51:02 - Update navigation.js
+*   2025-10-28 22:44:43 - Update navigation.js
+*   2025-10-28 22:35:32 - Update navigation.js
+*   2025-10-28 22:26:07 - Create navigation.js
+*   2025-10-28 22:25:46 - Delete navigation.js
+*   2025-10-28 22:25:09 - Update navigation.js
+*   2025-10-28 22:10:26 - Update themes.json
+*   2025-10-28 22:10:10 - Update navigation.js
+*   2025-10-28 21:40:27 - Update humanity-agent.js
+*   2025-10-28 21:26:11 - Update humanity-agent.js
+*   2025-10-28 21:20:07 - Update humanity-agent.js
+*   2025-10-28 20:59:31 - Update humanity-agent.js
+*   2025-10-28 20:19:55 - Update humanity-agent.js
+*   2025-10-28 19:38:46 - Update navigation.js
+*   2025-10-28 19:30:05 - Update navigation.js
+*   2025-10-28 19:24:35 - Update navigation.js
+*   2025-10-28 18:20:08 - Update navigation.js
+*   2025-10-28 18:06:10 - Update navigation.js
+*   2025-10-28 18:03:47 - Update navigation.js
+*   2025-10-28 18:01:06 - Update themes.json
+*   2025-10-28 17:45:33 - Update settings.html
+*   2025-10-28 17:36:55 - Update settings.html
+*   2025-10-28 17:19:36 - Update settings.html
+*   2025-10-28 17:13:48 - Update settings.html
+*   2025-10-28 17:06:28 - Update settings.html
+*   2025-10-28 16:47:49 - Update settings.html
+*   2025-10-28 16:34:58 - Update settings.html
+*   2025-10-28 16:25:03 - Update themes.json
+*   2025-10-28 15:57:54 - Create themes.json
+*   2025-10-28 15:21:17 - Update index.html
+*   2025-10-28 15:16:13 - Update index.html
+*   2025-10-28 15:12:20 - Update index.html
+*   2025-10-28 16:21:25 - Update dailyphoto.html
+*   2025-10-27 21:55:08 - Update authentication.html
+*   2025-10-27 21:23:54 - Update authentication.html
+*   2025-10-27 21:05:10 - Update authentication.html
+*   2025-10-27 21:01:15 - Update authentication.html
+*   2025-10-27 20:56:54 - Update authentication.html
+*   2025-10-27 20:53:15 - Update authentication.html
+*   2025-10-27 20:51:31 - Update authentication.html
+*   2025-10-27 20:50:29 - Update authentication.html
+*   2025-10-27 20:47:10 - Update authentication.html
+*   2025-10-27 20:44:14 - Update authentication.html
+*   2025-10-27 20:41:21 - Update authentication.html
+*   2025-10-27 20:38:25 - Update authentication.html
+*   2025-10-27 20:35:30 - Update authentication.html
+*   2025-10-27 20:33:57 - Update authentication.html
+*   2025-10-27 20:28:13 - Update index.html
+*   2025-10-27 20:25:48 - Update index.html
+*   2025-10-27 20:20:46 - Update index.html
+*   2025-10-27 20:15:30 - Update settings.html
+*   2025-10-27 20:15:08 - Delete test-navigation.js
+*   2025-10-27 20:11:49 - Update navigation.js
+*   2025-10-27 20:09:26 - Update navigation.js
+*   2025-10-27 20:04:58 - Update navigation.js
+*   2025-10-27 20:00:40 - Update navigation.js
+*   2025-10-27 19:55:34 - Update navigation.js
+*   2025-10-27 19:49:23 - Update page-identification.json
+*   2025-10-27 18:10:13 - Create navigation.js
+*   2025-10-27 18:10:03 - Delete navigation.js
+*   2025-10-27 18:09:49 - Update navigation.js
+*   2025-10-27 18:08:39 - Update navigation.js
+*   2025-10-27 17:52:56 - Update navigation.js
+*   2025-10-27 17:43:06 - Update navigation.js
+*   2025-10-27 17:35:48 - Update navigation.js
+*   2025-10-27 17:26:38 - Update navigation.js
+*   2025-10-27 17:17:30 - Update beta-settings.html
+*   2025-10-27 17:09:27 - Update beta-settings.html
+*   2025-10-27 17:04:22 - Update beta-settings.html
+*   2025-10-27 16:57:11 - Update beta-settings.html
+*   2025-10-27 16:44:09 - Update beta-settings.html
+*   2025-10-27 16:38:39 - Update beta-settings.html
+*   2025-10-27 16:36:15 - Update beta-settings.html
+*   2025-10-27 16:33:47 - Update beta-settings.html
+*   2025-10-27 16:28:21 - Update beta-settings.html
+*   2025-10-27 16:23:19 - Update beta-settings.html
+*   2025-10-27 16:20:34 - Update beta-settings.html
+*   2025-10-27 16:17:26 - Update beta-settings.html
+*   2025-10-27 16:14:37 - Update beta-settings.html
+*   2025-10-27 16:09:02 - Update beta-settings.html
+*   2025-10-27 16:06:05 - Update beta-settings.html
+*   2025-10-27 16:03:43 - Update beta-settings.html
+*   2025-10-27 16:01:48 - Update beta-settings.html
+*   2025-10-27 16:00:34 - Update beta-settings.html
+*   2025-10-27 15:58:33 - Update beta-settings.html
+*   2025-10-27 15:56:20 - Update beta-settings.html
+*   2025-10-27 13:17:29 - Update beta-settings.html
+*   2025-10-27 13:07:39 - Update navigation.js
+*   2025-10-27 13:03:46 - Update beta-settings.html
+*   2025-10-27 13:02:45 - Update navigation.js
+*   2025-10-26 22:15:27 - Update settings.html
+*   2025-10-26 22:12:29 - Update navigation.js
+*   2025-10-26 22:10:33 - Update test.html
+*   2025-10-26 22:08:15 - Update test.html
+*   2025-10-26 21:41:44 - Update test.html
+*   2025-10-26 21:40:31 - Update test.html
+*   2025-10-26 21:37:16 - Update test.html
+*   2025-10-26 21:34:56 - Update test.html
+*   2025-10-26 21:28:18 - Update test-navigation.js
+*   2025-10-26 21:21:54 - Update test-navigation.js
+*   2025-10-26 21:14:12 - Update test.html
+*   2025-10-26 21:10:32 - Update test-navigation.js
+*   2025-10-26 20:04:50 - Update settings.html
+*   2025-10-26 19:17:42 - Update test-navigation.js
+*   2025-10-26 19:17:21 - Update test.html
+*   2025-10-26 18:59:49 - Update test-navigation.js
+*   2025-10-26 18:58:34 - Update test.html
+*   2025-10-26 17:06:43 - Update test.html
+*   2025-10-26 17:04:25 - Update test-navigation.js
+*   2025-10-26 16:43:17 - Update navigation-mini.js
+*   2025-10-26 16:36:47 - Update legal.html
+*   2025-10-26 16:36:30 - Update legal.html
+*   2025-10-26 16:36:03 - Update legal.html
+*   2025-10-26 16:34:36 - Update legal.html
+*   2025-10-26 16:27:16 - Update legal.html
+*   2025-10-26 16:22:47 - Create legal.html
+*   2025-10-26 16:07:16 - Add files via upload
+*   2025-10-26 16:07:00 - Delete doc-images/dailyphoto.png
+*   2025-10-26 15:33:49 - Add files via upload
+*   2025-10-26 15:32:54 - Create ph
+*   2025-10-26 15:32:41 - Delete docs-images directory
+*   2025-10-26 15:21:26 - Add files via upload
+*   2025-10-26 15:10:09 - Update humanity-agent.js
+*   2025-10-26 15:08:39 - Update humanity-agent.js
+*   2025-10-26 15:01:39 - Create placeholder
+*   2025-10-26 14:23:06 - Update navigation.js
+*   2025-10-26 14:11:50 - Update navigation.js
+*   2025-10-26 13:44:53 - Update settings.html
+*   2025-10-26 13:42:59 - Update settings.html
+*   2025-10-26 13:36:12 - Update settings.html
+*   2025-10-26 13:26:39 - Update settings.html
+*   2025-10-26 13:03:57 - Update navigation.js
+*   2025-10-26 13:03:07 - Update test-navigation.js
+*   2025-10-26 12:53:42 - Update test-navigation.js
+*   2025-10-26 12:31:56 - Update test-navigation.js
+*   2025-10-26 12:23:48 - Update test-navigation.js
+*   2025-10-26 12:19:10 - Update test-navigation.js
+*   2025-10-26 12:11:01 - Update test-navigation.js
+*   2025-10-26 11:57:17 - Update test-navigation.js
+*   2025-10-26 11:51:22 - Update test-navigation.js
+*   2025-10-26 11:45:50 - Update test-navigation.js
+*   2025-10-26 11:42:10 - Update test-navigation.js
+*   2025-10-26 11:34:20 - Update test.html
+*   2025-10-26 11:30:45 - Update page-identification.json
+*   2025-10-26 11:27:30 - Update test-navigation.js
+*   2025-10-25 14:53:11 - Update humanity-agent.js
+*   2025-10-25 14:50:57 - Update humanity-agent.js
+*   2025-10-25 14:33:09 - Update humanity-agent.js
+*   2025-10-25 14:28:25 - Update dashboard.html
+*   2025-10-25 14:28:03 - Update and rename agent-activation.js to humanity-agent.js
+*   2025-10-25 13:51:47 - Update test.html
+*   2025-10-25 13:45:48 - Update test-navigation.js
+*   2025-10-25 13:29:59 - Update test.html
+*   2025-10-25 13:25:10 - Update test.html
+*   2025-10-25 13:23:53 - Update test.html
+*   2025-10-25 01:06:14 - Update test.html
+*   2025-10-25 01:04:23 - Update test-navigation.js
+*   2025-10-25 00:51:33 - Update test.html
+*   2025-10-25 00:48:02 - Update test.html
+*   2025-10-25 00:42:55 - Update test.html
+*   2025-10-25 00:37:59 - Update test.html
+*   2025-10-25 00:32:35 - Update test.html
+*   2025-10-25 00:32:14 - Update test-navigation.js
+*   2025-10-25 00:20:16 - Update test-navigation.js
+*   2025-10-25 00:09:41 - Update test-navigation.js
+*   2025-10-25 00:00:02 - Update test-navigation.js
+*   2025-10-24 23:49:37 - Update test-navigation.js
+*   2025-10-24 23:44:51 - Update test-navigation.js
+*   2025-10-24 23:40:40 - Rename logged-in/test-navigation.js to test-navigation.js
+*   2025-10-24 23:39:56 - Update test.html
+*   2025-10-24 23:37:40 - Create test-navigation.js
+*   2025-10-24 23:33:11 - Update settings.html
+*   2025-10-24 22:53:15 - Update settings.html
+*   2025-10-24 22:48:41 - Update settings.html
+*   2025-10-24 22:41:50 - Update settings.html
+*   2025-10-24 22:37:19 - Delete logged-in/idontknow.html
+*   2025-10-24 22:37:04 - Update settings.html
+*   2025-10-24 22:14:16 - Update agent-activation.js
+*   2025-10-24 22:11:13 - Update agent-activation.js
+*   2025-10-24 21:54:52 - Update agent-activation.js
+*   2025-10-24 21:33:49 - Update agent-activation.js
+*   2025-10-24 21:02:58 - Update agent-activation.js
+*   2025-10-24 20:54:15 - Update agent-activation.js
+*   2025-10-24 20:45:10 - Update agent-activation.js
+*   2025-10-24 20:32:15 - Update agent-activation.js
+*   2025-10-24 20:19:56 - Update agent-activation.js
+*   2025-10-24 20:05:04 - Update agent-activation.js
+*   2025-10-24 20:01:23 - Update agent-activation.js
+*   2025-10-24 13:07:41 - Update agent-activation.js
+*   2025-10-24 12:57:46 - Update agent-activation.js
+*   2025-10-24 12:50:54 - Update agent-activation.js
+*   2025-10-24 12:33:36 - Update agent-activation.js
+*   2025-10-24 12:23:57 - Update agent-activation.js
+*   2025-10-24 12:08:39 - Update agent-activation.js
+*   2025-10-24 11:56:32 - Update agent-activation.js
+*   2025-10-24 11:51:01 - Update agent-activation.js
+*   2025-10-24 11:47:01 - Update agent-activation.js
+*   2025-10-24 11:41:22 - Update agent-activation.js
+*   2025-10-24 11:37:23 - Update agent-activation.js
+*   2025-10-24 11:23:45 - Update agent-activation.js
+*   2025-10-24 11:13:44 - Update agent-activation.js
+*   2025-10-24 11:06:02 - Update agent-activation.js
+*   2025-10-24 09:22:43 - Update agent-activation.js
+*   2025-10-24 09:11:36 - Update agent-activation.js
+*   2025-10-24 09:03:21 - Update agent-activation.js
+*   2025-10-24 08:55:37 - Update agent-activation.js
+*   2025-10-24 08:46:58 - Update agent-activation.js
+*   2025-10-24 08:38:16 - Update agent-activation.js
+*   2025-10-24 08:17:56 - Update agent-activation.js
+*   2025-10-24 08:10:04 - Update agent-activation.js
+*   2025-10-24 08:03:12 - Update agent-activation.js
+*   2025-10-24 07:57:08 - Update agent-activation.js
+*   2025-10-24 07:53:28 - Update agent-activation.js
+*   2025-10-24 07:38:18 - Update agent-activation.js
+*   2025-10-24 07:33:18 - Update agent-activation.js
+*   2025-10-24 07:26:08 - Update agent-activation.js
+*   2025-10-24 00:53:16 - Update navigation.js
+*   2025-10-24 00:45:14 - Update navigation.js
+*   2025-10-24 00:37:43 - Update navigation.js
+*   2025-10-24 00:26:31 - Update beta-settings.html
+*   2025-10-24 00:21:02 - Update authentication.html
+*   2025-10-24 00:18:34 - Update authentication.html
+*   2025-10-24 00:14:39 - Create beta-settings.html
+*   2025-10-22 21:40:07 - Update agent-activation.js
+*   2025-10-22 21:35:02 - Update agent-activation.js
+*   2025-10-22 21:33:06 - Update agent-activation.js
+*   2025-10-22 21:30:23 - Update agent-activation.js
+*   2025-10-22 21:25:11 - Update agent-activation.js
+*   2025-10-22 16:58:14 - Update authentication.html
+*   2025-10-22 16:45:04 - Update navigation.js
+*   2025-10-22 16:38:45 - Update navigation.js
+*   2025-10-22 15:46:04 - Update notes.html
+*   2025-10-22 14:26:13 - Update dailyphoto.html
+*   2025-10-22 14:21:33 - Update dailyphoto.html
+*   2025-10-22 14:20:28 - Update dailyphoto.html
+*   2025-10-22 14:18:34 - Update dailyphoto.html
+*   2025-10-22 12:31:48 - Update agent-activation.js
+*   2025-10-22 12:27:23 - Update agent-activation.js
+*   2025-10-22 00:09:56 - Update settings.html
+*   2025-10-22 00:02:20 - ]
+*   2025-10-21 23:37:09 - Update index.html
+*   2025-10-21 23:22:44 - Update index.html
+*   2025-10-21 17:18:25 - Create music.html
+*   2025-10-21 16:17:28 - Update messenger-v2.html
+*   2025-10-21 16:17:08 - Update messenger-v2.html
+*   2025-10-21 16:03:24 - Update messenger-v2.html
+*   2025-10-21 16:25:31 - Update and rename test.html to messenger-v2.html
+*   2025-10-21 16:24:54 - Update test.html
+*   2025-10-21 16:13:41 - Update index.html
+*   2025-10-21 16:12:52 - Update index.html
+*   2025-10-21 16:11:54 - Update index.html
+*   2025-10-21 16:08:26 - Update dictionary.html
+*   2025-10-20 16:22:23 - Update agent-activation.js
+*   2025-10-19 20:51:11 - Update agent-activation.js
+*   2025-10-19 20:47:51 - Update agent-activation.js
+*   2025-10-19 20:38:00 - Update agent-activation.js
+*   2025-10-19 20:30:09 - Update agent-activation.js
+*   2025-10-19 15:16:56 - Update navigation-mini.js
+*   2025-10-19 15:15:40 - Update navigation.js
+*   2025-10-19 15:14:58 - Update navigation-mini.js
+*   2025-10-19 15:08:16 - Update navigation-mini.js
+*   2025-10-18 10:10:37 - Update page-identification.json
+*   2025-10-18 10:09:35 - Create idontknow.html
+*   2025-10-18 00:02:30 - Update test.html
+*   2025-10-17 23:56:36 - Update test.html
+*   2025-10-17 15:32:41 - Update settings.html
+*   2025-10-16 21:57:47 - Update test.html
+*   2025-10-16 21:30:35 - Update test.html
+*   2025-10-16 21:11:47 - Update test.html
+*   2025-10-16 21:05:28 - Update test.html
+*   2025-10-16 21:00:15 - Update test.html
+*   2025-10-16 16:42:32 - Update agent-activation.js
+*   2025-10-16 16:27:51 - Update agent-activation.js
+*   2025-10-16 18:17:46 - Update dashboard.html
+*   2025-10-16 14:02:43 - Update index.html
+*   2025-10-15 22:03:04 - Update navigation.js
+*   2025-10-15 18:41:12 - Incorporate 4SP history into AI agent instructions
+*   2025-10-15 18:32:15 - Update agent-activation.js
+*   2025-10-15 18:26:43 - Update fmt.Println message from 'Hello' to 'Goodbye'
+*   2025-10-15 18:14:20 - Update agent-activation.js
+*   2025-10-15 16:25:01 - Update agent-activation.js
+*   2025-10-15 16:22:17 - Update print statement from 'Hello' to 'Goodbye'
+*   2025-10-15 16:09:07 - Update print statement from 'Hello' to 'Goodbye'
+*   2025-10-15 15:58:22 - Update agent-activation.js
+*   2025-10-15 16:40:36 - Update agent-activation.js
+*   2025-10-15 16:38:20 - Update test-dashboard.html
+*   2025-10-15 01:27:01 - Update agent-activation.js
+*   2025-10-15 01:11:36 - Update agent-activation.js
+*   2025-10-15 00:57:58 - Update agent-activation.js
+*   2025-10-15 00:25:54 - Update agent-activation.js
+*   2025-10-14 23:46:16 - Update agent-activation.js
+*   2025-10-14 23:25:34 - Update agent-activation.js
+*   2025-10-14 23:11:44 - Update agent-activation.js
+*   2025-10-14 22:55:37 - Update agent-activation.js
+*   2025-10-14 22:44:22 - Update agent-activation.js
+*   2025-10-14 22:33:10 - Update agent-activation.js
+*   2025-10-14 02:05:10 - Update agent-activation.js
+*   2025-10-14 01:06:05 - Update agent-activation.js
+*   2025-10-14 01:04:45 - Update agent-activation.js
+*   2025-10-14 01:01:39 - Update agent-activation.js
+*   2025-10-14 00:37:37 - Update agent-activation.js
+*   2025-10-13 23:38:41 - Update agent-activation.js
+*   2025-10-13 22:47:26 - Update agent-activation.js
+*   2025-10-13 22:44:52 - Update agent-activation.js
+*   2025-10-13 22:37:50 - Update agent-activation.js
+*   2025-10-13 22:27:08 - Update agent-activation.js
+*   2025-10-13 22:26:11 - Update agent-activation.js
+*   2025-10-13 21:47:27 - Update agent-activation.js
+*   2025-10-13 21:30:09 - Update agent-activation.js
+*   2025-10-13 21:28:25 - Update test-dashboard.html
+*   2025-10-13 21:28:01 - Rename navigation-test.js to agent-activation.js
+*   2025-10-13 21:25:05 - Update navigation-test.js
+*   2025-10-13 21:19:48 - Update navigation-test.js
+*   2025-10-13 21:18:14 - Update navigation-test.js
+*   2025-10-13 20:57:19 - Update navigation-test.js
+*   2025-10-13 20:37:17 - Update navigation-test.js
+*   2025-10-13 20:32:24 - Update navigation-test.js
+*   2025-10-13 18:46:47 - Update navigation-test.js
+*   2025-10-13 18:41:15 - Update navigation-test.js
+*   2025-10-13 18:35:40 - Update navigation-test.js
+*   2025-10-13 18:25:38 - Update navigation-test.js
+*   2025-10-13 18:22:20 - Update navigation-test.js
+*   2025-10-13 18:19:31 - Update navigation-test.js
+*   2025-10-13 18:10:50 - Update navigation-test.js
+*   2025-10-13 04:11:03 - Update navigation-test.js
+*   2025-10-13 03:50:52 - Update navigation-test.js
+*   2025-10-13 03:45:54 - Update navigation-test.js
+*   2025-10-13 03:41:15 - Update navigation-test.js
+*   2025-10-13 03:36:17 - Update navigation-test.js
+*   2025-10-13 03:25:23 - Update navigation-test.js
+*   2025-10-13 01:33:18 - Update navigation-test.js
+*   2025-10-13 01:25:12 - Update navigation-test.js
+*   2025-10-13 01:03:54 - Update navigation-test.js
+*   2025-10-13 00:58:10 - Update navigation-test.js
+*   2025-10-13 00:51:54 - Update navigation-test.js
+*   2025-10-13 00:46:54 - Update navigation-test.js
+*   2025-10-13 00:36:27 - Update navigation-test.js
+*   2025-10-13 00:30:29 - Update navigation-test.js
+*   2025-10-13 00:22:05 - Update navigation-test.js
+*   2025-10-12 23:36:37 - Update test-dashboard.html
+*   2025-10-12 23:29:37 - Update navigation-test.js
+*   2025-10-12 23:21:51 - Update navigation-test.js
+*   2025-10-12 23:17:56 - Update navigation-test.js
+*   2025-10-12 23:13:39 - Update navigation-test.js
+*   2025-10-12 23:04:21 - Update navigation-test.js
+*   2025-10-12 22:54:21 - Update navigation-test.js
+*   2025-10-12 21:01:39 - Update navigation-test.js
+*   2025-10-12 20:23:21 - Update navigation-test.js
+*   2025-10-12 20:12:26 - Update navigation-test.js
+*   2025-10-12 20:08:13 - Update navigation-test.js
+*   2025-10-12 20:04:24 - Update navigation.js
+*   2025-10-12 20:03:20 - Update navigation.js
+*   2025-10-12 19:59:49 - Update navigation.js
+*   2025-10-12 19:56:47 - Update navigation.js
+*   2025-10-12 19:30:38 - Update navigation.js
+*   2025-10-12 19:20:21 - Update navigation.js
+*   2025-10-12 19:00:56 - Update authentication.html
+*   2025-10-12 18:58:54 - Update authentication.html
+*   2025-10-12 18:41:26 - Update navigation.js
+*   2025-10-12 18:38:57 - Update navigation.js
+*   2025-10-12 18:33:16 - Update navigation.js
+*   2025-10-12 18:29:17 - Update navigation.js
+*   2025-10-12 18:26:40 - Update navigation.js
+*   2025-10-12 18:23:51 - Update navigation.js
+*   2025-10-12 18:19:56 - Update navigation.js
+*   2025-10-12 18:14:16 - Update navigation.js
+*   2025-10-12 18:03:23 - Update navigation.js
+*   2025-10-12 17:44:20 - Update navigation.js
+*   2025-10-12 17:38:39 - Update navigation.js
+*   2025-10-12 17:33:15 - Update navigation.js
+*   2025-10-12 17:18:18 - Update injector.js
+*   2025-10-12 17:14:44 - Update navigation.js
+*   2025-10-12 16:55:02 - Update authentication.html
+*   2025-10-12 16:42:09 - Update authentication.html
+*   2025-10-12 16:33:15 - Update dictionary.html
+*   2025-10-12 16:28:44 - Update navigation.js
+*   2025-10-12 16:24:18 - Update navigation.js
+*   2025-10-12 16:22:54 - Update navigation.js
+*   2025-10-12 16:17:48 - Update navigation-mini.js
+*   2025-10-12 16:13:20 - Update authentication.html
+*   2025-10-12 15:13:44 - Update authentication.html
+*   2025-10-12 15:07:08 - Update authentication.html
+*   2025-10-11 23:58:28 - Update settings.html
+*   2025-10-11 23:31:11 - Update settings.html
+*   2025-10-11 23:12:46 - Update navigation.js
+*   2025-10-11 23:07:12 - Update navigation.js
+*   2025-10-11 23:05:02 - Update dashboard.html
+*   2025-10-11 22:08:31 - Update navigation.js
+*   2025-10-11 21:55:18 - Update navigation.js
+*   2025-10-11 21:42:30 - Update navigation.js
+*   2025-10-11 21:37:38 - Update navigation.js
+*   2025-10-11 21:32:46 - Update navigation.js
+*   2025-10-11 21:28:05 - Update navigation.js
+*   2025-10-11 21:21:01 - Update navigation.js
+*   2025-10-11 21:09:28 - Update navigation.js
+*   2025-10-11 21:07:08 - Update navigation.js
+*   2025-10-11 21:00:19 - Update test.html
+*   2025-10-11 20:42:42 - Update test.html
+*   2025-10-11 20:22:41 - Update test.html
+*   2025-10-11 20:02:35 - Update test.html
+*   2025-10-11 19:53:46 - Update test.html
+*   2025-10-11 15:22:25 - Update test.html
+*   2025-10-11 15:11:43 - Update test.html
+*   2025-10-11 14:54:29 - Update test.html
+*   2025-10-11 14:39:21 - Update test.html
+*   2025-10-11 14:30:40 - Update test.html
+*   2025-10-11 12:09:17 - Update notes.html
+*   2025-10-11 12:02:11 - Update notes.html
+*   2025-10-11 11:53:13 - Update notes.html
+*   2025-10-11 11:42:30 - Update index.html
+*   2025-10-11 11:34:57 - Update dictionary.html
+*   2025-10-11 11:32:02 - Update dictionary.html
+*   2025-10-11 11:25:37 - Update dictionary.html
+*   2025-10-11 00:55:30 - Update dictionary.html
+*   2025-10-11 00:42:06 - Update dictionary.html
+*   2025-10-11 00:30:56 - Update dictionary.html
+*   2025-10-11 00:27:24 - Update dictionary.html
+*   2025-10-11 00:22:19 - Update dictionary.html
+*   2025-10-11 00:17:58 - Update dictionary.html
+*   2025-10-11 00:15:14 - Update dictionary.html
+*   2025-10-11 00:00:30 - Update navigation.js
+*   2025-10-10 23:59:46 - Update verify.html
+*   2025-10-10 23:59:13 - Update signup.html
+*   2025-10-10 23:58:55 - Update login.html
+*   2025-10-10 23:58:43 - Update index.html
+*   2025-10-10 23:56:34 - Update navigation.js
+*   2025-10-10 23:53:21 - Update navigation.js
+*   2025-10-10 23:49:24 - Update page-identification.json
+*   2025-10-10 23:48:47 - Update page-identification.json
+*   2025-10-10 23:40:51 - Update navigation.js
+*   2025-10-10 23:37:36 - Update navigation.js
+*   2025-10-10 23:32:15 - Update navigation.js
+*   2025-10-10 23:25:36 - Update navigation-mini.js
+*   2025-10-10 23:10:38 - Update navigation.js
+*   2025-10-10 23:05:20 - Update dashboard.html
+*   2025-10-10 23:04:39 - Update navigation-mini.js
+*   2025-10-10 23:03:59 - Update verify.html
+*   2025-10-10 23:03:41 - Update login.html
+*   2025-10-10 23:03:30 - Update signup.html
+*   2025-10-10 23:03:21 - Update index.html
+*   2025-10-10 23:03:09 - Delete logged-in/test.html
+*   2025-10-10 23:02:57 - Update base-template.html
+*   2025-10-10 23:02:46 - Update dailyphoto.html
+*   2025-10-10 23:02:27 - Update dashboard.html
+*   2025-10-10 23:02:06 - Delete logged-in/music.html
+*   2025-10-10 23:01:59 - Delete logged-in/weather.html
+*   2025-10-10 23:01:47 - Delete logged-in/messenger.html
+*   2025-10-10 23:01:37 - Update notes.html
+*   2025-10-10 22:56:13 - Update navigation.js
+*   2025-10-10 22:52:48 - Update navigation.js
+*   2025-10-10 22:27:31 - Update base-template.html
+*   2025-10-10 22:19:09 - Update messenger.html
+*   2025-10-10 22:14:43 - Update messenger.html
+*   2025-10-10 22:05:12 - Update messenger.html
+*   2025-10-10 21:53:51 - Create messenger.html
+*   2025-10-10 21:38:01 - Update base-template.html
+*   2025-10-10 21:10:20 - Update base-template.html
+*   2025-10-10 19:58:34 - Update test.html
+*   2025-10-10 19:52:34 - Update test.html
+*   2025-10-10 19:35:25 - Update test.html
+*   2025-10-10 19:20:59 - Update test.html
+*   2025-10-10 19:13:29 - Update test.html
+*   2025-10-10 19:05:23 - Update test.html
+*   2025-10-10 18:43:09 - Update dailyphoto.html
+*   2025-10-10 18:40:36 - Update dailyphoto.html
+*   2025-10-10 18:14:25 - Update test.html
+*   2025-10-10 17:56:09 - Update test.html
+*   2025-10-10 00:01:26 - Update dailyphoto.html
+*   2025-10-09 21:25:44 - Update test.html
+*   2025-10-09 20:40:30 - Update navigation.js
+*   2025-10-09 19:57:40 - Update navigation.js
+*   2025-10-09 19:34:33 - Update dailyphoto.html
+*   2025-10-09 19:29:29 - Update dailyphoto.html
+*   2025-10-09 19:25:33 - Update dailyphoto.html
+*   2025-10-09 19:23:19 - Update dailyphoto.html
+*   2025-10-09 19:17:08 - Update dailyphoto.html
+*   2025-10-09 19:01:10 - Update test.html
+*   2025-10-09 18:52:05 - Update test.html
+*   2025-10-09 18:45:27 - Update test.html
+*   2025-10-09 18:32:07 - Update test.html
+*   2025-10-09 18:18:16 - Update and rename testshort.html to test.html
+*   2025-10-09 18:05:32 - Update dailyphoto.html
+*   2025-10-09 17:43:01 - Update dailyphoto.html
+*   2025-10-09 17:27:35 - Update dailyphoto.html
+*   2025-10-09 17:09:55 - Update dailyphoto.html
+*   2025-10-09 16:26:33 - Update dailyphoto.html
+*   2025-10-09 16:13:25 - Update dailyphoto.html
+*   2025-10-09 16:10:47 - Update dailyphoto.html
+*   2025-10-09 15:50:15 - Update dailyphoto.html
+*   2025-10-09 15:45:11 - Update page-identification.json
+*   2025-10-09 15:44:39 - Update page-identification.json
+*   2025-10-09 15:43:52 - Create dailyphoto.html
+*   2025-10-09 15:43:37 - Delete logged-in/test.html
+*   2025-10-09 15:42:42 - Update test.html
+*   2025-10-09 15:20:17 - Update test.html
+*   2025-10-08 23:43:23 - Update test.html
+*   2025-10-08 23:27:34 - Update test.html
+*   2025-10-08 23:08:37 - Update test.html
+*   2025-10-08 22:59:41 - Update test.html
+*   2025-10-08 22:49:19 - Update test.html
+*   2025-10-08 21:52:32 - Update test.html
+*   2025-10-08 21:15:21 - Update test.html
+*   2025-10-08 20:56:20 - Update test.html
+*   2025-10-08 20:44:53 - Update test.html
+*   2025-10-08 20:31:23 - Update test.html
+*   2025-10-08 20:23:11 - Update test.html
+*   2025-10-08 18:55:22 - Update testshort.html
+*   2025-10-08 18:45:10 - Update testshort.html
+*   2025-10-08 18:39:39 - Update testshort.html
+*   2025-10-08 06:25:15 - Create weather.html
+*   2025-10-08 00:23:45 - Update notes.html
+*   2025-10-08 00:17:48 - Create notes.html
+*   2025-10-08 00:06:19 - Update base-template.html
+*   2025-10-08 00:05:18 - Create base-template.html
+*   2025-10-07 23:52:21 - Update testshort.html
+*   2025-10-07 23:45:11 - Update testshort.html
+*   2025-10-07 23:34:11 - Update testshort.html
+*   2025-10-07 23:25:35 - Update testshort.html
+*   2025-10-07 22:58:33 - Create testshort.html
+*   2025-10-07 22:38:02 - Update test.html
+*   2025-10-07 22:27:17 - Update test.html
+*   2025-10-07 22:20:33 - Update test.html
+*   2025-10-07 22:09:26 - Update test.html
+*   2025-10-07 21:53:45 - Update test.html
+*   2025-10-07 21:46:07 - Update test.html
+*   2025-10-07 21:37:36 - Update test.html
+*   2025-10-07 21:31:44 - Update test.html
+*   2025-10-07 20:46:31 - Update test.html
+*   2025-10-07 20:35:25 - Update test.html
+*   2025-10-07 20:19:13 - Create test.html
+*   2025-10-07 20:18:53 - Delete logged-in/test.html
+*   2025-10-07 19:05:12 - Update test.html
+*   2025-10-07 18:17:34 - Update test.html
+*   2025-10-07 18:04:42 - Update test.html
+*   2025-10-07 18:03:21 - Update page-identification.json
+*   2025-10-07 17:56:17 - Update test.html
+*   2025-10-07 17:47:08 - Update test.html
+*   2025-10-07 17:43:30 - Update test.html
+*   2025-10-07 17:34:54 - Update test.html
+*   2025-10-07 17:24:26 - Update test.html
+*   2025-10-07 17:17:20 - Update test.html
+*   2025-10-07 17:13:41 - Update test.html
+*   2025-10-07 17:08:40 - Update test.html
+*   2025-10-07 16:51:25 - Update test.html
+*   2025-10-07 16:47:53 - Update test.html
+*   2025-10-07 16:43:22 - Update test.html
+*   2025-10-07 16:06:17 - Update test.html
+*   2025-10-07 02:03:54 - Create test.html
+*   2025-10-06 02:55:06 - Update music.html
+*   2025-10-06 02:44:57 - Update music.html
+*   2025-10-06 02:37:58 - Update music.html
+*   2025-10-06 02:29:41 - Update music.html
+*   2025-10-06 02:23:25 - Update music.html
+*   2025-10-06 02:22:15 - Update music.html
+*   2025-10-06 02:20:21 - Update music.html
+*   2025-10-06 02:09:26 - Update music.html
+*   2025-10-06 02:03:19 - Update music.html
+*   2025-10-06 01:55:56 - Update music.html
+*   2025-10-06 01:50:11 - Update music.html
+*   2025-10-06 01:37:28 - Update music.html
+*   2025-10-06 01:32:07 - Update music.html
+*   2025-10-06 01:26:03 - Update music.html
+*   2025-10-06 01:22:05 - Update music.html
+*   2025-10-06 01:18:09 - Update music.html
+*   2025-10-06 01:07:42 - Update music.html
+*   2025-10-06 00:58:15 - Update music.html
+*   2025-10-06 00:49:47 - Update music.html
+*   2025-10-06 00:44:40 - Update music.html
+*   2025-10-06 00:39:16 - Update music.html
+*   2025-10-06 00:35:31 - Update music.html
+*   2025-10-06 00:32:15 - Update music.html
+*   2025-10-06 00:26:27 - Update music.html
+*   2025-10-05 23:57:01 - Create music.html
+*   2025-10-05 16:30:54 - Update dashboard.html
+*   2025-10-05 16:24:23 - Update dashboard.html
+*   2025-10-05 14:17:09 - Update dashboard.html
+*   2025-10-05 14:07:46 - Update dashboard.html
+*   2025-10-05 01:34:46 - Update dashboard.html
+*   2025-10-05 01:28:47 - Update dashboard.html
+*   2025-10-05 01:19:19 - Update dashboard.html
+*   2025-10-05 01:09:36 - Update dashboard.html
+*   2025-10-05 00:16:16 - Update dashboard.html
+*   2025-10-05 00:07:32 - Update dashboard.html
+*   2025-10-04 23:54:08 - Update navigation.js
+*   2025-10-04 23:49:47 - Update navigation.js
+*   2025-10-04 23:40:38 - Update page-identification.json
+*   2025-10-04 23:37:53 - Update navigation.js
+*   2025-10-04 23:28:23 - Update navigation.js
+*   2025-10-04 23:17:13 - Update login.html
+*   2025-10-04 23:05:23 - Update login.html
+*   2025-10-04 22:46:21 - Update login.html
+*   2025-10-04 22:42:54 - Update login.html
+*   2025-10-04 22:41:34 - Update login.html
+*   2025-10-04 22:39:52 - Update login.html
+*   2025-10-04 22:21:44 - Update signup.html
+*   2025-10-04 22:21:23 - Update login.html
+*   2025-10-04 22:18:56 - Update index.html
+*   2025-10-04 22:12:28 - Update navigation-mini.js
+*   2025-10-04 21:55:59 - Update index.html
+*   2025-10-04 21:55:24 - Update navigation-mini.js
+*   2025-10-04 21:53:03 - Update index.html
+*   2025-10-04 21:51:45 - Update index.html
+*   2025-10-04 21:50:28 - Update navigation-mini.js
+*   2025-10-04 21:45:16 - Update index.html
+*   2025-10-04 21:44:37 - Update navigation-mini.js
+*   2025-10-04 21:33:55 - Update navigation-mini.js
+*   2025-10-04 21:32:26 - Update index.html
+*   2025-10-04 21:31:30 - Update index.html
+*   2025-10-04 21:29:09 - Update navigation-mini.js
+*   2025-10-04 21:03:17 - Update navigation-mini.js
+*   2025-10-04 20:31:22 - Update navigation-mini.js
+*   2025-10-04 19:31:43 - Update navigation-mini.js
+*   2025-10-04 19:15:16 - Update index.html
+*   2025-10-04 19:13:27 - Update navigation-mini.js
+*   2025-10-04 18:27:24 - Update navigation-mini.js
+*   2025-10-04 18:08:10 - Create navigation-mini.js
+*   2025-10-04 18:07:59 - Delete navigation-mini.js
+*   2025-10-04 17:56:00 - Update navigation-mini.js
+*   2025-10-04 17:47:59 - Update login.html
+*   2025-10-04 17:10:40 - Update login.html
+*   2025-10-04 16:58:01 - Update navigation-mini.js
+*   2025-10-04 16:45:58 - Update dashboard.html
+*   2025-10-04 16:44:18 - Update navigation.js
+*   2025-10-04 16:41:05 - Update signup.html
+*   2025-10-04 16:12:23 - Update signup.html
+*   2025-10-04 16:02:32 - Update login.html
+*   2025-10-04 15:53:48 - Update login.html
+*   2025-10-04 15:46:20 - Update login.html
+*   2025-10-04 15:10:09 - Update login.html
+*   2025-10-04 13:42:31 - Update signup.html
+*   2025-10-04 13:42:09 - Update login.html
+*   2025-10-04 13:38:47 - Update index.html
+*   2025-10-04 13:20:32 - Update navigation-mini.js
+*   2025-10-04 13:17:57 - Update navigation.js
+*   2025-10-04 13:17:21 - Update firebase-config.js
+*   2025-10-04 12:58:17 - Update navigation-mini.js
+*   2025-10-04 12:58:04 - Update navigation.js
+*   2025-10-04 12:51:00 - Update navigation-mini.js
+*   2025-10-04 12:44:51 - Update navigation.js
+*   2025-10-04 12:37:29 - Update firebase-config.js
+*   2025-10-04 12:31:24 - Update firebase-config.js
+*   2025-10-04 12:29:53 - Delete main.css
+*   2025-10-04 12:29:36 - Update firebase-config.js
+*   2025-10-04 11:51:52 - Update login.html
+*   2025-10-04 05:53:31 - Update login.html
+*   2025-10-04 05:48:13 - Update login.html
+*   2025-10-04 05:47:32 - Update page-identification.json
+*   2025-10-04 05:46:21 - Delete Pages.json
+*   2025-10-04 05:46:07 - Delete injector.js
+*   2025-10-04 05:45:43 - Update signup.html
+*   2025-10-04 05:45:26 - Update login.html
+*   2025-10-04 05:44:57 - Update login.html
+*   2025-10-04 05:44:15 - Update signup.html
+*   2025-10-04 05:36:07 - Update signup.html
+*   2025-10-04 05:35:46 - Update login.html
+*   2025-10-04 05:29:11 - Update signup.html
+*   2025-10-04 05:28:33 - Update login.html
+*   2025-10-04 05:24:43 - Update navigation-mini.js
+*   2025-10-04 05:21:04 - Delete auth-logic.js
+*   2025-10-04 05:20:49 - Update navigation.js
+*   2025-10-04 05:20:18 - Update navigation-mini.js
+*   2025-10-04 05:14:50 - Update login.html
+*   2025-10-04 03:22:26 - Update login.html
+*   2025-10-04 03:20:19 - Update navigation-mini.js
+*   2025-10-04 03:05:27 - Update index.html
+*   2025-10-04 03:01:08 - Update login.html
+*   2025-10-04 02:59:39 - Update navigation-mini.js
+*   2025-10-04 02:48:53 - Update login.html
+*   2025-10-04 02:48:14 - Update navigation-mini.js
+*   2025-10-04 02:39:52 - Delete dashboard.html
+*   2025-10-04 02:39:40 - Update login.html
+*   2025-10-04 02:35:35 - Update login.html
+*   2025-10-04 02:29:52 - Update login.html
+*   2025-10-04 02:02:40 - Update login.html
+*   2025-10-04 01:53:10 - Update login.html
+*   2025-10-04 01:45:30 - Update login.html
+*   2025-10-04 01:36:14 - Update login.html
+*   2025-10-04 01:29:13 - Update index.html
+*   2025-10-04 01:28:54 - Update login.html
+*   2025-10-04 01:25:47 - Add files via upload
+*   2025-10-04 01:23:05 - Update login.html
+*   2025-10-04 01:20:46 - Add files via upload
+*   2025-10-04 01:10:10 - Update index.html
+*   2025-10-04 01:03:40 - Update index.html
+*   2025-10-04 00:49:52 - Update index.html
+*   2025-10-04 00:48:50 - Update index.html
+*   2025-10-04 00:46:03 - Update index.html
+*   2025-10-04 00:41:34 - Update index.html
+*   2025-10-04 00:35:48 - Update index.html
+*   2025-10-04 00:33:42 - Update index.html
+*   2025-10-04 00:17:57 - Update index.html
+*   2025-10-04 00:16:11 - Update index.html
+*   2025-10-03 23:28:10 - Delete dashboard.js
+*   2025-10-03 23:10:03 - Update navigation.js
+*   2025-10-03 22:35:19 - Delete fonts directory
+*   2025-10-03 22:34:55 - Add files via upload
+*   2025-10-03 22:34:21 - Create example
+*   2025-10-03 22:33:17 - Update injector.js
+*   2025-10-03 22:32:18 - Add files via upload
+*   2025-10-03 22:29:10 - Update navigation.js
+*   2025-10-03 22:25:10 - Update navigation.js
+*   2025-10-03 22:19:18 - Update and rename index.html to dashboard.html
+*   2025-10-03 21:55:29 - Update navbar-loading.js
+*   2025-09-30 21:01:34 - Update navbar-loading.js
+*   2025-09-30 20:45:16 - Update Pages.json
+*   2025-09-30 20:40:19 - Update navbar-loading.js
+*   2025-09-30 19:29:27 - Update navbar-loading.js
+*   2025-09-30 19:23:48 - Update navbar-loading.js
+*   2025-09-30 19:17:23 - Update Pages.json
+*   2025-09-30 19:11:42 - Update index.html
+*   2025-09-30 18:58:53 - Update navbar-loading.js
+*   2025-09-30 18:29:10 - Update navbar-loading.js
+*   2025-09-30 18:22:44 - Update index.html
+*   2025-09-30 18:15:35 - Update navbar-loading.js
+*   2025-09-30 18:13:04 - Update navbar-loading.js
+*   2025-09-30 18:03:31 - Update index.html
+*   2025-09-30 17:52:40 - Update navbar-loading.js
+*   2025-09-30 17:51:31 - Update index.html
+*   2025-09-30 17:51:11 - Update index.html
+*   2025-09-30 17:46:56 - Update index.html
+*   2025-09-30 17:44:47 - Update navbar-loading.js
+*   2025-09-30 17:44:15 - Update navbar-loading.js
+*   2025-09-30 17:39:43 - Update navbar-loading.js
+*   2025-09-05 18:59:12 - Update navbar-loading.js
+*   2025-09-05 18:42:38 - Update main.css
+*   2025-09-05 18:31:21 - Update navbar-loading.js
+*   2025-09-05 13:17:05 - Update navbar-loading.js
+*   2025-09-05 12:57:08 - Update navbar-loading.js
+*   2025-09-05 12:53:50 - Update index.html
+*   2025-09-05 12:49:44 - Update index.html
+*   2025-09-05 12:44:32 - Update navbar-loading.js
+*   2025-09-05 12:43:11 - Update navbar-loading.js
+*   2025-09-05 12:34:30 - Update navbar-loading.js
+*   2025-09-05 11:39:14 - Create example
+*   2025-09-05 11:35:36 - Update injector.js
+*   2025-09-05 11:31:01 - Update injector.js
+*   2025-09-05 11:07:00 - Update navbar-loading.js
+*   2025-09-05 11:04:07 - Update navbar-loading.js
+*   2025-09-05 11:03:54 - Update index.html
+*   2025-09-05 11:03:36 - Update main.css
+*   2025-09-05 10:59:51 - Update main.css
+*   2025-09-05 10:45:55 - Update main.css
+*   2025-09-05 10:45:12 - Update navbar-loading.js
+*   2025-09-05 10:43:25 - Update index.html
+*   2025-09-05 09:25:28 - Add files via upload
+*   2025-09-05 09:24:36 - Create example
