@@ -1020,16 +1020,23 @@
 
                             <!-- Letter Avatar Options -->
                             <div id="pfpLetterSettings" class="hidden flex flex-col gap-4 mt-2">
-                                <label class="block text-gray-400 text-xs mb-1 font-light">Custom Text (Max 3)</label>
-                                <div class="flex gap-4 items-center mb-4">
-                                    <input type="text" id="pfp-custom-text" maxlength="3" class="input-text-style w-24 text-center uppercase" placeholder="A">
-                                    <p class="text-xs text-gray-500">Leave empty to use username initial.</p>
+                                <div class="flex items-center gap-6 mb-4">
+                                    <!-- Interactive Preview -->
+                                    <div id="pfp-letter-preview" class="w-24 h-24 rounded-[24px] flex items-center justify-center text-white text-3xl font-bold shadow-lg border border-white/10 cursor-text relative overflow-hidden group" style="background: linear-gradient(135deg, #374151 0%, #111827 100%);">
+                                        <input type="text" id="pfp-letter-input" maxlength="3" class="absolute inset-0 w-full h-full bg-transparent border-none outline-none text-center uppercase cursor-text placeholder-white/20" placeholder="A">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <label class="block text-gray-400 text-xs uppercase tracking-wider font-bold">Letter Preview</label>
+                                        <p class="text-xs text-gray-500 max-w-[200px]">Type directly in the box to set your avatar text (Max 3).</p>
+                                    </div>
                                 </div>
                                 
-                                <label class="block text-gray-400 text-xs mb-2 font-light">Background Color</label>
-                                <div class="flex flex-wrap gap-2 mb-6" id="pfp-color-grid"></div>
+                                <label class="block text-gray-400 text-xs mb-2 uppercase tracking-wider font-bold">Background Color</label>
+                                <div class="color-palette-grid mb-6" id="pfp-color-grid"></div>
                                 
-                                <button id="save-letter-pfp-btn" class="btn-toolbar-style btn-primary-override w-full justify-center">Set Letter Avatar</button>
+                                <button id="save-letter-pfp-btn" class="btn-toolbar-style btn-primary-override w-full justify-center">
+                                    <i class="fa-solid fa-check mr-2"></i> Set Letter Avatar
+                                </button>
                             </div>
 
                             <!-- Mibi Avatar Settings (Hidden by default) -->
@@ -1058,7 +1065,7 @@
                                             
                                             <!-- LEFT: Live Preview -->
                                             <div id="mac-preview-wrapper" class="w-1/2 flex flex-col items-center justify-center bg-[#0a0a0a] p-8 border-r border-[#333] transition-all duration-500 ease-in-out z-10">
-                                                <div class="relative h-64 md:h-80 aspect-square rounded-[48px] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
+                                                <div class="relative h-64 md:h-80 aspect-square rounded-[56px] overflow-hidden border-4 border-[#333] shadow-lg mb-6 transition-all duration-300 hover:border-dashed hover:border-white cursor-pointer flex-shrink-0" id="mac-preview-container" style="aspect-ratio: 1/1;">
                                                     <!-- Background (Static) -->
                                                     <div id="mac-preview-bg" class="absolute inset-0 w-full h-full transition-colors duration-300"></div>
                                                     
@@ -3657,25 +3664,38 @@ const performAccountDeletion = async (credential) => {
                 updatePfpUi(currentPfpType);
 
                 // --- Letter Avatar Logic ---
-                const pfpCustomText = document.getElementById('pfp-custom-text');
+                const pfpLetterInput = document.getElementById('pfp-letter-input');
+                const pfpLetterPreview = document.getElementById('pfp-letter-preview');
                 const pfpColorGrid = document.getElementById('pfp-color-grid');
                 const saveLetterBtn = document.getElementById('save-letter-pfp-btn');
-                let selectedLetterColor = userData.pfpLetterBg || '#3B82F6';
+                let selectedLetterColor = userData.pfpLetterBg || '#374151';
 
-                if (pfpCustomText) pfpCustomText.value = userData.letterAvatarText || "";
+                if (pfpLetterInput) pfpLetterInput.value = userData.letterAvatarText || "";
                 
+                if (pfpLetterPreview) {
+                    pfpLetterPreview.style.backgroundColor = selectedLetterColor;
+                    if (selectedLetterColor.includes('gradient')) {
+                        pfpLetterPreview.style.background = selectedLetterColor;
+                    }
+                }
+
                 if (pfpColorGrid) {
                     pfpColorGrid.innerHTML = '';
                     letterColors.forEach(color => {
                         const d = document.createElement('div');
-                        d.className = 'w-8 h-8 rounded-[16px] cursor-pointer border-2 transition hover:scale-110 ' + (selectedLetterColor === '#' + color ? 'border-white' : 'border-transparent');
-                        d.style.backgroundColor = '#' + color;
+                        const hexColor = color.startsWith('#') ? color : '#' + color;
+                        const isSelected = selectedLetterColor === hexColor;
+                        
+                        d.className = `color-option ${isSelected ? 'selected' : ''}`;
+                        d.style.backgroundColor = hexColor;
+                        
                         d.onclick = () => {
-                            selectedLetterColor = '#' + color;
-                            pfpColorGrid.querySelectorAll('div').forEach(el => el.classList.replace('border-white', 'border-transparent'));
-                            d.classList.replace('border-transparent', 'border-white');
-                            // Update live preview in settings
-                            previewPlaceholder.style.backgroundColor = selectedLetterColor;
+                            selectedLetterColor = hexColor;
+                            pfpColorGrid.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+                            d.classList.add('selected');
+                            // Update live preview
+                            pfpLetterPreview.style.background = 'none';
+                            pfpLetterPreview.style.backgroundColor = hexColor;
                         };
                         pfpColorGrid.appendChild(d);
                     });
@@ -3683,7 +3703,7 @@ const performAccountDeletion = async (credential) => {
 
                 if (saveLetterBtn) {
                     saveLetterBtn.onclick = async () => {
-                        const text = pfpCustomText.value.trim().toUpperCase();
+                        const text = pfpLetterInput.value.trim().toUpperCase();
                         showMessage(pfpMessage, 'Saving...', 'warning');
                         try {
                             await updateDoc(userDocRef, {
