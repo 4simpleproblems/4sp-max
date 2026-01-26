@@ -10,64 +10,80 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="../navigation-mini.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Unified Tailwind CSS configuration for a consistent dark theme
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'custom-darkest-gray': '#040404', // Body background
-                        'custom-dark-gray': '#111111',    // Form container background
-                        'custom-medium-gray': '#252525', // Borders, inputs, buttons
-                        'custom-light-gray': '#505050',  // Labels and secondary text
-                        'custom-lighter-gray': '#808080', // Hover states and subtle text
-                        'custom-white-gray': '#c0c0c0',  // Main text and headings
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <script src="injector.js"></script>
+    <script src="navigation.js"></script>
+
     <style>
-        :root {
-            --geist-foreground: 192, 192, 192; /* custom-white-gray */
-            --geist-background: 7, 7, 7;       /* custom-darkest-gray */
+        body { 
+            font-family: 'Geist', sans-serif; 
+            background-color: #040404; 
+            color: #c0c0c0; 
+            font-weight: 300;
         }
 
-        body {
-            font-family: 'Geist', sans-serif;
-            background-color: rgb(var(--geist-background));
-            color: rgb(var(--geist-foreground));
-            transition: all 0.3s ease;
-            font-weight: 300; /* CUSTOM: Lighter base font weight */
-        }
-
-        /* CUSTOM: Lighter bold/headings to match notes.html */
         h1, h2, h3, .font-bold, .font-semibold, strong, .tracking-tighter {
             font-weight: 400 !important;
         }
 
-        .btn-social {
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+        .auth-container {
+            background-color: #111111;
+            border: 1px solid #252525;
+            border-radius: 1.25rem;
+            padding: 2rem;
         }
-        .btn-social:hover {
-            /* Keep existing hover effect for social buttons */
-            background-color: rgba(37, 37, 37, 0.7); /* custom-medium-gray with transparency */
-            border-color: #383838;
+
+        .input-style {
+            width: 100%; 
+            padding: 0.75rem; 
+            border: 1px solid #252525; 
+            background-color: #040404; 
+            border-radius: 14px; 
+            color: #c0c0c0; 
+            transition: all 0.2s;
         }
-        
+        .input-style:focus {
+            border-color: #505050; 
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(80, 80, 80, 0.5);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border-radius: 14px;
+            font-weight: 400;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #6366f1;
+        }
+        .btn-secondary {
+            background-color: #111111;
+            color: #c0c0c0;
+            border: 1px solid #252525;
+        }
+        .btn-secondary:hover {
+            background-color: #1f1f1f;
+            border-color: #505050;
+        }
+
         .message-area { min-height: 20px; }
-        .error-message { color: #f87171; font-weight: 400; /* Match new heading weight */ }
-        .success-message { color: #4ade80; font-weight: 400; }
-        .warning-message { color: #fbbf24; font-weight: 400; }
+        .error-message { color: #f87171; }
+        .success-message { color: #4ade80; }
+        .warning-message { color: #fbbf24; }
         
-        .auth-split-container { max-width: 1200px; margin: 0 auto; }
-        @media (min-width: 768px) { .auth-col { } }
         @media (max-width: 767px) {
             .right-col { display: none; }
-            .left-col { border-right: none; }
         }
     </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
@@ -80,25 +96,25 @@
 </script>
     
 </head>
-<body class="bg-custom-darkest-gray text-custom-white-gray min-h-screen flex flex-col">
+<body class="bg-[#040404] text-[#c0c0c0] min-h-screen flex flex-col">
 
     <div id="navbar-container"></div>
-    <main class="flex-grow flex items-stretch justify-center p-0">
-        <div class="auth-split-container bg-custom-darkest-gray flex flex-wrap w-full border-0 overflow-hidden p-0">
-            <div class="auth-col left-col flex-1 p-8 flex flex-col justify-center items-center bg-custom-darkest-gray min-w-[300px]">
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl grid md:grid-cols-2 gap-0 auth-container overflow-hidden">
+            <div class="left-col flex-1 p-8 flex flex-col justify-center items-center">
 
                 <div id="loginContainer" class="w-full flex flex-col items-center">
-                    <h2 class="text-3xl font-normal text-custom-white-gray mb-6 text-center w-full tracking-tighter">Login to Your Account</h2>
+                    <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Login to Your Account</h2>
                     <form id="loginForm" novalidate class="w-full max-w-md"> 
                         <div class="mb-5">
                             <label for="loginEmail" class="block mb-2 text-custom-light-gray text-sm font-light text-left">Email</label>
-                            <input type="email" id="loginEmail" placeholder="Enter your email" required class="w-full p-3 border border-custom-medium-gray bg-custom-dark-gray rounded-xl text-custom-white-gray transition focus:border-custom-light-gray focus:ring focus:ring-custom-light-gray/50 focus:outline-none">
+                            <input type="email" id="loginEmail" placeholder="Enter your email" required class="input-style">
                         </div>
                         <div class="mb-5">
                             <label for="loginPassword" class="block mb-2 text-custom-light-gray text-sm font-light text-left">Password</label>
-                            <input type="password" id="loginPassword" placeholder="Enter your password" required class="w-full p-3 border border-custom-medium-gray bg-custom-dark-gray rounded-xl text-custom-white-gray transition focus:border-custom-light-gray focus:ring focus:ring-custom-light-gray/50 focus:outline-none">
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required class="input-style">
                         </div>
-                        <button type="submit" class="w-full p-3 text-lg rounded-xl font-normal ring-1 ring-white/20 text-white bg-white/5 hover:bg-white/10 transition">LOGIN</button>
+                        <button type="submit" class="btn btn-primary">LOGIN</button>
                     </form>
                     <div id="loginMessage" class="message-area w-full max-w-md mt-4 text-center text-sm"></div>
                     <div class="w-full max-w-md mt-4 text-center"> 
@@ -111,14 +127,14 @@
                 </div>
 
                 <div id="resetPasswordContainer" class="w-full flex-col items-center" style="display: none;">
-                    <h2 class="text-3xl font-normal text-custom-white-gray mb-6 text-center w-full tracking-tighter">Reset Your Password</h2>
+                    <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Reset Your Password</h2>
                     <p class="text-custom-light-gray text-base mb-6 text-center max-w-md font-normal">Enter your email address and we'll send you a link to reset your password.</p>
                     <form id="resetPasswordForm" novalidate class="w-full max-w-md">
                         <div class="mb-5">
                             <label for="resetEmail" class="block mb-2 text-custom-light-gray text-sm font-light text-left">Email</label>
-                            <input type="email" id="resetEmail" placeholder="Enter your registered email" required class="w-full p-3 border border-custom-medium-gray bg-custom-dark-gray rounded-xl text-custom-white-gray transition focus:border-custom-light-gray focus:ring focus:ring-custom-light-gray/50 focus:outline-none">
+                            <input type="email" id="resetEmail" placeholder="Enter your registered email" required class="input-style">
                         </div>
-                        <button type="submit" class="w-full p-3 text-lg rounded-xl font-normal ring-1 ring-white/20 text-white bg-white/5 hover:bg-white/10 transition">SEND RESET LINK</button>
+                        <button type="submit" class="btn btn-primary">SEND RESET LINK</button>
                     </form>
                     <div id="resetMessage" class="message-area w-full max-w-md mt-4 text-center text-sm"></div>
                     <div class="w-full max-w-md mt-6 text-center"> 
@@ -127,14 +143,14 @@
                 </div>
 
                 <div id="usernameContainer" class="w-full flex-col items-center" style="display: none;">
-                    <h2 class="text-3xl font-normal text-custom-white-gray mb-6 text-center w-full tracking-tighter">Choose Your Username</h2>
+                    <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Choose Your Username</h2>
                     <form id="usernameForm" novalidate class="w-full max-w-md"> 
                         <div class="mb-5">
                             <label for="signupUsername" class="block mb-2 text-custom-light-gray text-sm font-light text-left">Username</label>
-                            <input type="text" id="signupUsername" placeholder="6-24 characters, including symbols" required class="w-full p-3 border border-custom-medium-gray bg-custom-dark-gray rounded-xl text-custom-white-gray transition focus:border-custom-light-gray focus:ring focus:ring-custom-light-gray/50 focus:outline-none">
+                            <input type="text" id="signupUsername" placeholder="6-24 characters, including symbols" required class="input-style">
                             <p class="text-xs text-custom-lighter-gray mt-2 text-left font-light">Allowed symbols: .,-+\_!?$</p>
                         </div>
-                        <button type="submit" class="w-full p-3 text-lg rounded-xl font-normal ring-1 ring-white/20 text-white bg-white/5 hover:bg-white/10 transition">NEXT</button>
+                        <button type="submit" class="btn btn-primary">NEXT</button>
                     </form>
                     <div id="usernameMessage" class="message-area w-full max-w-md mt-4 text-center text-sm"></div>
                     <p class="text-sm text-custom-light-gray mt-6 text-center w-full max-w-md">
@@ -144,18 +160,18 @@
                 </div>
                 
                 <div id="signupContainer" class="w-full flex-col items-center" style="display: none;">
-                    <h2 class="text-3xl font-normal text-custom-white-gray mb-6 text-center w-full tracking-tighter">Set Your Credentials</h2>
+                    <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Set Your Credentials</h2>
                     <form id="signupForm" novalidate class="w-full max-w-md"> 
                         <div class="mb-5">
                             <label for="signupEmail" class="block mb-2 text-custom-light-gray text-sm font-light text-left">Email</label>
-                            <input type="email" id="signupEmail" placeholder="Enter your email" required class="w-full p-3 border border-custom-medium-gray bg-custom-dark-gray rounded-xl text-custom-white-gray transition focus:border-custom-light-gray focus:ring focus:ring-custom-light-gray/50 focus:outline-none">
+                            <input type="email" id="signupEmail" placeholder="Enter your email" required class="input-style">
                         </div>
                         <div class="mb-5">
                             <label for="signupPassword" class="block mb-2 text-custom-light-gray text-sm font-light text-left">Password</label>
-                            <input type="password" id="signupPassword" placeholder="Enter your password" required class="w-full p-3 border border-custom-medium-gray bg-custom-dark-gray rounded-xl text-custom-white-gray transition focus:border-custom-light-gray focus:ring focus:ring-custom-light-gray/50 focus:outline-none">
+                            <input type="password" id="signupPassword" placeholder="Enter your password" required class="input-style">
                             <p class="text-xs text-custom-lighter-gray mt-2 text-left font-light">At least 8 characters, including a number, an uppercase, and a lowercase letter.</p>
                         </div>
-                        <button type="submit" class="w-full p-3 text-lg rounded-xl font-normal ring-1 ring-white/20 text-white bg-white/5 hover:bg-white/10 transition">CREATE ACCOUNT</button>
+                        <button type="submit" class="btn btn-primary">CREATE ACCOUNT</button>
                     </form>
                     <div id="signupMessage" class="message-area w-full max-w-md mt-4 text-center text-sm"></div>
                     <div class="w-full max-w-md mt-6 text-center"> 
@@ -165,27 +181,27 @@
 
             </div>
 
-            <div class="auth-col right-col flex-1 p-8 flex flex-col justify-center items-center bg-custom-darkest-gray">
+            <div class="right-col flex-1 p-8 flex flex-col justify-center items-center">
                 <div class="w-full flex flex-col items-center justify-center">
-                    <h2 class="text-3xl font-normal text-custom-white-gray mb-6 text-center w-full tracking-tighter">Continue instantly</h2>
+                    <h2 class="text-3xl font-normal text-white mb-6 text-center w-full tracking-tighter">Continue instantly</h2>
                     <p class="text-lg text-custom-light-gray mb-8 text-center max-w-md font-normal">
                         Use a trusted provider to sign in or create an account in one click.
                     </p>
                     
-                    <button id="googleAuthBtn" class="btn-social flex items-center justify-center w-full max-w-md p-3 bg-custom-dark-gray text-custom-white-gray border border-custom-medium-gray rounded-xl font-normal cursor-pointer mb-3">
+                    <button id="googleAuthBtn" class="btn btn-secondary mb-3">
                         <img src="images/google-icon.png" alt="Google Logo" class="w-6 h-6 mr-3">
                         Continue with Google
                     </button>
-                    <button id="microsoftAuthBtn" class="btn-social flex items-center justify-center w-full max-w-md p-3 bg-custom-dark-gray text-custom-white-gray border border-custom-medium-gray rounded-xl font-normal cursor-pointer mb-3">
+                    <button id="microsoftAuthBtn" class="btn btn-secondary mb-3">
                         <img src="images/microsoft.png" alt="Microsoft Logo" class="w-6 h-6 mr-3">
                         Continue with Microsoft
                     </button>
-                    <button id="githubAuthBtn" class="btn-social flex items-center justify-center w-full max-w-md p-3 bg-custom-dark-gray text-custom-white-gray border border-custom-medium-gray rounded-xl font-normal cursor-pointer mb-3">
+                    <button id="githubAuthBtn" class="btn btn-secondary mb-3">
                         <img src="images/github-mark-white.png" alt="GitHub Logo" class="w-6 h-6 mr-3">
                         Continue with GitHub
                     </button>
                     
-                    <button id="twitterAuthBtn" class="btn-social flex items-center justify-center w-full max-w-md p-3 bg-custom-dark-gray text-custom-white-gray border border-custom-medium-gray rounded-xl font-normal cursor-pointer mb-3">
+                    <button id="twitterAuthBtn" class="btn btn-secondary mb-3">
                         <img src="../images/x.png" alt="X Logo" class="w-6 h-6 mr-3">
                         Continue with X
                     </button>

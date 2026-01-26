@@ -19,55 +19,48 @@
 
     <style>
         html { scroll-behavior: smooth; }
-        :root {
-            --geist-foreground: 255, 255, 255;
-            --geist-background: 0, 0, 0;
-        }
-        .dark { color-scheme: dark; }
         body { 
             font-family: 'Geist', sans-serif; 
             background-color: #040404; 
             color: #c0c0c0; 
-            transition: all 0.3s ease;
-            font-size: 16px;
             font-weight: 300;
         }
-
         h1, h2, h3, .font-bold, .font-semibold, strong, .tracking-widest {
             font-weight: 400 !important;
-        }
-        
-        /* Emphasis class for slightly bolder text */
-        .text-emphasis {
-            font-weight: 500 !important; 
-            color: #ffffff;
         }
         #page-content {
             padding-top: 64px;
         }
-        
         .gradient-text {
             background-image: linear-gradient(90deg, #0070f3, #f81ce5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
-        /* Custom scrollbar to match dark theme */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 14px;
+            font-weight: 400;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid #252525;
+            background-color: #111111;
+            color: #c0c0c0;
         }
-        ::-webkit-scrollbar-track {
-            background: #000;
+        .btn:hover {
+            background-color: #1f1f1f;
+            border-color: #505050;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 4px;
+        .legal-card {
+            background-color: #111111;
+            border: 1px solid #252525;
+            border-radius: 1.25rem;
+            padding: 1.5rem;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #444;
-        }
-
         .legal-list-item {
             position: relative;
             padding-left: 1.5rem;
@@ -76,7 +69,7 @@
             content: "•";
             position: absolute;
             left: 0;
-            color: #6b7280; /* gray-500 */
+            color: #6b7280;
         }
     </style>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1D4F692C1Q"></script>
@@ -88,7 +81,7 @@
       gtag('config', 'G-1D4F692C1Q');
     </script>
 </head>
-<body class="bg-black text-white min-h-screen flex flex-col">
+<body class="bg-[#040404] text-white min-h-screen flex flex-col">
     <div id="page-content">
         <main class="flex-grow">
         <!-- Header Section -->
@@ -102,10 +95,10 @@
                 </p>
                 
                 <div class="flex flex-wrap justify-center gap-4 mt-8">
-                    <a href="#terms-of-service" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-normal rounded-xl shadow-sm text-white bg-white/10 ring-1 ring-white/20 hover:bg-white/20 transition">
+                    <a href="#terms-of-service" class="btn">
                         Terms of Service
                     </a>
-                    <a href="#privacy-policy" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-normal rounded-xl shadow-sm text-white bg-white/10 ring-1 ring-white/20 hover:bg-white/20 transition">
+                    <a href="#privacy-policy" class="btn">
                         Privacy Policy
                     </a>
                 </div>
@@ -113,21 +106,21 @@
         </section>
 
         <!-- Content Section -->
-        <div class="mx-auto max-w-6xl px-4 py-16 space-y-24">
+        <div class="mx-auto max-w-6xl px-4 py-16 space-y-16">
 
             <!-- TERMS OF SERVICE -->
             <section id="terms-of-service" class="scroll-mt-24">
-                <div class="mb-8">
+                <div class="mb-8 text-center">
                     <span class="text-sm font-light text-blue-400 uppercase tracking-widest mb-2 block">Agreement</span>
                     <h2 class="text-4xl font-light mb-6">Terms of Service</h2>
-                    <p class="text-xl text-gray-400 font-light leading-relaxed">
-                        Welcome to 4simpleproblems (4SP). By accessing or using our website, tools, or services, you agree to be bound by these Terms of Service. If you do not agree to all the terms and conditions, then you may not access the website or use any services.
+                    <p class="text-xl text-gray-400 font-light leading-relaxed max-w-3xl mx-auto">
+                        Welcome to 4simpleproblems (4SP). By accessing or using our website, tools, or services, you agree to be bound by these Terms of Service. If you do not agree, you may not use any services.
                     </p>
                 </div>
 
-                <div class="space-y-12">
+                <div class="space-y-8">
                     <!-- 1. Conduct -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">1. User Responsibility & Conduct</h3>
                         <p class="text-lg text-gray-400 font-light mb-4">
                             You are solely responsible for your conduct and any data, text, information, graphics, photos, profiles, audio, and video clips ("Content") that you submit, post, and display on the 4SP service.
@@ -141,7 +134,7 @@
                     </div>
 
                     <!-- 2. Feature Disclaimers -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">2. Feature-Specific Disclaimers</h3>
                         
                         <div class="mb-8">
@@ -171,7 +164,7 @@
                     </div>
 
                     <!-- 3. Governance -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">3. Administration & Governance</h3>
                         <p class="text-lg text-gray-400 font-light mb-4">
                             The Creator and Owner of 4simpleproblems (<span class="text-gray-200">4simpleproblems@gmail.com</span>) retains absolute authority over the platform.
@@ -185,7 +178,7 @@
                     </div>
 
                     <!-- 4. Liability -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">4. Limitation of Liability</h3>
                         <p class="text-lg text-gray-400 font-light leading-relaxed">
                             In no event shall 4simpleproblems be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
@@ -193,7 +186,7 @@
                     </div>
 
                     <!-- 5. Additional Services -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">5. Additional Services & Systems (VERN, VELIUM, VORA, VANA)</h3>
                         <p class="text-lg text-gray-400 font-light mb-4">
                             The 4SP platform integrates several advanced systems and services, including but not limited to VERN, VELIUM, VORA, and VANA. These systems provide enhanced functionalities and are governed by the same Terms of Service.
@@ -209,47 +202,47 @@
 
             <!-- PRIVACY POLICY -->
             <section id="privacy-policy" class="scroll-mt-24 pt-12 border-t border-gray-900">
-                <div class="mb-8">
+                <div class="mb-8 text-center">
                     <span class="text-sm font-light text-purple-400 uppercase tracking-widest mb-2 block">Data Handling</span>
                     <h2 class="text-4xl font-light mb-6">Privacy Policy</h2>
-                    <p class="text-xl text-gray-400 font-light leading-relaxed">
+                    <p class="text-xl text-gray-400 font-light leading-relaxed max-w-3xl mx-auto">
                         Your privacy is important to us. This policy details exactly how we collect, use, and protect your information.
                     </p>
                 </div>
 
-                <div class="space-y-12">
+                <div class="space-y-8">
                     <!-- 1. Info Collection -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">1. Information We Collect</h3>
                         
                         <div class="mb-6">
                             <h4 class="text-lg text-gray-200 font-normal mb-2">A. Account Information (Google Firebase)</h4>
                             <p class="text-gray-400 font-light mb-2">When you sign in, we collect and store:</p>
-                            <ul class="space-y-1 text-gray-500 font-light text-sm">
-                                <li>• Email address</li>
-                                <li>• Display name/Username</li>
-                                <li>• Unique user identifier (UID)</li>
-                                <li>• Profile picture URL</li>
+                            <ul class="space-y-1 text-gray-500 font-light text-sm list-disc list-inside">
+                                <li>Email address</li>
+                                <li>Display name/Username</li>
+                                <li>Unique user identifier (UID)</li>
+                                <li>Profile picture URL</li>
                             </ul>
                         </div>
 
                         <div class="mb-6">
                             <h4 class="text-lg text-gray-200 font-normal mb-2">B. Analytics (Google Analytics)</h4>
                             <p class="text-gray-400 font-light mb-2">To understand usage, we may collect:</p>
-                            <ul class="space-y-1 text-gray-500 font-light text-sm">
-                                <li>• IP address and general location</li>
-                                <li>• Browser type and device info</li>
-                                <li>• Page visit duration</li>
+                            <ul class="space-y-1 text-gray-500 font-light text-sm list-disc list-inside">
+                                <li>IP address and general location</li>
+                                <li>Browser type and device info</li>
+                                <li>Page visit duration</li>
                             </ul>
                         </div>
 
                         <div class="mb-6">
                             <h4 class="text-lg text-gray-200 font-normal mb-2">C. Internal Analytics</h4>
                             <p class="text-gray-400 font-light mb-2">We use an internal tracking system to improve site navigation and content. This system records:</p>
-                            <ul class="space-y-1 text-gray-500 font-light text-sm">
-                                <li>• Pages visited and time spent on each page</li>
-                                <li>• Session duration</li>
-                                <li>• Timestamps of activity</li>
+                            <ul class="space-y-1 text-gray-500 font-light text-sm list-disc list-inside">
+                                <li>Pages visited and time spent on each page</li>
+                                <li>Session duration</li>
+                                <li>Timestamps of activity</li>
                             </ul>
                             <p class="text-gray-500 font-light text-sm mt-1">This data is stored securely in our Firestore database and is used solely for site improvement.</p>
                         </div>
@@ -263,7 +256,7 @@
                     </div>
 
                     <!-- 2. Local Storage -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">2. Local Storage & IndexedDB</h3>
                         <p class="text-lg text-gray-400 font-light mb-4">
                             Certain features store data <span class="text-white font-normal">locally on your device</span>. This data is NOT sent to our servers unless explicitly uploaded (e.g. during an export/import).
@@ -277,7 +270,7 @@
                     </div>
 
                     <!-- 3. Third Party -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">3. Third-Party Services</h3>
                         <p class="text-lg text-gray-400 font-light mb-4">
                             Our website interacts with third-party APIs:
@@ -290,7 +283,7 @@
                     </div>
 
                     <!-- 4. Security -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">4. Data Security & Deletion</h3>
                         <p class="text-lg text-gray-400 font-light leading-relaxed">
                             We use Google Firebase to secure your data. You have the right to delete your account at any time via the Settings page. Deleting your account removes authentication credentials, though some logs may remain in backups for a limited period.
@@ -298,7 +291,7 @@
                     </div>
 
                     <!-- 5. Contact -->
-                    <div class="border-l border-gray-800 pl-6">
+                    <div class="legal-card">
                         <h3 class="text-2xl font-light text-white mb-4">5. Contact</h3>
                         <p class="text-lg text-gray-400 font-light">
                             Questions? Contact the Owner at <a href="mailto:4simpleproblems@gmail.com" class="text-blue-400 hover:underline">4simpleproblems@gmail.com</a>.
