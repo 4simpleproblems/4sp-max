@@ -306,8 +306,23 @@ function renderResults(results) {
 
 function openLikedSongs() {
     closeLibraryDrawer(); currentPlaylistId = null; mainHeader.textContent = "Liked Songs"; contentArea.className = '';
-    let html = `<div class="artist-header"><div class="w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-4xl shadow-lg"><i class="fas fa-heart"></i></div><div class="artist-info"><p>${library.likedSongs.length} song${library.likedSongs.length!==1?'s':''}</p></div></div><div class="song-list mt-8">${library.likedSongs.map((item, idx) => createSongRow(item, null, idx)).join('')}</div>`;
-    if (library.likedSongs.length === 0) html += `<div class="text-center text-gray-500 mt-10">You haven't liked any songs yet.</div>`;
+    let html = `
+        <div class="flex flex-col md:flex-row items-center gap-8 p-8 bg-[#0a0a0a] rounded-3xl border border-[#333] mb-8">
+            <div class="w-48 h-48 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-6xl shadow-2xl">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="flex flex-col gap-2 text-center md:text-left">
+                <h2 class="text-4xl font-bold text-white">Liked Songs</h2>
+                <p class="text-gray-400 text-lg">${library.likedSongs.length} song${library.likedSongs.length!==1?'s':''}</p>
+                <div class="flex gap-3 mt-4 justify-center md:justify-start">
+                    <button onclick="playSong(library.likedSongs[0], 0, library.likedSongs)" class="btn-toolbar-style active px-8 py-3 rounded-full">
+                        <i class="fas fa-play"></i> Play All
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="song-list space-y-3 px-2">${library.likedSongs.map((item, idx) => createSongRow(item, null, idx)).join('')}</div>`;
+    if (library.likedSongs.length === 0) html += `<div class="text-center text-gray-500 mt-20 py-20 bg-[#0a0a0a] rounded-3xl border border-dashed border-[#333]">You haven't liked any songs yet.</div>`;
     contentArea.innerHTML = html;
     attachListEvents(library.likedSongs, null, library.likedSongs);
 }
@@ -317,12 +332,29 @@ function openPlaylist(playlistId) {
     mainHeader.textContent = pl.name; contentArea.className = '';
     const lastUpdated = new Date(pl.updatedAt).toLocaleDateString();
     
-    // Filter valid songs
     const validSongs = pl.songs.filter(s => s && (s.id || s.url || (s.song && s.song.url)));
     
-    let coverHtml = pl.cover ? `<img src="${pl.cover}" class="w-32 h-32 rounded-lg object-cover shadow-lg border border-[#333]">` : `<div class="w-32 h-32 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center text-white text-4xl shadow-lg"><i class="fas fa-music"></i></div>`;
-    let html = `<div class="artist-header relative group">${coverHtml}<div class="artist-info"><p>${validSongs.length} song${validSongs.length!==1?'s':''} • Updated: ${lastUpdated}</p><button onclick="openEditPlaylistModal()" class="btn-toolbar-style mt-4"><i class="fas fa-pen"></i> Edit Playlist</button></div></div><div class="song-list mt-8">${validSongs.map((item, idx) => createSongRow(item, playlistId, idx)).join('')}</div>`;
-    if (validSongs.length === 0) html += `<div class="text-center text-gray-500 mt-10">This playlist is empty.</div>`;
+    let coverHtml = pl.cover ? `<img src="${pl.cover}" class="w-48 h-48 rounded-2xl object-cover shadow-2xl border border-[#333]">` : `<div class="w-48 h-48 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center text-white text-6xl shadow-2xl"><i class="fas fa-music"></i></div>`;
+    
+    let html = `
+        <div class="flex flex-col md:flex-row items-center gap-8 p-8 bg-[#0a0a0a] rounded-3xl border border-[#333] mb-8">
+            ${coverHtml}
+            <div class="flex flex-col gap-2 text-center md:text-left">
+                <h2 class="text-4xl font-bold text-white">${pl.name}</h2>
+                <p class="text-gray-400 text-lg">${validSongs.length} song${validSongs.length!==1?'s':''} • Updated: ${lastUpdated}</p>
+                <div class="flex gap-3 mt-4 justify-center md:justify-start">
+                    <button onclick="playSong(library.playlists.find(p => p.id === '${playlistId}').songs[0], 0, library.playlists.find(p => p.id === '${playlistId}').songs)" class="btn-toolbar-style active px-8 py-3 rounded-full" ${validSongs.length === 0 ? 'disabled' : ''}>
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <button onclick="openEditPlaylistModal()" class="btn-toolbar-style px-6 py-3">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="song-list space-y-3 px-2">${validSongs.map((item, idx) => createSongRow(item, playlistId, idx)).join('')}</div>`;
+    
+    if (validSongs.length === 0) html += `<div class="text-center text-gray-500 mt-20 py-20 bg-[#0a0a0a] rounded-3xl border border-dashed border-[#333]">This playlist is empty.</div>`;
     contentArea.innerHTML = html;
     attachListEvents(validSongs, playlistId, validSongs);
 }
@@ -331,11 +363,32 @@ function createSongRow(item, contextPlaylistId = null, index) {
     const imgUrl = getImageUrl(item), song = item.song || item, author = item.author || { name: item.primaryArtists || '' }, durationStr = formatTime(song.duration), trackUrl = song.url || item.url;
     const isLiked = library.likedSongs.some(s => (s.id && s.id === item.id) || (trackUrl && (s.song?.url || s.url) === trackUrl));
     let uniqueId = item.id || trackUrl || (song.name + author.name);
-    // Append index to ensure uniqueness in DOM
     const domId = btoa(String(uniqueId)).substring(0, 16).replace(/[/+=]/g, '') + `-${index}`;
     
-    let actionBtnHtml = contextPlaylistId ? `<button id="remove-${domId}" class="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-500 transition-all"><i class="fas fa-minus"></i></button>` : `<button id="add-${domId}" class="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition-all"><i class="fas fa-plus"></i></button>`;
-    return `<div id="row-${domId}" class="song-row flex items-center p-3 bg-[#111] hover:bg-[#1a1a1a] rounded-2xl border border-[#252525] transition-colors gap-4 cursor-pointer">` + `<img src="${imgUrl}" loading="lazy" class="w-12 h-12 rounded-lg object-cover"><div class="flex-grow overflow-hidden"><div class="text-white font-medium truncate">${song.name}</div><div class="text-gray-500 text-xs truncate">${author.name}</div></div><div class="flex items-center gap-3"><div class="text-gray-600 text-xs">${durationStr}</div>${actionBtnHtml}<button id="like-${domId}" class="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center ${isLiked?'text-red-500 border-red-500':'text-gray-400 hover:text-white hover:border-white'}"><i class="${isLiked?'fas':'far'} fa-heart"></i></button><button id="play-${domId}" class="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition-all"><i class="fas fa-play"></i></button></div></div>`;
+    let actionBtnHtml = contextPlaylistId ? 
+        `<button id="remove-${domId}" class="w-10 h-10 rounded-xl border border-[#333] flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-500 transition-all bg-black/40" title="Remove from Playlist"><i class="fas fa-minus"></i></button>` : 
+        `<button id="add-${domId}" class="w-10 h-10 rounded-xl border border-[#333] flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition-all bg-black/40" title="Add to Playlist"><i class="fas fa-plus"></i></button>`;
+
+    return `
+        <div id="row-${domId}" class="song-row group flex items-center p-4 bg-[#0a0a0a] hover:bg-[#111] rounded-2xl border border-[#252525] transition-all gap-5 cursor-pointer">
+            <div class="relative w-14 h-14 flex-shrink-0">
+                <img src="${imgUrl}" loading="lazy" class="w-full h-full rounded-xl object-cover shadow-lg border border-white/5">
+                <div class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fas fa-play text-white text-sm"></i>
+                </div>
+            </div>
+            <div class="flex-grow overflow-hidden">
+                <div class="text-white font-semibold truncate text-base mb-0.5">${song.name}</div>
+                <div class="text-gray-500 text-sm truncate font-light">${author.name}</div>
+            </div>
+            <div class="flex items-center gap-4 px-2">
+                <div class="text-gray-600 text-xs font-mono hidden sm:block">${durationStr}</div>
+                ${actionBtnHtml}
+                <button id="like-${domId}" class="w-10 h-10 rounded-xl border border-[#333] flex items-center justify-center transition-all bg-black/40 ${isLiked?'text-red-500 border-red-500':'text-gray-400 hover:text-white hover:border-white'}" title="Like">
+                    <i class="${isLiked?'fas':'far'} fa-heart"></i>
+                </button>
+            </div>
+        </div>`;
 }
 
 function attachListEvents(items, contextPlaylistId = null, listContext = []) {
@@ -692,7 +745,22 @@ function triggerDownload(blob, filename) {
 window.toggleSettingsMenu = function() { if (settingsDropdown) settingsDropdown.classList.toggle('hidden'); };
 window.handleTransitionChange = function() { const val = transitionSelect.value; crossfadeConfig.enabled = (val === 'crossfade'); if (crossfadeConfig.enabled) { crossfadeSliderContainer.classList.remove('hidden'); crossfadeSliderContainer.style.display = 'flex'; } else { crossfadeSliderContainer.classList.add('hidden'); crossfadeSliderContainer.style.display = 'none'; } saveSettings(); };
 function saveSettings() { localStorage.setItem('crossfadeConfig', JSON.stringify(crossfadeConfig)); }
-document.addEventListener('click', (e) => { if (settingsDropdown && !settingsDropdown.classList.contains('hidden')) { const btn = document.getElementById('settings-btn'); if (btn && !btn.contains(e.target) && !settingsDropdown.contains(e.target)) settingsDropdown.classList.add('hidden'); } });
+
+document.addEventListener('click', (e) => { 
+    if (settingsDropdown && !settingsDropdown.classList.contains('hidden')) { 
+        const btn = document.getElementById('settings-btn'); 
+        if (btn && !btn.contains(e.target) && !settingsDropdown.contains(e.target)) settingsDropdown.classList.add('hidden'); 
+    } 
+    
+    // Click outside library drawer to close
+    const libDrawer = document.getElementById('library-drawer');
+    const viewLibBtn = document.getElementById('view-library-btn');
+    if (libDrawer && !libDrawer.classList.contains('translate-x-full')) {
+        if (!libDrawer.contains(e.target) && viewLibBtn && !viewLibBtn.contains(e.target)) {
+            closeLibraryDrawer();
+        }
+    }
+});
 
 // Expose globals
 window.handleSearch = handleSearch; window.showHome = showHome; window.openLikedSongs = openLikedSongs; window.openPlaylist = openPlaylist; window.addCurrentToPlaylist = addCurrentToPlaylist; window.toggleMute = toggleMute;
