@@ -1184,6 +1184,9 @@
             // If path starts with ../GAMES/ -> It will effectively be WORKER_ROOT/GAMES/ (which matches GAMES_BASE_URL)
             // This allows us to access root folders like ../GTA-JSDOS/ while keeping ../GAMES/sm64 intact.
             
+            if (relativePath === '../GAMES/others/balatro.html' || relativePath === 'GAMES/others/balatro.png') { // Specific exclusion for Balatro and its image
+                return relativePath;
+            }
             if (relativePath.startsWith('../')) {
                 const pathPart = relativePath.substring(3); // Remove '../'
                 return proxyUrl(`${WORKER_ROOT}${pathPart}`);
