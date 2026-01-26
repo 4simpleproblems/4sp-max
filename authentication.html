@@ -263,16 +263,32 @@
 
         let hasRedirected = false;
 
-        onAuthStateChanged(auth, async (user) => {
+       onAuthStateChanged(auth, async (user) => {
             if (user) {
                 // User is signed in.
                 if (!hasRedirected && window.location.pathname.endsWith('authentication.html')) {
                     const userDoc = await getDoc(getUserDocRef(user.uid));
-                    if (userDoc.exists()) {
-                        // Ensure user document exists before redirecting
+                    
+                    // --- SECURITY FIX START ---
+                    // Check if they are verified OR if they are a social login user
+                    const isProviderLogin = user.providerData.some(p => 
+                        ['google.com', 'github.com', 'twitter.com', 'microsoft.com'].includes(p.providerId)
+                    );
+                    
+                    const isVerified = user.emailVerified || isProviderLogin;
+
+                    if (userDoc.exists() && isVerified) { 
+                        // Only redirect if they have a doc AND are verified
                         hasRedirected = true;
                         navigateToDashboard();
+                    } else if (userDoc.exists() && !isVerified) {
+                        // They have a doc but aren't verified? 
+                        // Don't let them in. Ideally, show the error message again.
+                        console.log("User has session but is unverified. Blocking auto-redirect.");
+                        // Optional: Force sign out here to clean up the bad state
+                        // await signOut(auth); 
                     }
+                    // --- SECURITY FIX END ---
                 }
             } else {
                 // User is signed out.
