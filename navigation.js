@@ -509,7 +509,7 @@ let db;
                 padding: 0.5rem 1rem; 
                 color: var(--tab-text, #9ca3af); 
                 font-size: 0.875rem; font-weight: 400; 
-                border-radius: 14px; /* Updated to 14px */
+                border-radius: 16px; /* Updated to 14px */
                 text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
                 border: 1px solid transparent; transition: all 0.2s; cursor: pointer;
                 flex-shrink: 0; 
@@ -542,7 +542,7 @@ let db;
             #auth-toggle {
                 border-color: var(--avatar-border);
                 transition: border-color 0.3s ease;
-                border-radius: 14px; /* Updated to 14px */
+                border-radius: 16px; /* Updated to 14px */
                 border-width: 1px; /* Explicit 1px */
                 width: 40px; height: 40px;
                 display: flex; align-items: center; justify-content: center;
@@ -555,7 +555,7 @@ let db;
                 position: absolute; right: 0; top: 55px; width: 16rem;
                 background: var(--menu-bg, #000);
                 border: 1px solid var(--menu-border, #333);
-                border-radius: 1.25rem; 
+                border-radius: 20px; 
                 padding: 0.75rem; /* Equal spacing on edges */
                 display: flex; flex-direction: column; gap: 0.5rem; /* Flex gap for equal internal spacing */
                 box-shadow: 0 10px 30px rgba(0,0,0,0.6);
@@ -606,7 +606,7 @@ let db;
                 display: flex; align-items: center; gap: 0.75rem; width: 100%; text-align: left; 
                 padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--menu-text, #d1d5db); 
                 background: var(--tab-hover-bg, rgba(79, 70, 229, 0.05)); /* Default background color */
-                border-radius: 14px; 
+                border-radius: 16px; 
                 transition: all 0.2s ease; cursor: pointer;
                 /* FIXED: Border color now matches the background color */
                 border: 1px solid var(--tab-hover-bg, rgba(79, 70, 229, 0.05));
@@ -622,7 +622,7 @@ let db;
             .logged-out-auth-toggle { 
                 background: var(--logged-out-icon-bg, #010101); border: 1px solid var(--logged-out-icon-border, #374151); 
                 transition: background-color 0.3s ease, border-color 0.3s ease;
-                border-radius: 14px; /* Updated to 14px */
+                border-radius: 16px; /* Updated to 16px */
             }
             .logged-out-auth-toggle i { color: var(--logged-out-icon-color, #DADADA); transition: color 0.3s ease; }
 
@@ -635,7 +635,7 @@ let db;
             #pin-button { 
                 border-color: var(--pin-btn-border, #4b5563); transition: background-color 0.2s, border-color 0.3s ease; 
                 display: flex; align-items: center; justify-content: center; 
-                border-radius: 14px; /* Updated to 14px */
+                border-radius: 16px; /* Updated to 16px */
                 border-width: 1px; /* Explicit 1px */
                 width: 40px; height: 40px;
             }
@@ -670,7 +670,7 @@ let db;
                 pointer-events: none;
             }
             .notification-toast {
-                background-color: #0a0a0a; border: 1px solid #333; border-radius: 14px;
+                background-color: #0a0a0a; border: 1px solid #333; border-radius: 16px;
                 padding: 0.75rem 1.25rem; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
                 display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem;
                 min-width: 200px; transform: translateX(120%);
@@ -824,7 +824,7 @@ let db;
 
             return `
                 <div id="pin-area-wrapper" class="relative flex-shrink-0 flex items-center">
-                    <a href="${pinButtonUrl}" id="pin-button" class="w-10 h-10 border flex items-center justify-center hover:bg-gray-700 transition" title="${pinButtonTitle}" style="border-radius: 14px; border-width: 1px;">
+                    <a href="${pinButtonUrl}" id="pin-button" class="w-10 h-10 border flex items-center justify-center hover:bg-gray-700 transition" title="${pinButtonTitle}" style="border-radius: 16px; border-width: 1px;">
                         <i id="pin-button-icon" class="${pinButtonIcon}"></i>
                     </a>
                     <div id="pin-context-menu" class="auth-menu-container closed" style="width: 12rem;">
@@ -942,7 +942,7 @@ let db;
 
                 // FIX: Combined styles to ensure background colors render correctly
                 if (pfpType === 'custom' && userData?.customPfp) {
-                    avatarHtml = `<img src="${userData.customPfp}" class="w-full h-full object-cover" style="border-radius: 12px;" alt="Profile">`;
+                    avatarHtml = `<img src="${userData.customPfp}" class="w-full h-full object-cover" style="border-radius: 14px;" alt="Profile">`;
                 } else if (pfpType === 'mibi' && userData?.mibiConfig) {
                     const { eyes, mouths, hats, bgColor, rotation, size, offsetX, offsetY } = userData.mibiConfig;
                     const scale = (size || 100) / 100;
@@ -951,7 +951,7 @@ let db;
                     const y = offsetY || 0;
                     
                     avatarHtml = `
-                        <div class="w-full h-full relative overflow-hidden" style="background-color: ${bgColor || '#3B82F6'}; border-radius: 12px;">
+                        <div class="w-full h-full relative overflow-hidden" style="background-color: ${bgColor || '#3B82F6'}; border-radius: 14px;">
                              <div class="absolute inset-0 w-full h-full" style="transform: translate(${x}%, ${y}%) rotate(${rot}deg) scale(${scale}); transform-origin: center;">
                                  <img src="/mibi-avatars/head.png" class="absolute inset-0 w-full h-full object-contain">
                                  ${eyes ? `<img src="/mibi-avatars/eyes/${eyes}" class="absolute inset-0 w-full h-full object-contain">` : ''}
