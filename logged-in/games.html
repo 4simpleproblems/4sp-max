@@ -1184,7 +1184,7 @@
             // If path starts with ../GAMES/ -> It will effectively be WORKER_ROOT/GAMES/ (which matches GAMES_BASE_URL)
             // This allows us to access root folders like ../GTA-JSDOS/ while keeping ../GAMES/sm64 intact.
             
-            if (relativePath === '../GAMES/others/balatro.html' || relativePath === 'GAMES/others/balatro.png' || relativePath === 'GAMES/others/balatro-3-2.png') { // Specific exclusion for Balatro and its images
+            if (relativePath === '../GAMES/others/balatro.html' || relativePath === '../GAMES/others/balatro.png' || relativePath === '../GAMES/others/balatro-3-2.png') { // Specific exclusion for Balatro and its images
                 return relativePath;
             }
             if (relativePath.startsWith('../')) {
