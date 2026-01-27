@@ -15,7 +15,6 @@
       '../ban-enforcer.js',
       '../url-changer.js',
       '../panic-key.js',
-      '../navigation.js',
       '../analytics.js'
     ];
 
