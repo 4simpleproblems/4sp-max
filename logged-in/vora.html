@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <!-- VERN_SYSTEM Proxy -->
     <script src="/VORA/VERN_SYSTEM/uv/uv.bundle.js"></script>
     <script>
         const basePath = "/VORA/VERN_SYSTEM/uv/";
@@ -217,8 +216,10 @@
             box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
         }
 
+        /* MODIFIED: Removed 'border-radius: 12px !important' 
+           This allows navigation.js to apply its own rounded corners (16px/20px).
+        */
         button, a, .rounded-xl {
-            border-radius: 12px !important;
             transition: all 0.2s ease;
         }
     </style>
@@ -232,8 +233,7 @@
     <script src="/VORA/cachedFetch.js"></script>
     <script src="/VORA/utils.js"></script>
     <script src="/VORA/load/embeds.js"></script>
-    <script src="../injector.js"></script>
-    <script src="../navigation.js"></script>
+    <script src="/injector.js"></script>
 </head>
 <body class="bg-deep-black">
     <nav class="sidebar">
@@ -278,7 +278,6 @@
         </header>
 
         <main>
-            <!-- Categories / Favorites -->
             <section id="favorites-section" class="mb-12 hidden">
                 <div class="flex items-center gap-3 mb-6">
                     <i class="fas fa-star text-yellow-500"></i>
@@ -296,8 +295,7 @@
                     </div>
                 </div>
                 <div id="moviesGrid" class="video-grid">
-                    <!-- Trending movies will load here -->
-                </div>
+                    </div>
             </section>
 
             <section id="series-section" class="mb-12">
@@ -308,11 +306,9 @@
                     </div>
                 </div>
                 <div id="seriesGrid" class="video-grid">
-                    <!-- Trending series will load here -->
-                </div>
+                    </div>
             </section>
 
-            <!-- Dynamic Results (for search or direct page view) -->
             <section id="dynamic-section" class="hidden">
                 <div id="dynamic-header" class="flex items-center gap-3 mb-6">
                     <i class="fas fa-search text-purple-500"></i>
