@@ -1251,7 +1251,7 @@
                     <div class="image-overlay absolute inset-0 transition-colors duration-200"></div>
                     <div class="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between rounded-2xl">
                         <div class="flex items-start justify-between w-full">
-                            <h3 class="text-4xl font-bold text-white truncate drop-shadow-lg" style="max-width: 80%;" title="${game.name}">${game.name}</h3>
+                            <h3 class="text-4xl font-bold text-white truncate drop-shadow-lg group-hover:max-w-[calc(100%-1rem)] transition-all duration-700 ease-[cubic-bezier(0.45,0,0.55,1)]" title="${game.name}">${game.name}</h3>
                             <div class="flex items-center gap-1.5 bg-black/50 backdrop-blur-sm rounded-2xl p-1.5">
                                 ${gameButtonsHtml}
                                 ${favoriteButtonHtml}
@@ -1319,7 +1319,7 @@
             card.innerHTML = `
                 <div class="relative w-full cursor-pointer group">
                     <div class="aspect-w-3 aspect-h-2"><img data-src="${imgSrc}" alt="${game.name}" class="w-full h-full object-cover"></div>
-                    <h3 class="absolute top-2 right-2 z-10 max-w-[80%] bg-black/60 backdrop-blur-md rounded-xl px-3 py-1.5 text-white truncate text-sm font-semibold shadow-lg" title="${game.name}">${game.name}</h3>
+                    <h3 class="absolute top-2 right-2 z-10 max-w-[80%] group-hover:max-w-[calc(100%-1rem)] transition-all duration-700 ease-[cubic-bezier(0.45,0,0.55,1)] bg-black/60 backdrop-blur-md rounded-xl px-3 py-1.5 text-white truncate text-sm font-semibold shadow-lg" title="${game.name}">${game.name}</h3>
                     <div class="absolute bottom-2 right-2 bg-black/50 backdrop-blur-sm rounded-2xl p-1.5 flex items-center gap-1.5 shadow-lg">
                         ${game.isDownload ? `<a class="btn-card-action download-action" href="${game.url}" target="_blank" title="Download Game"><i class="fa-solid fa-download transition-colors"></i></a>` : `<button class="btn-card-action play-action" title="Play Game"><i class="fa-solid fa-play transition-colors"></i></button>`}
                         <button class="btn-card-action fav-action ${isFavorite ? 'favorited' : ''}" title="${isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}"><i class="fa-solid fa-star fa-solid-star transition-colors"></i><i class="fa-regular fa-star fa-regular-star transition-colors"></i></button>
