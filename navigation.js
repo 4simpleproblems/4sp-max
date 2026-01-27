@@ -180,10 +180,13 @@ let auth;
 let db;
 
 (function() {
-    const loadScript = (src) => {
+    const loadScript = (src, isModule = false) => {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = src;
+            if (isModule) {
+                script.type = 'module';
+            }
             script.onload = resolve;
             script.onerror = reject;
             document.head.appendChild(script);
@@ -364,7 +367,7 @@ let db;
         
         // Load Admin Keybinds
         try {
-            await loadScript("/admin_keybinds.js");
+            await loadScript("/admin_keybinds.js", true); // Load as module
         } catch(e) { console.warn("Admin keybinds script not loaded", e); }
 
         try {
@@ -379,9 +382,9 @@ let db;
         }
 
         try {
-            await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
-            await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js");
-            await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js");
+            await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js", true);
+            await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js", true);
+            await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js", true);
             initializeApp(pages, window.FIREBASE_CONFIG);
         } catch (error) {
             console.error("Failed to load core Firebase SDKs:", error);
