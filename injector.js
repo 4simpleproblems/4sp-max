@@ -15,7 +15,9 @@
       '../ban-enforcer.js',
       '../url-changer.js',
       '../panic-key.js',
-      '../analytics.js'
+      '../analytics.js',
+      '../navigation.js'
+
     ];
 
     // 2. CORE DYNAMIC LOADING FUNCTION
