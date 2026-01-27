@@ -230,6 +230,20 @@
             border-radius: 14px !important;
             transition: all 0.2s ease;
         }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
     </style>
     
     <!-- Scripts relevant to Vira -->
@@ -282,17 +296,20 @@
             <!-- Player Section -->
             <section id="player-section" class="mb-12 hidden">
                 <div id="player-container" class="relative w-full aspect-video bg-black rounded-[14px] overflow-hidden shadow-2xl border border-brand-border mb-6">
-                    <iframe id="main-player" src="" class="w-full h-full border-none" allowfullscreen></iframe>
+                    <video id="custom-video-player" class="w-full h-full" controls crossorigin="anonymous"></video>
                 </div>
-                <div class="bg-card-dark p-6 rounded-[14px] border border-brand-border">
-                    <div class="flex justify-between items-start">
+                <div class="bg-card-dark p-8 rounded-[14px] border border-brand-border shadow-xl">
+                    <div class="flex justify-between items-start mb-6">
                         <div>
-                            <h2 id="player-title" class="text-2xl text-white mb-2 font-medium">Video Title</h2>
+                            <h2 id="player-title" class="text-3xl text-white mb-2 font-medium">Video Title</h2>
                             <p id="player-metadata" class="text-gray-500 text-sm">Artist • Duration</p>
                         </div>
-                        <button onclick="closePlayer()" class="px-4 py-2 rounded-[14px] bg-deep-black border border-brand-border hover:border-accent-red text-white text-sm transition-all">
-                            <i class="fas fa-times"></i> Close
+                        <button onclick="closePlayer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-deep-black border border-brand-border hover:border-accent-red transition-all text-xl text-white">
+                            <i class="fas fa-times"></i>
                         </button>
+                    </div>
+                    <div id="player-description" class="text-gray-400 leading-relaxed max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        Loading description...
                     </div>
                 </div>
             </section>

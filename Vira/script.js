@@ -36,42 +36,74 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    window.playVideo = function(videoId, title, artist, duration) {
-        const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    window.playVideo = function(videoId) {
+        window.location.hash = `video/${videoId}`;
+    };
+
+    async function loadVideoFromHash() {
+        const hash = window.location.hash;
         const playerSection = document.getElementById('player-section');
         const dynamicSection = document.getElementById('dynamic-section');
-        const mainPlayer = document.getElementById('main-player');
+        const videoPlayer = document.getElementById('custom-video-player');
         const playerTitle = document.getElementById('player-title');
         const playerMetadata = document.getElementById('player-metadata');
+        const playerDescription = document.getElementById('player-description');
 
-        if (window.__uv$config && window.__uv$config.prefix) {
-            const proxiedUrl = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(youtubeUrl);
-            
-            // Update UI
-            playerTitle.textContent = title;
-            playerMetadata.textContent = `${artist} • ${duration}`;
-            mainPlayer.src = proxiedUrl;
-            
-            playerSection.classList.remove('hidden');
-            dynamicSection.classList.add('hidden');
-            
-            // Scroll to top of player
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            console.error("UV proxy not configured, opening directly.");
-            window.open(youtubeUrl, '_blank');
+        if (!hash.startsWith('#video/')) {
+            playerSection.classList.add('hidden');
+            dynamicSection.classList.remove('hidden');
+            videoPlayer.pause();
+            videoPlayer.src = '';
+            return;
+        }
+
+        const videoId = hash.replace('#video/', '');
+        
+        // Show player, hide results
+        playerSection.classList.remove('hidden');
+        dynamicSection.classList.add('hidden');
+        playerTitle.textContent = 'Loading...';
+        playerDescription.textContent = 'Fetching video data...';
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        try {
+            const res = await fetch(`/api/video-info?videoId=${videoId}`);
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.error);
+
+            playerTitle.textContent = data.title;
+            playerMetadata.textContent = `${data.author} • ${data.duration}s`;
+            playerDescription.textContent = data.description || 'No description available.';
+
+            if (data.streaming_url) {
+                // Use UV proxy for the stream URL to bypass CORS/IP blocks
+                if (window.__uv$config && window.__uv$config.prefix) {
+                    videoPlayer.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
+                } else {
+                    videoPlayer.src = data.streaming_url;
+                }
+                videoPlayer.play().catch(e => console.warn("Autoplay blocked or failed:", e));
+            } else {
+                playerDescription.textContent = 'Error: Could not retrieve a valid streaming URL.';
+            }
+
+        } catch (error) {
+            console.error("Failed to load video info:", error);
+            playerTitle.textContent = 'Error';
+            playerDescription.textContent = 'Failed to load video information. It might be age-restricted or unavailable in your region.';
         }
     }
 
     window.closePlayer = function() {
-        const playerSection = document.getElementById('player-section');
-        const dynamicSection = document.getElementById('dynamic-section');
-        const mainPlayer = document.getElementById('main-player');
+        window.location.hash = '';
+    };
 
-        playerSection.classList.add('hidden');
-        dynamicSection.classList.remove('hidden');
-        mainPlayer.src = ''; // Stop video
-    }
+    window.addEventListener('hashchange', loadVideoFromHash);
+    
+    // Initial check
+    if (window.location.hash) loadVideoFromHash();
 
     function renderResults(results) {
         videoGrid.innerHTML = ''; // Clear existing content
@@ -91,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="text-gray-500 text-xs">${item.duration}</p>
                 </div>
             `;
-            videoItem.addEventListener('click', () => playVideo(item.id, item.title, item.artist, item.duration));
+            videoItem.addEventListener('click', () => playVideo(item.id));
             videoGrid.appendChild(videoItem);
         });
     }
