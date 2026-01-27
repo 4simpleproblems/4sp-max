@@ -6,15 +6,23 @@
 export default async function handler(req, res) {
   try {
     // Extract the target URL, method, and headers from the incoming request.
-    // UV typically sends these in custom headers following the Bare server protocol.
     const bareUrl = req.headers['x-bare-url'];
     const bareMethod = req.headers['x-bare-method'] || req.method;
-    // x-bare-headers might be JSON stringified
-    const bareHeaders = JSON.parse(req.headers['x-bare-headers'] || '{}');
+    let bareHeaders = {};
+    try {
+        bareHeaders = JSON.parse(req.headers['x-bare-headers'] || '{}');
+    } catch (e) {
+        console.warn('Bare server: Failed to parse x-bare-headers', e);
+    }
 
     if (!bareUrl) {
-      console.error('Bare server: Missing x-bare-url header');
-      return res.status(400).send('Missing x-bare-url header');
+      console.log('Bare server: Received heartbeat or info request');
+      return res.status(200).json({
+        versions: ['v1'],
+        language: 'Node.js',
+        memory: process.memoryUsage().heapUsed,
+        maintainer: '4SP'
+      });
     }
 
     // Construct headers for the outbound request to the target

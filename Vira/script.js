@@ -91,8 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("Failed to load video info:", error);
-            playerTitle.textContent = 'Error';
-            playerDescription.textContent = 'Failed to load video information. It might be age-restricted or unavailable in your region.';
+            playerTitle.textContent = 'Playback Error';
+            playerDescription.innerHTML = `
+                <div class="text-red-500 font-medium mb-2">Failed to load video information.</div>
+                <p class="text-sm">Possible reasons:</p>
+                <ul class="list-disc ml-5 text-sm mt-1">
+                    <li>The video is age-restricted or private.</li>
+                    <li>The server is currently rate-limited by YouTube.</li>
+                    <li>Geographical restrictions are in place.</li>
+                </ul>
+                <div class="mt-4">
+                    <button onclick="closePlayer()" class="text-xs underline hover:text-white">Back to results</button>
+                </div>
+            `;
         }
     }
 

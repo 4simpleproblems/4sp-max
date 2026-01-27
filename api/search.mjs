@@ -7,7 +7,7 @@ async function getYoutube() {
     youtubePromise = (async () => {
       // Use dynamic import
       const { Innertube } = await import('youtubei.js');
-      return Innertube.create();
+      return Innertube.create({ cache: null });
     })();
   }
   return youtubePromise;

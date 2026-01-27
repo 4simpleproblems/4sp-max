@@ -1,18 +1,26 @@
-import { Innertube } from 'youtubei.js';
+let youtubePromise; // Store the promise of the InnerTube instance
 
-let youtubePromise;
-
+// Cache the InnerTube instance so we don't recreate it on every request (Vercel warm starts)
 async function getYoutube() {
   if (!youtubePromise) {
-    youtubePromise = Innertube.create();
+    youtubePromise = (async () => {
+      // Use dynamic import
+      const { Innertube } = await import('youtubei.js');
+      return Innertube.create({ cache: null });
+    })();
   }
   return youtubePromise;
 }
 
 export default async function handler(req, res) {
+  // enable CORS so your frontend can call this
+  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -30,24 +38,23 @@ export default async function handler(req, res) {
     const info = await yt.getInfo(videoId);
     
     // Get the best format that has both video and audio
+    // youtubei.js v16+ uses different format selection methods
     const format = info.chooseFormat({ type: 'video+audio', quality: 'best' });
     
-    if (!format) {
-        // Fallback to video only if best combined not found
+    let streamingUrl;
+    if (format) {
+        streamingUrl = format.decipher(yt.session.player);
+    } else {
+        // Fallback: try to get video only and just use that if combined fails
         const videoOnly = info.chooseFormat({ type: 'video', quality: 'best' });
-        const audioOnly = info.chooseFormat({ type: 'audio', quality: 'best' });
-        return res.status(200).json({
-            title: info.basic_info.title,
-            author: info.basic_info.author,
-            description: info.basic_info.short_description,
-            formats: info.formats,
-            adaptive_formats: info.adaptive_formats,
-            streaming_url: videoOnly?.decipher(yt.session.player),
-            audio_url: audioOnly?.decipher(yt.session.player)
-        });
+        if (videoOnly) {
+            streamingUrl = videoOnly.decipher(yt.session.player);
+        }
     }
 
-    const streamingUrl = format.decipher(yt.session.player);
+    if (!streamingUrl) {
+        return res.status(404).json({ error: 'No playable format found' });
+    }
 
     res.status(200).json({
       title: info.basic_info.title,
