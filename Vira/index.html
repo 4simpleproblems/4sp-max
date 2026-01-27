@@ -15,6 +15,7 @@
             config: basePath + "uv.config.js",
             sw: basePath + "uv.sw.js",
             stockSW: "/VORA/VERN_SYSTEM/sw.js",
+            bare: "/api/bare",
         };
     </script>
     <script src="/VORA/VERN_SYSTEM/baremux/index.js"></script>
@@ -234,6 +235,13 @@
     <!-- Scripts relevant to Vira -->
     <script src="../navigation.js"></script>
     <script src="/injector.js"></script>
+    <script>
+        // Placeholder for solveSimpleChallenge to prevent ReferenceError
+        function solveSimpleChallenge(url) {
+            console.warn('solveSimpleChallenge called for:', url, ' - returning true as a stub.');
+            return true; // Assume challenge is "solved" for now
+        }
+    </script>
 </head>
 <body class="bg-deep-black">
     <nav class="sidebar">
@@ -271,6 +279,24 @@
         </header>
 
         <main>
+            <!-- Player Section -->
+            <section id="player-section" class="mb-12 hidden">
+                <div id="player-container" class="relative w-full aspect-video bg-black rounded-[14px] overflow-hidden shadow-2xl border border-brand-border mb-6">
+                    <iframe id="main-player" src="" class="w-full h-full border-none" allowfullscreen></iframe>
+                </div>
+                <div class="bg-card-dark p-6 rounded-[14px] border border-brand-border">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 id="player-title" class="text-2xl text-white mb-2 font-medium">Video Title</h2>
+                            <p id="player-metadata" class="text-gray-500 text-sm">Artist • Duration</p>
+                        </div>
+                        <button onclick="closePlayer()" class="px-4 py-2 rounded-[14px] bg-deep-black border border-brand-border hover:border-accent-red text-white text-sm transition-all">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             <!-- Dynamic Results (for search) -->
             <section id="dynamic-section">
                 <div id="dynamic-header" class="flex items-center gap-3 mb-6">

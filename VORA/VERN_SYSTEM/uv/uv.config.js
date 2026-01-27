@@ -15,6 +15,6 @@
          * @type {string}
          * @description The Bare server to use. This can be an absolute URL or a relative path.
          */
-        bare: "/bare/", // This will be handled by BareMux/Wisp in the frontend
+        bare: "/api/bare", // This will be handled by BareMux/Wisp in the frontend
     };
 })();

@@ -36,6 +36,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    window.playVideo = function(videoId, title, artist, duration) {
+        const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        const playerSection = document.getElementById('player-section');
+        const dynamicSection = document.getElementById('dynamic-section');
+        const mainPlayer = document.getElementById('main-player');
+        const playerTitle = document.getElementById('player-title');
+        const playerMetadata = document.getElementById('player-metadata');
+
+        if (window.__uv$config && window.__uv$config.prefix) {
+            const proxiedUrl = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(youtubeUrl);
+            
+            // Update UI
+            playerTitle.textContent = title;
+            playerMetadata.textContent = `${artist} • ${duration}`;
+            mainPlayer.src = proxiedUrl;
+            
+            playerSection.classList.remove('hidden');
+            dynamicSection.classList.add('hidden');
+            
+            // Scroll to top of player
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            console.error("UV proxy not configured, opening directly.");
+            window.open(youtubeUrl, '_blank');
+        }
+    }
+
+    window.closePlayer = function() {
+        const playerSection = document.getElementById('player-section');
+        const dynamicSection = document.getElementById('dynamic-section');
+        const mainPlayer = document.getElementById('main-player');
+
+        playerSection.classList.add('hidden');
+        dynamicSection.classList.remove('hidden');
+        mainPlayer.src = ''; // Stop video
+    }
+
     function renderResults(results) {
         videoGrid.innerHTML = ''; // Clear existing content
         results.forEach(item => {
@@ -54,21 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="text-gray-500 text-xs">${item.duration}</p>
                 </div>
             `;
-            videoItem.addEventListener('click', () => playVideo(item.id));
+            videoItem.addEventListener('click', () => playVideo(item.id, item.title, item.artist, item.duration));
             videoGrid.appendChild(videoItem);
         });
-    }
-
-    function playVideo(videoId) {
-        const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
-        // Assuming the VERN_SYSTEM proxy is available globally as __uv$config
-        if (window.__uv$config && window.__uv$config.prefix) {
-            const proxiedUrl = window.__uv$config.prefix + window.__uv$config.encodeUrl(youtubeUrl);
-            window.location.href = proxiedUrl;
-        } else {
-            console.error("UV proxy not configured, opening directly.");
-            window.open(youtubeUrl, '_blank');
-        }
     }
 
     // Initial load, if there's a predefined query or to show recent videos
