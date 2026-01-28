@@ -274,12 +274,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 viraPlayer.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
                 viraPlayer.play().catch(() => {});
             } else { throw new Error("No stream"); }
-        } catch (e) {
-            console.warn("High Fluency failed, using failover.");
-            const url = instances[currentInstanceIndex] + `/embed/${videoId}?autoplay=1`;
+        } catch (error) {
+            console.warn("VIRA: Direct pulling failed, using failover:", error);
+            // Skip local-instance for embeds as it doesn't support them
+            const validEmbedInstances = instances.filter(url => !url.includes('/api/local-instance'));
+            const baseUrl = validEmbedInstances[currentInstanceIndex % validEmbedInstances.length];
+            const embedUrl = `${baseUrl}/embed/${videoId}?autoplay=1`;
             if (viraPlayer) { hide(viraPlayer); viraPlayer.pause(); }
-            show(embedCont);
-            if (embedIframe) embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(url);
+            show(embedContainer);
+            if (embedIframe) embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
         }
     }
 

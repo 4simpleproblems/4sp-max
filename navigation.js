@@ -1173,7 +1173,12 @@ let db;
             const authControlsWrapper = document.getElementById('auth-controls-wrapper');
             const navbarLogo = document.getElementById('navbar-logo');
 
-            const logoPath = DEFAULT_THEME['logo-src']; 
+            let currentTheme;
+            try {
+                currentTheme = JSON.parse(localStorage.getItem(THEME_STORAGE_KEY)) || DEFAULT_THEME;
+            } catch (e) { currentTheme = DEFAULT_THEME; }
+
+            const logoPath = currentTheme['logo-src'] || DEFAULT_THEME['logo-src']; 
             if (navbarLogo) navbarLogo.src = logoPath;
             
             // Determine the single active page key first
