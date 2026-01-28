@@ -155,7 +155,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    window.closePlayer = function() {
+        window.location.hash = '';
+    };
+
+    window.addEventListener('hashchange', loadVideoFromHash);
+    
+    // Initial check for hash on load
+    if (window.location.hash) {
+        loadVideoFromHash();
+    }
+
     // Initial load, if there's a predefined query or to show recent videos
-    // For now, let's just show the initial message.
-    // You could call searchVideos('trending') or similar here if desired.
 });
