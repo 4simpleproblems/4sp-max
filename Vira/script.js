@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const link = document.createElement('a');
             link.href = 'javascript:void(0)';
             link.className = 'nav-link flex items-center gap-2 px-4 py-2 hover:bg-white/5 rounded-lg transition-all';
-            link.innerHTML = "<i class=\"fas fa-list text-gray-500\"></i> <span class=\"truncate text-sm\">${pl.name}</span>";
+            link.innerHTML = `<i class="fas fa-list text-gray-500"></i> <span class="truncate text-sm">${pl.name}</span>`;
             link.onclick = () => window.location.hash = `playlist/${pl.id}`;
             playlistList.appendChild(link);
         });
@@ -174,23 +174,24 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (item.type === 'video') {
                 resultItem.classList.add('video-item', 'relative', 'group');
-                resultItem.innerHTML = "                <div class=\"thumbnail-container\">
-                    <img src=\"${item.thumbnail}\" alt=\"" class="w-full h-full object-cover">
-                    <div class="play-overlay"><i class="fas fa-play play-icon"></i></div>
-                    <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-red z-10 add-pl-btn" title="Add to Playlist">
-                        <i class="fas fa-plus text-xs"></i>
-                    </button>
-                </div>
-                <div class="p-4">
-                    <h3 class="text-white text-base font-medium mb-1 line-clamp-2" title=\"${item.title}\">${item.title}</h3>
-                    <p class="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors author-link" onclick="event.stopPropagation(); window.location.hash='channel/${item.artistId}'">
-                        ${item.artist}
-                    </p>
-                    <div class="flex justify-between items-center mt-2 text-gray-500 text-xs">
-                        <span>${item.duration}</span><span>${item.views || ''}</span>
+                resultItem.innerHTML = `
+                    <div class="thumbnail-container">
+                        <img src="${item.thumbnail}" alt="" class="w-full h-full object-cover">
+                        <div class="play-overlay"><i class="fas fa-play play-icon"></i></div>
+                        <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-red z-10 add-pl-btn" title="Add to Playlist">
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
                     </div>
-                </div>
-";
+                    <div class="p-4">
+                        <h3 class="text-white text-base font-medium mb-1 line-clamp-2" title="${item.title}">${item.title}</h3>
+                        <p class="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors author-link" onclick="event.stopPropagation(); window.location.hash='channel/${item.artistId}'">
+                            ${item.artist}
+                        </p>
+                        <div class="flex justify-between items-center mt-2 text-gray-500 text-xs">
+                            <span>${item.duration}</span><span>${item.views || ''}</span>
+                        </div>
+                    </div>
+                `;
                 resultItem.addEventListener('click', (e) => {
                     if (e.target.closest('.add-pl-btn') || e.target.closest('.author-link')) return;
                     window.location.hash = `video/${item.id}`;
@@ -206,15 +207,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isHeader) resultItem.classList.add('bg-gradient-to-b', 'from-zinc-900', 'to-black');
                 else resultItem.classList.add('cursor-pointer', 'hover:border-accent-red', 'transition-all', 'group');
                 
-                resultItem.innerHTML = "                <div class=\"flex flex-col md:flex-row items-center gap-8 w-full max-w-4xl\">
-                    <img src=\"${item.thumbnail}\" class="w-32 h-32 rounded-full border-4 border-brand-border bg-black shadow-2xl transition-transform group-hover:scale-105" alt="${item.title}">
-                    <div class="flex-grow text-center md:text-left">
-                        <h2 class="text-3xl text-white font-medium mb-2">${item.title}</h2>
-                        <p class="text-gray-400 text-sm leading-relaxed line-clamp-3">${item.description || 'No channel description available.'}</p>
+                resultItem.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center gap-8 w-full max-w-4xl">
+                        <img src="${item.thumbnail}" class="w-32 h-32 rounded-full border-4 border-brand-border bg-black shadow-2xl transition-transform group-hover:scale-105" alt="${item.title}">
+                        <div class="flex-grow text-center md:text-left">
+                            <h2 class="text-3xl text-white font-medium mb-2">${item.title}</h2>
+                            <p class="text-gray-400 text-sm leading-relaxed line-clamp-3">${item.description || 'No channel description available.'}</p>
+                        </div>
                     </div>
-                </div>
-                ${isHeader ? '<div class="w-full h-px bg-brand-border mt-12 mb-4"></div><h3 class="text-white text-xl self-start px-4">Latest Videos</h3>' : ''}
-";
+                    ${isHeader ? '<div class="w-full h-px bg-brand-border mt-12 mb-4"></div><h3 class="text-white text-xl self-start px-4">Latest Videos</h3>' : ''}
+                `;
                 if (!isHeader) resultItem.addEventListener('click', () => window.location.hash = `channel/${item.id}`);
             }
             videoGrid.appendChild(resultItem);
@@ -258,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 delContainer.innerHTML = `<button onclick="deletePlaylist('${pl.id}')" class="text-red-500 text-xs hover:underline flex items-center gap-2"><i class="fas fa-trash"></i> Delete Playlist</button>`;
                 videoGrid.appendChild(delContainer);
             } else {
-                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\'"+pl.id+"\')" class="text-xs underline">Delete Playlist</button></div>';
+                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\' '+pl.id+' \')" class="text-xs underline">Delete Playlist</button></div>';
             }
             return;
         }
@@ -303,22 +305,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (playerTitle) playerTitle.textContent = data.title;
             if (playerMetadata) {
-                playerMetadata.innerHTML = "                <span class=\"text-gray-400 font-medium cursor-pointer hover:underline\" onclick=\"window.location.hash='channel/${data.channel_id}'\">${data.author}</span> • 
-                <span class=\"text-gray-500\">${data.duration}</span> • 
-                <span class=\"text-gray-500\">${data.views}</span>
-            ";
+                playerMetadata.innerHTML = `
+                    <span class="text-gray-400 font-medium cursor-pointer hover:underline" onclick="window.location.hash='channel/${data.channel_id}'">${data.author}</span> • 
+                    <span class="text-gray-500">${data.duration}</span> • 
+                    <span class="text-gray-500">${data.views}</span>
+                `;
             }
             if (playerDescription) {
-                playerDescription.innerHTML = "                <div class=\"mb-6 flex items-center gap-4\">
-                    <span class=\"hover:underline cursor-pointer flex items-center gap-2 text-white font-medium\" onclick=\"window.location.hash='channel/${data.channel_id}'\">
-                        <i class=\"fas fa-check-circle text-accent-red\"></i> ${data.author}
-                    </span>
-                    <button id=\"player-add-pl-btn\" class=\"text-xs bg-brand-border px-3 py-1 rounded-full hover:bg-accent-red transition-all text-white\">
-                        <i class=\"fas fa-plus\"></i> Add to Playlist
-                    </button>
-                </div>
-                <div class=\"whitespace-pre-wrap text-sm leading-relaxed\">${data.description || 'No description available.'}</div>
-";
+                playerDescription.innerHTML = `
+                    <div class="mb-6 flex items-center gap-4">
+                        <span class="hover:underline cursor-pointer flex items-center gap-2 text-white font-medium" onclick="window.location.hash='channel/${data.channel_id}'">
+                            <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
+                        </span>
+                        <button id="player-add-pl-btn" class="text-xs bg-brand-border px-3 py-1 rounded-full hover:bg-accent-red transition-all text-white">
+                            <i class="fas fa-plus"></i> Add to Playlist
+                        </button>
+                    </div>
+                    <div class="whitespace-pre-wrap text-sm leading-relaxed">${data.description || 'No description available.'}</div>
+                `;
                 const addBtn = document.getElementById('player-add-pl-btn');
                 if (addBtn) addBtn.onclick = () => window.addToPlaylist({
                     type: 'video', id: videoId, title: data.title, artist: data.author, artistId: data.channel_id,
