@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { query, type } = req.query;
+  const { query, type, category } = req.query;
 
   if (!query) {
     return res.status(400).json({ error: 'Missing query parameter' });
@@ -39,31 +39,68 @@ export default async function handler(req, res) {
 
   try {
     const yt = await getYoutube();
-    
-    // Search for video, channel, playlist, or movie
-    // You can filter results using the second argument: 'video', 'channel', 'playlist', 'all'
-    const searchFilter = type || 'all'; 
-    const results = await yt.search(query, { type: searchFilter });
-    
-    // Simplify the huge InnerTube response into just what your app needs
-    const simplifiedData = results.results.map(item => {
-      // InnerTube returns different objects (Video, Shelf, etc.), so we check types
-      if (item.type === 'Video') {
-        return {
-          id: item.id,
-          title: item.title.text,
-          artist: item.author.name,
-          duration: item.duration.text,
-          thumbnail: item.thumbnails[0].url,
-          views: item.short_view_count?.text || "",
-          published: item.published?.text || "",
-          url: `https://www.youtube.com/watch?v=${item.id}`
-        };
-      }
-      return null;
-    }).filter(i => i !== null);
+    let results;
 
-    res.status(200).json({ results: simplifiedData });
+    if (category === 'music') {
+        // Use YouTube Music search
+        const musicResults = await yt.music.search(query, { type: 'video' });
+        results = [];
+        
+        // Music search results are nested in sections/contents
+        musicResults.sections.forEach(section => {
+            if (section.contents) {
+                section.contents.forEach(item => {
+                    if (item.type === 'MusicVideo' || item.type === 'MusicResponsiveListItem') {
+                        results.push({
+                            type: 'video',
+                            id: item.id,
+                            title: item.title,
+                            artist: item.author?.name || item.artists?.[0]?.name || "Unknown Artist",
+                            duration: item.duration?.text || "",
+                            thumbnail: item.thumbnails?.[0]?.url,
+                            views: item.views || "",
+                            published: "",
+                            category: 'music'
+                        });
+                    }
+                });
+            }
+        });
+    } else {
+        // Standard YouTube search
+        const searchFilter = type || 'all'; 
+        const searchResults = await yt.search(query, { type: searchFilter });
+        
+        results = searchResults.results.map(item => {
+          if (item.type === 'Video') {
+            return {
+              type: 'video',
+              id: item.id,
+              title: item.title.text,
+              artist: item.author.name,
+              artistId: item.author.id,
+              duration: item.duration.text,
+              thumbnail: item.thumbnails[0].url,
+              views: item.short_view_count?.text || "",
+              published: item.published?.text || "",
+              url: `https://www.youtube.com/watch?v=${item.id}`
+            };
+          } else if (item.type === 'Channel') {
+            return {
+              type: 'channel',
+              id: item.id,
+              title: item.author.name,
+              thumbnail: item.thumbnails[0].url,
+              subscribers: item.subscribers.text,
+              video_count: item.video_count.text,
+              description: item.description_snippet?.text || ""
+            };
+          }
+          return null;
+        }).filter(i => i !== null);
+    }
+
+    res.status(200).json({ results });
     
   } catch (error) {
     console.error("Search Error:", error);
