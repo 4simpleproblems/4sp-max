@@ -36,8 +36,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const instances = [
+        'https://invidious.nerdvpn.de',
+        'https://iv.melmac.space',
+        'https://invidious.no-logs.com',
+        'https://yewtu.be',
+        'https://inv.zzls.xyz'
+    ];
+    let currentInstanceIndex = 0;
+
     window.playVideo = function(videoId) {
         window.location.hash = `video/${videoId}`;
+    };
+
+    window.switchInstance = function() {
+        currentInstanceIndex = (currentInstanceIndex + 1) % instances.length;
+        console.log(`VIRA: Manually switching to instance: ${instances[currentInstanceIndex]}`);
+        loadVideoFromHash();
     };
 
     async function loadVideoFromHash() {
@@ -73,18 +88,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!res.ok || data.error) {
                 console.error("API Error Response:", data);
-                // Even if metadata fails, we can still try to load the embed
                 playerTitle.textContent = 'YouTube Video';
-                playerDescription.textContent = 'Metadata could not be loaded, but the video may still play.';
+                playerDescription.textContent = 'Metadata failed to load, but the video will still attempt to play.';
             } else {
                 playerTitle.textContent = data.title;
                 playerMetadata.textContent = `${data.author} • ${data.duration}s`;
                 playerDescription.textContent = data.description || 'No description available.';
             }
 
-            // Using Invidious as the primary embed source to bypass bot detection
-            const embedUrl = `https://inv.tux.rs/embed/${videoId}?autoplay=1`;
+            const baseUrl = instances[currentInstanceIndex];
+            const embedUrl = `${baseUrl}/embed/${videoId}?autoplay=1`;
             
+            console.log(`VIRA: Attempting instance ${currentInstanceIndex + 1}: ${baseUrl}`);
+
             // Use UV proxy for the embed URL
             if (window.__uv$config && window.__uv$config.prefix) {
                 embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
