@@ -139,8 +139,8 @@ export default async function handler(req, res) {
               type: 'channel',
               id: item.id,
               title: item.author?.name || item.title?.toString() || "Unknown Channel",
-              thumbnail: item.thumbnails?.[0]?.url || "",
-              subscribers: item.subscribers?.text || "",
+              thumbnail: item.thumbnails?.[0]?.url || item.author?.thumbnails?.[0]?.url || "",
+              subscribers: item.subscribers?.text || item.subscriber_count?.text || "",
               video_count: item.video_count?.text || "",
               description: item.description_snippet?.text || ""
             };

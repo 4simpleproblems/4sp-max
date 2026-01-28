@@ -267,12 +267,21 @@
         <div class="flex-grow">
             <a href="javascript:void(0)" onclick="switchCategory('youtube')" id="cat-youtube" class="nav-link active">
                 <i class="fab fa-youtube"></i>
-                <span>YouTube</span>
+                <span>Home</span>
             </a>
-            <a href="javascript:void(0)" onclick="switchCategory('music')" id="cat-music" class="nav-link">
-                <i class="fas fa-music"></i>
-                <span>YouTube Music</span>
-            </a>
+            
+            <div class="mt-8 mb-4 px-4">
+                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Playlists</h3>
+            </div>
+            
+            <div id="playlist-list" class="flex flex-col gap-1">
+                <!-- Playlists will be injected here -->
+            </div>
+
+            <button onclick="openCreatePlaylistModal()" class="nav-link w-full text-left mt-2 border border-dashed border-brand-border hover:border-accent-red">
+                <i class="fas fa-plus"></i>
+                <span>New Playlist</span>
+            </button>
         </div>
 
         <div class="mt-auto pt-6 border-t border-brand-border">
@@ -359,4 +368,29 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- Playlist Modals -->
+    <div id="create-playlist-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div class="bg-card-dark border border-brand-border p-8 rounded-[24px] w-full max-w-md shadow-2xl">
+            <h3 class="text-2xl text-white font-medium mb-6">Create New Playlist</h3>
+            <input type="text" id="new-playlist-name" placeholder="Playlist Name" class="search-input w-full p-4 mb-6 rounded-[14px]">
+            <div class="flex justify-end gap-4">
+                <button onclick="closeModals()" class="px-6 py-3 text-gray-400 hover:text-white transition-colors">Cancel</button>
+                <button onclick="confirmCreatePlaylist()" class="px-8 py-3 bg-accent-red text-white rounded-[14px] hover:scale-105 transition-all">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-to-playlist-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div class="bg-card-dark border border-brand-border p-8 rounded-[24px] w-full max-w-md shadow-2xl max-h-[80vh] flex flex-col">
+            <h3 class="text-2xl text-white font-medium mb-6">Add to Playlist</h3>
+            <div id="modal-playlist-list" class="flex flex-col gap-2 overflow-y-auto pr-2 custom-scrollbar mb-6">
+                <!-- Playlists will be listed here -->
+            </div>
+            <div class="flex justify-end gap-4">
+                <button onclick="closeModals()" class="px-6 py-3 text-gray-400 hover:text-white transition-colors">Cancel</button>
+                <button onclick="openCreatePlaylistModal()" class="px-6 py-3 border border-brand-border text-white rounded-[14px] hover:border-accent-red transition-all">New Playlist</button>
+            </div>
+        </div>
+    </div>
 <!-- Made with ❤️ from 4SP -->
