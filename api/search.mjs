@@ -135,12 +135,16 @@ export default async function handler(req, res) {
               published: item.published?.text || ""
             };
           } else if (item.type === 'Channel') {
+            // Robust thumbnail extraction for channels
+            const channelThumb = item.thumbnails?.[0]?.url || 
+                               item.author?.thumbnails?.[0]?.url || 
+                               item.author?.avatar?.[0]?.url || 
+                               "";
             return {
               type: 'channel',
               id: item.id,
               title: item.author?.name || item.title?.toString() || "Unknown Channel",
-              thumbnail: item.thumbnails?.[0]?.url || item.author?.thumbnails?.[0]?.url || "",
-              subscribers: item.subscribers?.text || item.subscriber_count?.text || "",
+              thumbnail: channelThumb,
               video_count: item.video_count?.text || "",
               description: item.description_snippet?.text || ""
             };

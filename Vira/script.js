@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerDescription = document.getElementById('player-description');
     const searchCloseBtn = document.getElementById('searchCloseBtn');
     const playlistList = document.getElementById('playlist-list');
+    const dynamicTitle = document.getElementById('dynamic-title');
 
     let currentCategory = 'youtube';
     let library = { playlists: [] };
@@ -46,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stored) {
             library = JSON.parse(stored);
         } else {
-            // Initial empty library
             saveLibrary();
         }
     }
@@ -70,8 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.openCreatePlaylistModal = function() {
-        document.getElementById('create-playlist-modal').classList.remove('hidden');
-        document.getElementById('new-playlist-name').focus();
+        const modal = document.getElementById('create-playlist-modal');
+        if (modal) modal.classList.remove('hidden');
+        const input = document.getElementById('new-playlist-name');
+        if (input) input.focus();
     };
 
     window.closeModals = function() {
@@ -103,15 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
         itemToAdd = item;
         const modal = document.getElementById('add-to-playlist-modal');
         const list = document.getElementById('modal-playlist-list');
-        list.innerHTML = '';
-        library.playlists.forEach(pl => {
-            const btn = document.createElement('button');
-            btn.className = 'w-full text-left p-4 bg-black/40 hover:bg-accent-red hover:text-white rounded-[12px] transition-all flex justify-between items-center';
-            btn.innerHTML = `<span>${pl.name}</span> <span class="text-xs opacity-60">${pl.videos.length} videos</span>`;
-            btn.onclick = () => confirmAddToPlaylist(pl.id);
-            list.appendChild(btn);
-        });
-        modal.classList.remove('hidden');
+        if (list) {
+            list.innerHTML = '';
+            library.playlists.forEach(pl => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 bg-black/40 hover:bg-accent-red hover:text-white rounded-[12px] transition-all flex justify-between items-center';
+                btn.innerHTML = `<span>${pl.name}</span> <span class="text-xs opacity-60">${pl.videos.length} videos</span>`;
+                btn.onclick = () => confirmAddToPlaylist(pl.id);
+                list.appendChild(btn);
+            });
+        }
+        if (modal) modal.classList.remove('hidden');
     };
 
     async function confirmAddToPlaylist(plId) {
@@ -130,6 +134,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function openPlaylist(plId) {
         window.location.hash = `playlist/${plId}`;
     }
+
+    window.deletePlaylist = function(plId) {
+        if (confirm("Are you sure you want to delete this playlist?")) {
+            library.playlists = library.playlists.filter(p => p.id !== plId);
+            saveLibrary();
+            window.location.hash = '';
+            const title = document.querySelector('h2.text-2xl');
+            if (title) title.textContent = 'Explore YouTube';
+            searchVideos('trending');
+        }
+    };
 
     // --- Search & Results ---
     window.switchCategory = function(cat) {
@@ -171,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderResults(results) {
+        if (!videoGrid) return;
         videoGrid.innerHTML = '';
         results.forEach(item => {
             const resultItem = document.createElement('div');
@@ -202,7 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (e.target.closest('.add-pl-btn')) return;
                     playVideo(item.id);
                 });
-                resultItem.querySelector('.add-pl-btn').onclick = (e) => {
+                const addBtn = resultItem.querySelector('.add-pl-btn');
+                if (addBtn) addBtn.onclick = (e) => {
                     e.stopPropagation();
                     addToPlaylist(item);
                 };
@@ -256,15 +273,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const pl = library.playlists.find(p => p.id === plId);
             if (!pl) return;
             
-            playerSection.classList.add('hidden');
-            dynamicSection.classList.remove('hidden');
+            if (playerSection) playerSection.classList.add('hidden');
+            if (dynamicSection) dynamicSection.classList.remove('hidden');
+            if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
+            if (embedIframe) embedIframe.src = '';
+            
             const title = document.querySelector('h2.text-2xl');
-            title.textContent = `Playlist: ${pl.name}`;
+            if (title) title.textContent = `Playlist: ${pl.name}`;
+            if (dynamicTitle) dynamicTitle.textContent = pl.name;
             
             if (pl.videos.length > 0) {
                 renderResults(pl.videos);
+                const deleteContainer = document.createElement('div');
+                deleteContainer.className = 'col-span-full mt-12 pt-8 border-t border-brand-border flex justify-center';
+                deleteContainer.innerHTML = `
+                    <button onclick="deletePlaylist('${pl.id}')" class="px-6 py-3 rounded-full border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white transition-all text-sm font-medium">
+                        <i class="fas fa-trash-alt mr-2"></i> Delete Playlist
+                    </button>
+                `;
+                videoGrid.appendChild(deleteContainer);
             } else {
-                videoGrid.innerHTML = '<p class="text-gray-500 text-center col-span-full py-20">This playlist is empty.</p>';
+                videoGrid.innerHTML = '<p class="text-gray-500 text-center col-span-full py-20 italic">This playlist is empty.</p>';
             }
             return;
         }
@@ -275,6 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dynamicSection) dynamicSection.classList.remove('hidden');
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
+            if (dynamicTitle) dynamicTitle.textContent = 'Channel View';
             searchVideos(channelId); 
             return;
         }
@@ -285,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
             if (searchCloseBtn) searchCloseBtn.classList.add('hidden');
+            if (dynamicTitle) dynamicTitle.textContent = 'Search Results';
             return;
         }
 
@@ -319,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="hover:underline cursor-pointer flex items-center gap-2" onclick="viewChannel('${data.channel_id}')">
                             <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
                         </span>
-                        <button onclick='addToPlaylist(${JSON.stringify({id: videoId, title: data.title, artist: data.author, artistId: data.channel_id, thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`, duration: data.duration, views: data.views, published: data.published, type: "video"}).replace(/'/g, "&apos;")})' class="text-xs bg-brand-border px-3 py-1 rounded-full hover:bg-accent-red transition-all">
+                        <button onclick='addToPlaylist(${JSON.stringify({id: videoId, title: data.title, artist: data.author, artistId: data.channel_id, thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`, duration: data.duration, views: data.views, published: data.published, type: "video"}).replace(/'/g, "&apos;")})' class="text-xs bg-brand-border px-3 py-1 rounded-full hover:bg-accent-red transition-all text-white">
                             <i class="fas fa-plus"></i> Add to Playlist
                         </button>
                     </div>
