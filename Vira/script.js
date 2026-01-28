@@ -71,7 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`/api/video-info?videoId=${videoId}`);
             const data = await res.json();
 
-            if (data.error) throw new Error(data.error);
+            if (!res.ok || data.error) {
+                console.error("API Error Response:", data);
+                throw new Error(data.error || `Server returned ${res.status}`);
+            }
 
             playerTitle.textContent = data.title;
             playerMetadata.textContent = `${data.author} • ${data.duration}s`;

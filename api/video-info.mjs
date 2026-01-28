@@ -6,7 +6,11 @@ async function getYoutube() {
     youtubePromise = (async () => {
       // Use dynamic import
       const { Innertube } = await import('youtubei.js');
-      return Innertube.create({ cache: null });
+      // generate_session_locally: true is often needed for serverless
+      return Innertube.create({ 
+        cache: null,
+        generate_session_locally: true 
+      });
     })();
   }
   return youtubePromise;
@@ -35,25 +39,40 @@ export default async function handler(req, res) {
 
   try {
     const yt = await getYoutube();
-    const info = await yt.getInfo(videoId);
+    
+    let info;
+    try {
+        info = await yt.getInfo(videoId);
+    } catch (infoError) {
+        console.warn("yt.getInfo failed, trying yt.getBasicInfo:", infoError.message);
+        // Fallback to basic info if full info fails (sometimes works for age-restricted etc.)
+        info = await yt.getBasicInfo(videoId);
+    }
     
     // Get the best format that has both video and audio
     // youtubei.js v16+ uses different format selection methods
-    const format = info.chooseFormat({ type: 'video+audio', quality: 'best' });
-    
     let streamingUrl;
-    if (format) {
-        streamingUrl = format.decipher(yt.session.player);
-    } else {
-        // Fallback: try to get video only and just use that if combined fails
-        const videoOnly = info.chooseFormat({ type: 'video', quality: 'best' });
-        if (videoOnly) {
-            streamingUrl = videoOnly.decipher(yt.session.player);
+    try {
+        const format = info.chooseFormat({ type: 'video+audio', quality: 'best' }) || 
+                       info.chooseFormat({ type: 'video', quality: 'best' });
+        
+        if (format) {
+            streamingUrl = format.decipher(yt.session.player);
+        }
+    } catch (formatError) {
+        console.error("Format selection/decipher error:", formatError);
+    }
+
+    if (!streamingUrl) {
+        // Last ditch effort: find any format with a URL
+        const anyFormat = info.formats?.find(f => f.url) || info.adaptive_formats?.find(f => f.url);
+        if (anyFormat) {
+            streamingUrl = anyFormat.decipher ? anyFormat.decipher(yt.session.player) : anyFormat.url;
         }
     }
 
     if (!streamingUrl) {
-        return res.status(404).json({ error: 'No playable format found' });
+        return res.status(404).json({ error: 'No playable format found for video ' + videoId });
     }
 
     res.status(200).json({
@@ -65,7 +84,12 @@ export default async function handler(req, res) {
     });
     
   } catch (error) {
-    console.error("Video Info Error:", error);
-    res.status(500).json({ error: 'Failed to fetch video info', details: error.message });
+    console.error("Video Info Critical Error:", error);
+    // Return detailed error so we can see it in the client console
+    res.status(500).json({ 
+        error: `Video Info Error: ${error.message}`, 
+        stack: error.stack,
+        videoId: videoId
+    });
   }
 }
