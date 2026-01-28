@@ -171,9 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (playerTitle) playerTitle.textContent = data.title;
             if (playerMetadata) {
                 playerMetadata.innerHTML = `
-                    <span class="text-gray-400">${data.author}</span> • 
-                    <span class="text-gray-500">${data.duration}s</span> • 
-                    <span class="text-gray-500">${data.views || ''} views</span>
+                    <span class="text-gray-400 font-medium">${data.author}</span> • 
+                    <span class="text-gray-500">${data.duration}</span> • 
+                    <span class="text-gray-500">${data.views}</span> • 
+                    <span class="text-gray-500">${data.published || ''}</span>
                 `;
             }
             if (playerDescription) {
