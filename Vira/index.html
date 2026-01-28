@@ -6,7 +6,7 @@
         const viraId = Math.random().toString(36).substring(2, 10);
         console.log("VIRA: Session ID initialized:", viraId);
 
-        // Ultraviolet Configuration
+        // Define Ultraviolet Configuration BEFORE loading uv.bundle.js
         const basePath = "/VORA/VERN_SYSTEM/uv/";
         self.__uv$config = {
             prefix: basePath + "service/",
@@ -29,12 +29,12 @@
     </script>
 
     <!-- VERN_SYSTEM Proxy Scripts -->
-    <script src="/VORA/VERN_SYSTEM/uv/uv.bundle.js"></script>
     <script src="/VORA/VERN_SYSTEM/baremux/index.js"></script>
     <script>
+        // Initialize BareMux BEFORE uv.bundle.js to prevent SharedWorker race conditions
         window.checkBare = async () => {
             try {
-                // Using a regular Worker instead of SharedWorker to fix the MessagePort error
+                // Force a non-SharedWorker connection globally
                 const connection = new BareMux.BareMuxConnection("/VORA/VERN_SYSTEM/baremux/worker.js", false);
                 const wispUrl = "wss://wisp.mercurywork.shop/";
                 const transportPath = "/VORA/VERN_SYSTEM/libcurl/index.mjs";
@@ -57,6 +57,8 @@
             await window.checkBare();
         })();
     </script>
+    <!-- Load UV bundle AFTER BareMux is ready -->
+    <script src="/VORA/VERN_SYSTEM/uv/uv.bundle.js"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
