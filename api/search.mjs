@@ -55,6 +55,8 @@ export default async function handler(req, res) {
           artist: item.author.name,
           duration: item.duration.text,
           thumbnail: item.thumbnails[0].url,
+          views: item.short_view_count?.text || "",
+          published: item.published?.text || "",
           url: `https://www.youtube.com/watch?v=${item.id}`
         };
       }
@@ -75,6 +77,8 @@ export default async function handler(req, res) {
             artist: item.author,
             duration: item.durationText,
             thumbnail: item.videoThumbnails.find(t => t.quality === 'medium')?.url || item.videoThumbnails[0].url,
+            views: item.viewCountText || "",
+            published: item.publishedText || "",
             url: `https://www.youtube.com/watch?v=${item.videoId}`,
             fallback: true
         }));

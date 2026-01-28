@@ -55,80 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadVideoFromHash();
     };
 
-    async function loadVideoFromHash() {
-        const hash = window.location.hash;
-        const playerSection = document.getElementById('player-section');
-        const dynamicSection = document.getElementById('dynamic-section');
-        const embedIframe = document.getElementById('youtube-embed');
-        const playerTitle = document.getElementById('player-title');
-        const playerMetadata = document.getElementById('player-metadata');
-        const playerDescription = document.getElementById('player-description');
-
-        if (!hash.startsWith('#video/')) {
-            playerSection.classList.add('hidden');
-            dynamicSection.classList.remove('hidden');
-            embedIframe.src = '';
-            return;
-        }
-
-        const videoId = hash.replace('#video/', '');
-        
-        // Show player, hide results
-        playerSection.classList.remove('hidden');
-        dynamicSection.classList.add('hidden');
-        playerTitle.textContent = 'Loading...';
-        playerDescription.textContent = 'Fetching video data...';
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        try {
-            // We still fetch metadata for the UI
-            const res = await fetch(`/api/video-info?videoId=${videoId}`);
-            const data = await res.json();
-
-            if (!res.ok || data.error) {
-                console.error("API Error Response:", data);
-                playerTitle.textContent = 'YouTube Video';
-                playerDescription.textContent = 'Metadata failed to load, but the video will still attempt to play.';
-            } else {
-                playerTitle.textContent = data.title;
-                playerMetadata.textContent = `${data.author} • ${data.duration}s`;
-                playerDescription.textContent = data.description || 'No description available.';
-            }
-
-            const baseUrl = instances[currentInstanceIndex];
-            const embedUrl = `${baseUrl}/embed/${videoId}?autoplay=1`;
-            
-            console.log(`VIRA: Attempting instance ${currentInstanceIndex + 1}: ${baseUrl}`);
-
-            // Use UV proxy for the embed URL
-            if (window.__uv$config && window.__uv$config.prefix) {
-                embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
-            } else {
-                embedIframe.src = embedUrl;
-            }
-
-        } catch (error) {
-            console.error("Failed to setup video playback:", error);
-            playerTitle.textContent = 'Playback Setup Error';
-            playerDescription.innerHTML = `
-                <div class="text-red-500 font-medium mb-2">Failed to initialize the video player.</div>
-                <div class="mt-4">
-                    <button onclick="closePlayer()" class="text-xs underline hover:text-white">Back to results</button>
-                </div>
-            `;
-        }
-    }
-
-    window.closePlayer = function() {
-        window.location.hash = '';
-    };
-
-    window.addEventListener('hashchange', loadVideoFromHash);
-    
-    // Initial check
-    if (window.location.hash) loadVideoFromHash();
-
     function renderResults(results) {
         videoGrid.innerHTML = ''; // Clear existing content
         results.forEach(item => {
@@ -144,12 +70,89 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="p-4">
                     <h3 class="text-white text-base font-medium mb-1 line-clamp-2" title="${item.title}">${item.title}</h3>
                     <p class="text-gray-400 text-sm">${item.artist}</p>
-                    <p class="text-gray-500 text-xs">${item.duration}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-gray-500 text-xs">${item.duration}</p>
+                        <p class="text-gray-500 text-[10px]">${item.views || ''} • ${item.published || ''}</p>
+                    </div>
                 </div>
             `;
             videoItem.addEventListener('click', () => playVideo(item.id));
             videoGrid.appendChild(videoItem);
         });
+    }
+
+    async function loadVideoFromHash() {
+        const hash = window.location.hash;
+        const playerSection = document.getElementById('player-section');
+        const dynamicSection = document.getElementById('dynamic-section');
+        const viraPlayer = document.getElementById('vira-player');
+        const embedContainer = document.getElementById('embed-container');
+        const embedIframe = document.getElementById('youtube-embed');
+        const playerTitle = document.getElementById('player-title');
+        const playerMetadata = document.getElementById('player-metadata');
+        const playerDescription = document.getElementById('player-description');
+
+        if (!hash.startsWith('#video/')) {
+            playerSection.classList.add('hidden');
+            dynamicSection.classList.remove('hidden');
+            viraPlayer.pause();
+            viraPlayer.src = '';
+            embedIframe.src = '';
+            return;
+        }
+
+        const videoId = hash.replace('#video/', '');
+        
+        playerSection.classList.remove('hidden');
+        dynamicSection.classList.add('hidden');
+        playerTitle.textContent = 'Loading...';
+        playerDescription.textContent = 'Preparing high fluency stream...';
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        try {
+            const res = await fetch(`/api/video-info?videoId=${videoId}`);
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.error);
+
+            playerTitle.textContent = data.title;
+            playerMetadata.textContent = `${data.author} • ${data.duration}s • ${data.views || ''} views`;
+            playerDescription.innerHTML = `
+                <div class="mb-4 text-white font-medium flex items-center gap-2">
+                    <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
+                </div>
+                <div class="whitespace-pre-wrap">${data.description || 'No description available.'}</div>
+            `;
+
+            // HIGH FLUENCY MODE: Use native video element if possible
+            if (data.streaming_url) {
+                console.log("VIRA: Direct stream found. Engaging High Fluency Mode...");
+                embedContainer.classList.add('hidden');
+                viraPlayer.classList.remove('hidden');
+                
+                // Proxy the stream through UV
+                const proxiedUrl = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
+                viraPlayer.src = proxiedUrl;
+                viraPlayer.play().catch(e => console.warn("VIRA: Autoplay blocked."));
+            } else {
+                throw new Error("No direct stream available");
+            }
+
+        } catch (error) {
+            console.error("VIRA: High Fluency failed, falling back to Invidious:", error);
+            const baseUrl = instances[currentInstanceIndex];
+            const embedUrl = `${baseUrl}/embed/${videoId}?autoplay=1`;
+            
+            viraPlayer.classList.add('hidden');
+            embedContainer.classList.remove('hidden');
+            embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
+            
+            if (playerTitle.textContent === 'Loading...') {
+                playerTitle.textContent = 'YouTube Video';
+                playerDescription.textContent = 'Engaged failover mode. Direct metadata unavailable.';
+            }
+        }
     }
 
     // Initial load, if there's a predefined query or to show recent videos

@@ -22,17 +22,24 @@ export default async function handler(req, res) {
 
   try {
     const yt = await getYoutube();
-    const info = await yt.getBasicInfo(videoId);
+    const info = await yt.getInfo(videoId);
     
+    // Select the best combined format (video + audio) for fast loading
+    const format = info.chooseFormat({ type: 'video+audio', quality: 'best' });
+    const streamingUrl = format ? format.decipher(yt.session.player) : null;
+
     return res.status(200).json({
       title: info.basic_info.title,
       author: info.basic_info.author,
-      description: info.basic_info.short_description || "",
-      duration: info.basic_info.duration
+      description: info.basic_info.short_description || info.primary_info?.description?.text || "",
+      duration: info.basic_info.duration,
+      streaming_url: streamingUrl,
+      channel_id: info.basic_info.channel_id,
+      views: info.basic_info.view_count,
+      published: info.basic_info.publish_date
     });
   } catch (error) {
     console.error("Video Info Error:", error);
-    // Fallback: try a simple fetch if Innertube fails
     try {
         const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
         const data = await response.json();
@@ -40,10 +47,11 @@ export default async function handler(req, res) {
             title: data.title,
             author: data.author_name,
             description: "Detailed description unavailable (fallback mode).",
-            duration: 0
+            duration: 0,
+            fallback: true
         });
     } catch (fallbackError) {
-        return res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
   }
 }
