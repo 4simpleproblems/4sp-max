@@ -2,10 +2,6 @@ const viraId = new URL(self.location).searchParams.get('v') || 'service';
 
 importScripts('./uv/uv.bundle.js');
 importScripts('./uv/uv.config.js');
-
-// Override prefix with the unique ID for this session
-self.__uv$config.prefix = "/VORA/VERN_SYSTEM/uv/" + viraId + "/";
-
 importScripts('./uv/uv.sw.js');
 
 const uv = new UVServiceWorker();
@@ -24,7 +20,9 @@ self.addEventListener('fetch', (event) => {
         try {
             event.respondWith(uv.fetch(event));
         } catch (e) {
-            console.error("UV Fetch Error", e);
+            console.error("VIRA Proxy Fetch Error:", e);
+            // Return a 408 Timeout if the proxy fetch itself crashes
+            return new Response("Proxy Error", { status: 408 });
         }
     }
 });
