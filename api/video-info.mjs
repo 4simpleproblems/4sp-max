@@ -20,40 +20,55 @@ export default async function handler(req, res) {
   const { videoId } = req.query;
   if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
 
+  // RACE: Try Invidious API and YouTubei.js in parallel for maximum speed
   try {
-    const yt = await getYoutube();
-    const info = await yt.getInfo(videoId);
-    
-    // Select the best combined format (video + audio) for fast loading
-    const format = info.chooseFormat({ type: 'video+audio', quality: 'best' });
-    const streamingUrl = format ? format.decipher(yt.session.player) : null;
+    const invResPromise = fetch(`https://invidious.nerdvpn.de/api/v1/videos/${videoId}`).then(r => r.json()).catch(() => null);
+    const ytPromise = getYoutube().then(yt => yt.getInfo(videoId)).catch(() => null);
 
-    return res.status(200).json({
-      title: info.basic_info?.title || "Unknown Title",
-      author: info.basic_info?.author || "Unknown Author",
-      description: info.primary_info?.description?.text || info.basic_info?.short_description || "",
-      duration: info.basic_info?.duration_text || `${Math.floor((info.basic_info?.duration || 0) / 60)}:${((info.basic_info?.duration || 0) % 60).toString().padStart(2, '0')}`,
-      streaming_url: streamingUrl,
-      channel_id: info.basic_info?.channel_id || "",
-      views: info.primary_info?.view_count?.text || `${info.basic_info?.view_count || 0} views`,
-      published: info.primary_info?.published?.text || info.basic_info?.publish_date || ""
-    });
-  } catch (error) {
-    console.error("Video Info Error:", error);
-    try {
-        const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
-        const data = await response.json();
+    const [invData, ytInfo] = await Promise.all([invResPromise, ytPromise]);
+
+    if (ytInfo) {
+        let format = ytInfo.chooseFormat({ type: 'video+audio', quality: 'best' });
+        if (!format) format = ytInfo.chooseFormat({ type: 'video', quality: 'best' });
+        
         return res.status(200).json({
-            title: data.title,
-            author: data.author_name,
-            description: "Detailed description unavailable (fallback mode).",
-            duration: "0:00",
-            views: "Unknown views",
-            published: "Unknown date",
-            fallback: true
+            title: ytInfo.basic_info.title,
+            author: ytInfo.basic_info.author,
+            description: ytInfo.primary_info?.description?.text || ytInfo.basic_info.short_description || "",
+            duration: ytInfo.basic_info.duration_text || "0:00",
+            streaming_url: format ? format.decipher(ytInfo.session.player) : (invData?.formatStreams?.[0]?.url || ""),
+            channel_id: ytInfo.basic_info.channel_id,
+            views: ytInfo.primary_info?.view_count?.text || `${ytInfo.basic_info.view_count} views`,
+            published: ytInfo.primary_info?.published?.text || ytInfo.basic_info.publish_date
         });
-    } catch (fallbackError) {
-        return res.status(500).json({ error: error.message });
     }
+
+    if (invData) {
+        return res.status(200).json({
+            title: invData.title,
+            author: invData.author,
+            description: invData.description,
+            duration: invData.lengthSeconds,
+            streaming_url: invData.formatStreams?.[0]?.url || "",
+            channel_id: invData.authorId,
+            views: invData.viewCount,
+            published: invData.publishedText
+        });
+    }
+
+    // FINAL FALLBACK
+    const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+    const data = await response.json();
+    return res.status(200).json({
+        title: data.title,
+        author: data.author_name,
+        description: "Metadata fallback active.",
+        duration: "0:00",
+        views: "Unknown",
+        fallback: true
+    });
+
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 }
