@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hash = window.location.hash;
         const playerSection = document.getElementById('player-section');
         const dynamicSection = document.getElementById('dynamic-section');
-        const videoPlayer = document.getElementById('custom-video-player');
+        const embedIframe = document.getElementById('youtube-embed');
         const playerTitle = document.getElementById('player-title');
         const playerMetadata = document.getElementById('player-metadata');
         const playerDescription = document.getElementById('player-description');
@@ -52,8 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!hash.startsWith('#video/')) {
             playerSection.classList.add('hidden');
             dynamicSection.classList.remove('hidden');
-            videoPlayer.pause();
-            videoPlayer.src = '';
+            embedIframe.src = '';
             return;
         }
 
@@ -68,41 +67,35 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         try {
+            // We still fetch metadata for the UI
             const res = await fetch(`/api/video-info?videoId=${videoId}`);
             const data = await res.json();
 
             if (!res.ok || data.error) {
                 console.error("API Error Response:", data);
-                throw new Error(data.error || `Server returned ${res.status}`);
+                // Even if metadata fails, we can still try to load the embed
+                playerTitle.textContent = 'YouTube Video';
+                playerDescription.textContent = 'Metadata could not be loaded, but the video may still play.';
+            } else {
+                playerTitle.textContent = data.title;
+                playerMetadata.textContent = `${data.author} • ${data.duration}s`;
+                playerDescription.textContent = data.description || 'No description available.';
             }
 
-            playerTitle.textContent = data.title;
-            playerMetadata.textContent = `${data.author} • ${data.duration}s`;
-            playerDescription.textContent = data.description || 'No description available.';
-
-            if (data.streaming_url) {
-                // Use UV proxy for the stream URL to bypass CORS/IP blocks
-                if (window.__uv$config && window.__uv$config.prefix) {
-                    videoPlayer.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
-                } else {
-                    videoPlayer.src = data.streaming_url;
-                }
-                videoPlayer.play().catch(e => console.warn("Autoplay blocked or failed:", e));
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1`;
+            
+            // Use UV proxy for the embed URL
+            if (window.__uv$config && window.__uv$config.prefix) {
+                embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
             } else {
-                playerDescription.textContent = 'Error: Could not retrieve a valid streaming URL.';
+                embedIframe.src = embedUrl;
             }
 
         } catch (error) {
-            console.error("Failed to load video info:", error);
-            playerTitle.textContent = 'Playback Error';
+            console.error("Failed to setup video playback:", error);
+            playerTitle.textContent = 'Playback Setup Error';
             playerDescription.innerHTML = `
-                <div class="text-red-500 font-medium mb-2">Failed to load video information.</div>
-                <p class="text-sm">Possible reasons:</p>
-                <ul class="list-disc ml-5 text-sm mt-1">
-                    <li>The video is age-restricted or private.</li>
-                    <li>The server is currently rate-limited by YouTube.</li>
-                    <li>Geographical restrictions are in place.</li>
-                </ul>
+                <div class="text-red-500 font-medium mb-2">Failed to initialize the video player.</div>
                 <div class="mt-4">
                     <button onclick="closePlayer()" class="text-xs underline hover:text-white">Back to results</button>
                 </div>
