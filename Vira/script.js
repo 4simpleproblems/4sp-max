@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') {
             const query = searchInput.value.trim();
             if (query) {
+                // Close player if searching
+                window.location.hash = ''; 
                 searchVideos(query);
             }
         }
@@ -31,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Failed to fetch search results:", error);
-            videoGrid.innerHTML = '<p class="text-red-500 text-center col-span-full">Failed to load videos. Please try again later.</p>';
+            videoGrid.innerHTML = `<p class="text-red-500 text-center col-span-full">Failed to load videos. Error: ${error.message}</p>`;
             noResultsMessage.classList.add('hidden');
         }
     }
@@ -91,22 +93,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const playerTitle = document.getElementById('player-title');
         const playerMetadata = document.getElementById('player-metadata');
         const playerDescription = document.getElementById('player-description');
+        const searchCloseBtn = document.getElementById('searchCloseBtn');
 
         if (!hash.startsWith('#video/')) {
-            playerSection.classList.add('hidden');
-            dynamicSection.classList.remove('hidden');
-            viraPlayer.pause();
-            viraPlayer.src = '';
-            embedIframe.src = '';
+            if (playerSection) playerSection.classList.add('hidden');
+            if (dynamicSection) dynamicSection.classList.remove('hidden');
+            if (viraPlayer) {
+                viraPlayer.pause();
+                viraPlayer.src = '';
+            }
+            if (embedIframe) embedIframe.src = '';
+            if (searchCloseBtn) searchCloseBtn.classList.add('hidden');
             return;
         }
 
         const videoId = hash.replace('#video/', '');
         
-        playerSection.classList.remove('hidden');
-        dynamicSection.classList.add('hidden');
-        playerTitle.textContent = 'Loading...';
-        playerDescription.textContent = 'Preparing high fluency stream...';
+        if (playerSection) playerSection.classList.remove('hidden');
+        if (dynamicSection) dynamicSection.classList.add('hidden');
+        if (searchCloseBtn) searchCloseBtn.classList.remove('hidden');
+        
+        if (playerTitle) playerTitle.textContent = 'Loading...';
+        if (playerDescription) playerDescription.textContent = 'Preparing high fluency stream...';
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -116,19 +124,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.error) throw new Error(data.error);
 
-            playerTitle.textContent = data.title;
-            playerMetadata.textContent = `${data.author} • ${data.duration}s • ${data.views || ''} views`;
-            playerDescription.innerHTML = `
-                <div class="mb-4 text-white font-medium flex items-center gap-2">
-                    <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
-                </div>
-                <div class="whitespace-pre-wrap">${data.description || 'No description available.'}</div>
-            `;
+            if (playerTitle) playerTitle.textContent = data.title;
+            if (playerMetadata) playerMetadata.textContent = `${data.author} • ${data.duration}s • ${data.views || ''} views`;
+            if (playerDescription) {
+                playerDescription.innerHTML = `
+                    <div class="mb-4 text-white font-medium flex items-center gap-2">
+                        <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
+                    </div>
+                    <div class="whitespace-pre-wrap">${data.description || 'No description available.'}</div>
+                `;
+            }
 
             // HIGH FLUENCY MODE: Use native video element if possible
-            if (data.streaming_url) {
+            if (data.streaming_url && viraPlayer) {
                 console.log("VIRA: Direct stream found. Engaging High Fluency Mode...");
-                embedContainer.classList.add('hidden');
+                if (embedContainer) embedContainer.classList.add('hidden');
                 viraPlayer.classList.remove('hidden');
                 
                 // Proxy the stream through UV
@@ -144,11 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const baseUrl = instances[currentInstanceIndex];
             const embedUrl = `${baseUrl}/embed/${videoId}?autoplay=1`;
             
-            viraPlayer.classList.add('hidden');
-            embedContainer.classList.remove('hidden');
-            embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
+            if (viraPlayer) viraPlayer.classList.add('hidden');
+            if (embedContainer) embedContainer.classList.remove('hidden');
+            if (embedIframe) embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
             
-            if (playerTitle.textContent === 'Loading...') {
+            if (playerTitle && playerTitle.textContent === 'Loading...') {
                 playerTitle.textContent = 'YouTube Video';
                 playerDescription.textContent = 'Engaged failover mode. Direct metadata unavailable.';
             }

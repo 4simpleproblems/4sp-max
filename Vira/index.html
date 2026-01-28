@@ -286,9 +286,14 @@
                 <h2 class="text-2xl text-white font-medium">Explore YouTube</h2>
                 <p class="text-gray-500 text-sm">Search for videos, channels, and playlists.</p>
             </div>
-            <div class="relative w-full md:w-96">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                <input type="text" id="searchInput" placeholder="Search YouTube..." class="search-input w-full pl-12 pr-4 py-3 rounded-[12px] text-sm">
+            <div class="relative w-full md:w-96 flex items-center gap-2">
+                <div class="relative flex-grow">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" id="searchInput" placeholder="Search YouTube..." class="search-input w-full pl-12 pr-4 py-3 rounded-[12px] text-sm">
+                </div>
+                <button id="searchCloseBtn" onclick="closePlayer()" class="hidden w-10 h-10 flex items-center justify-center rounded-[12px] bg-deep-black border border-brand-border hover:border-accent-red text-white transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </header>
 
@@ -296,7 +301,11 @@
             <!-- Player Section -->
             <section id="player-section" class="mb-12 hidden">
                 <div id="player-container" class="relative w-full rounded-[14px] overflow-hidden shadow-2xl border border-brand-border mb-6 bg-black">
-                    <div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+                    <!-- High Fluency Direct Player -->
+                    <video id="vira-player" class="w-full aspect-video hidden" controls crossorigin="anonymous"></video>
+                    
+                    <!-- Fallback Embed Player -->
+                    <div id="embed-container" style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
                         <iframe id="youtube-embed" src="" style="top: 0; left: 0; width: 100%; height: 100%; position: absolute; border: 0;" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
                     </div>
                 </div>
