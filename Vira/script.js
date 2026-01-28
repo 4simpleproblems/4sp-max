@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentInstanceIndex = 0;
     
     const instances = [
+        window.location.origin + '/api/local-instance',
         'https://invidious.nerdvpn.de',
         'https://iv.melmac.space',
         'https://invidious.no-logs.com',

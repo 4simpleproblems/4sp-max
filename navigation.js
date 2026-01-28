@@ -148,7 +148,7 @@ window.applyTheme = (theme) => {
             logoImg.src = newLogoSrc;
         }
 
-        const noFilterThemes = ['Dark', 'Light', 'Christmas'];
+        const noFilterThemes = ['Dark', 'Light', 'Christmas', 'Potato'];
         const isNoFilter = noFilterThemes.includes(themeToApply.name);
         
         // Check if mode is changing (Tinted <-> Standard)
