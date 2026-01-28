@@ -9,7 +9,7 @@
         // Ultraviolet Configuration
         const basePath = "/VORA/VERN_SYSTEM/uv/";
         self.__uv$config = {
-            prefix: basePath + "service/",
+            prefix: basePath + "service/", // STABLE PREFIX: Do not change this, it breaks internal UV paths
             encodeUrl: (url) => {
                 if (!window.Ultraviolet) return url;
                 return Ultraviolet.codec.xor.encode(url);
@@ -24,7 +24,7 @@
             config: basePath + "uv.config.js",
             sw: basePath + "uv.sw.js",
             stockSW: "/VORA/VERN_SYSTEM/sw.js",
-            // Pass the ID to the bare server
+            // Pass the ID to the bare server for session tracking
             bare: "/api/bare?v=" + viraId,
         };
     </script>
@@ -63,7 +63,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vira - YouTube</title>
+    <title>Vira - YouTube Alternative</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
