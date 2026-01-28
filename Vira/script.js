@@ -96,15 +96,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 resultItem.addEventListener('click', () => playVideo(item.id));
-            } else if (item.type === 'channel') {
-                resultItem.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'p-6', 'bg-card-dark', 'border', 'border-brand-border', 'rounded-[16px]', 'hover:border-accent-red', 'transition-all', 'cursor-pointer', 'col-span-full', 'md:col-span-1');
+            } else if (item.type === 'channel' || item.type === 'channel_header') {
+                const isHeader = item.type === 'channel_header';
+                resultItem.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'p-8', 'bg-card-dark', 'border', 'border-brand-border', 'rounded-[24px]', 'col-span-full', 'mb-8');
+                if (isHeader) resultItem.classList.add('bg-gradient-to-b', 'from-zinc-900', 'to-black');
+                
                 resultItem.innerHTML = `
-                    <img src="${item.thumbnail}" class="w-24 h-24 rounded-full mb-4 border-2 border-brand-border group-hover:border-accent-red transition-all" alt="${item.title}">
-                    <h3 class="text-white text-lg font-medium mb-1 text-center">${item.title}</h3>
-                    <p class="text-gray-500 text-sm mb-2 text-center">${item.subscribers} • ${item.video_count}</p>
-                    <p class="text-gray-400 text-xs text-center line-clamp-2">${item.description}</p>
+                    <div class="flex flex-col md:flex-row items-center gap-8 w-full max-w-4xl">
+                        <img src="${item.thumbnail}" class="w-32 h-32 rounded-full border-4 border-brand-border shadow-2xl" alt="${item.title}">
+                        <div class="flex-grow text-center md:text-left">
+                            <h2 class="text-3xl text-white font-medium mb-2">${item.title}</h2>
+                            <p class="text-accent-red text-sm font-medium mb-4">${item.subscribers || ''} subscribers</p>
+                            <p class="text-gray-400 text-sm leading-relaxed">${item.description || 'No channel description available.'}</p>
+                        </div>
+                    </div>
+                    ${isHeader ? '<div class="w-full h-px bg-brand-border mt-12 mb-4"></div><h3 class="text-white text-xl self-start px-4">Latest Videos</h3>' : ''}
                 `;
-                resultItem.addEventListener('click', () => viewChannel(item.id));
+                if (!isHeader) resultItem.addEventListener('click', () => viewChannel(item.id));
             }
             videoGrid.appendChild(resultItem);
         });
