@@ -18,7 +18,12 @@ async function handleRequest(event) {
         return await uv.fetch(event);
     }
     
-    return await fetch(event.request);
+    try {
+        return await fetch(event.request);
+    } catch (err) {
+        console.error("Native fetch failed in SW:", err);
+        return new Response("Network error", { status: 408 });
+    }
 }
 
 self.addEventListener('fetch', (event) => {

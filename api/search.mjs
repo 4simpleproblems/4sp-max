@@ -65,6 +65,22 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error("Search Error:", error);
-    res.status(500).json({ error: 'Failed to fetch data' });
+    // Fallback to Invidious search API if YouTubei fails
+    try {
+        const invRes = await fetch(`https://invidious.nerdvpn.de/api/v1/search?q=${encodeURIComponent(query)}&type=video`);
+        const invData = await invRes.json();
+        const results = invData.map(item => ({
+            id: item.videoId,
+            title: item.title,
+            artist: item.author,
+            duration: item.durationText,
+            thumbnail: item.videoThumbnails.find(t => t.quality === 'medium')?.url || item.videoThumbnails[0].url,
+            url: `https://www.youtube.com/watch?v=${item.videoId}`,
+            fallback: true
+        }));
+        return res.status(200).json({ results });
+    } catch (fallbackError) {
+        res.status(500).json({ error: error.message, stack: error.stack });
+    }
   }
 }
