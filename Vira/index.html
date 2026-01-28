@@ -34,12 +34,13 @@
     <script>
         window.checkBare = async () => {
             try {
-                const connection = new BareMux.BareMuxConnection("/VORA/VERN_SYSTEM/baremux/worker.js");
+                // Using a regular Worker instead of SharedWorker to fix the MessagePort error
+                const connection = new BareMux.BareMuxConnection("/VORA/VERN_SYSTEM/baremux/worker.js", false);
                 const wispUrl = "wss://wisp.mercurywork.shop/";
                 const transportPath = "/VORA/VERN_SYSTEM/libcurl/index.mjs";
                 
-                // Set transport directly to ensure it works even if worker is slow to respond
                 await connection.setTransport(transportPath, [{ websocket: wispUrl }]);
+                console.log("VIRA: Proxy transport established.");
             } catch (e) {
                 console.warn("VIRA: BareMux initialization issue:", e);
             }
