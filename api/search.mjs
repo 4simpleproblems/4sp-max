@@ -41,18 +41,16 @@ export default async function handler(req, res) {
             const channel = await yt.getChannel(query);
             const channelVideos = await channel.getVideos();
             
-            // Add a special "Channel Info" item at the top
             results.push({
                 type: 'channel_header',
                 id: channel.metadata.id,
                 title: channel.metadata.title,
                 thumbnail: channel.metadata.thumbnail?.[0]?.url || "",
-                subscribers: channel.metadata.subscriber_count || "",
                 description: channel.metadata.description || ""
             });
 
-            // Add the channel's videos
-            channelVideos.videos.forEach(v => {
+            const vids = channelVideos.videos || [];
+            vids.forEach(v => {
                 results.push({
                     type: 'video',
                     id: v.id,
@@ -71,87 +69,40 @@ export default async function handler(req, res) {
         }
     }
 
-    if (category === 'music') {
-        try {
-            // yt.music.search returns a complex object with sections
-            const musicResults = await yt.music.search(query, { type: 'video' });
-            
-            // Log for debugging if empty (visible in Vercel logs)
-            if (!musicResults.sections || musicResults.sections.length === 0) {
-                console.log("Music search returned no sections for:", query);
-            }
-
-            musicResults.sections.forEach(section => {
-                const contents = section.contents || section.items || [];
-                contents.forEach(item => {
-                    // Try to catch any item that looks like a video/song
-                    if (item.id || item.videoId) {
-                        results.push({
-                            type: 'video',
-                            id: item.id || item.videoId,
-                            title: item.title?.toString() || "Unknown Song",
-                            artist: item.author?.name || item.artists?.[0]?.name || "Unknown Artist",
-                            duration: item.duration?.text || "",
-                            thumbnail: item.thumbnails?.[0]?.url || "",
-                            views: item.views?.toString() || "",
-                            category: 'music'
-                        });
-                    }
-                });
-            });
-            
-            // If still empty, try standard search but flag as music
-            if (results.length === 0) {
-                const fallback = await yt.search(query, { type: 'video' });
-                results = fallback.results.map(item => ({
-                    type: 'video',
-                    id: item.id,
-                    title: item.title?.text || item.title?.toString(),
-                    artist: item.author?.name || "Unknown Artist",
-                    duration: item.duration?.text || "",
-                    thumbnail: item.thumbnails?.[0]?.url || "",
-                    views: item.short_view_count?.text || "",
-                    published: item.published?.text || "",
-                    category: 'music'
-                })).filter(i => i !== null);
-            }
-        } catch (musicErr) {
-            console.error("Music Search Error:", musicErr);
-            return handler({ ...req, query: { ...req.query, category: 'youtube' } }, res);
-        }
-    } else {
-        const searchResults = await yt.search(query, { type: type || 'all' });
-        results = searchResults.results.map(item => {
-          if (item.type === 'Video') {
-            return {
-              type: 'video',
-              id: item.id,
-              title: item.title?.text || item.title?.toString() || "Unknown Video",
-              artist: item.author?.name || "Unknown Artist",
-              artistId: item.author?.id || "",
-              duration: item.duration?.text || "",
-              thumbnail: item.thumbnails?.[0]?.url || "",
-              views: item.short_view_count?.text || "",
-              published: item.published?.text || ""
-            };
-          } else if (item.type === 'Channel') {
-            // Robust thumbnail extraction for channels
-            const channelThumb = item.thumbnails?.[0]?.url || 
-                               item.author?.thumbnails?.[0]?.url || 
-                               item.author?.avatar?.[0]?.url || 
-                               "";
-            return {
-              type: 'channel',
-              id: item.id,
-              title: item.author?.name || item.title?.toString() || "Unknown Channel",
-              thumbnail: channelThumb,
-              video_count: item.video_count?.text || "",
-              description: item.description_snippet?.text || ""
-            };
-          }
-          return null;
-        }).filter(i => i !== null);
-    }
+    // Standard YouTube search (YouTube Music removed as requested)
+    const searchFilter = type || 'all'; 
+    const searchResults = await yt.search(query, { type: searchFilter });
+    
+    results = searchResults.results.map(item => {
+      if (item.type === 'Video') {
+        return {
+          type: 'video',
+          id: item.id,
+          title: item.title?.text || item.title?.toString() || "Unknown Video",
+          artist: item.author?.name || "Unknown Artist",
+          artistId: item.author?.id || "",
+          duration: item.duration?.text || "",
+          thumbnail: item.thumbnails?.[0]?.url || "",
+          views: item.short_view_count?.text || "",
+          published: item.published?.text || ""
+        };
+      } else if (item.type === 'Channel') {
+        // Robust thumbnail extraction for search results
+        const channelThumb = item.thumbnails?.[0]?.url || 
+                           item.author?.thumbnails?.[0]?.url || 
+                           item.author?.avatar?.[0]?.url || 
+                           "";
+        return {
+          type: 'channel',
+          id: item.id,
+          title: item.author?.name || item.title?.toString() || "Unknown Channel",
+          thumbnail: channelThumb,
+          video_count: item.video_count?.text || "",
+          description: item.description_snippet?.text || ""
+        };
+      }
+      return null;
+    }).filter(i => i !== null);
 
     return res.status(200).json({ results });
     

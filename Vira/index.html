@@ -121,6 +121,7 @@
             margin-bottom: 4px;
             font-size: 14px;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .nav-link:hover, .nav-link.active {
@@ -265,8 +266,8 @@
         </div>
         
         <div class="flex-grow">
-            <a href="javascript:void(0)" onclick="switchCategory('youtube')" id="cat-youtube" class="nav-link active">
-                <i class="fab fa-youtube"></i>
+            <a href="javascript:void(0)" onclick="window.location.hash=''; window.location.reload();" class="nav-link active">
+                <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
             
@@ -363,12 +364,6 @@
         </footer>
     </div>
 
-    <div class="hidden">
-        <iframe id="youtube-embed" src="" style="display:none;" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-    </div>
-
-    <script src="script.js"></script>
-
     <!-- Playlist Modals -->
     <div id="create-playlist-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
         <div class="bg-card-dark border border-brand-border p-8 rounded-[24px] w-full max-w-md shadow-2xl">
@@ -393,4 +388,8 @@
             </div>
         </div>
     </div>
+
+    <script src="script.js"></script>
 <!-- Made with ❤️ from 4SP -->
+</body>
+</html>
