@@ -877,7 +877,7 @@
     },
     {
         "name": "Potato",
-        "logo-src": "../images/potato.png",
+        "logo-src": "/images/potato.png",
         "navbar-bg": "#4b3621",
         "navbar-border": "#6b4423",
         "avatar-gradient": "linear-gradient(135deg, #6b4423 0%, #4b3621 100%)",
