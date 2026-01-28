@@ -7,7 +7,7 @@ async function getYoutube() {
       const { Innertube } = await import('youtubei.js');
       return Innertube.create({ 
         cache: null,
-        generate_session_locally: true 
+        generate_session_locally: true
       });
     })();
   }
@@ -46,11 +46,11 @@ export default async function handler(req, res) {
                                 results.push({
                                     type: 'video',
                                     id: item.id,
-                                    title: item.title || "Unknown Title",
+                                    title: item.title?.toString() || "Unknown Title",
                                     artist: item.author?.name || item.artists?.[0]?.name || "Unknown Artist",
-                                    duration: item.duration?.text || "",
+                                    duration: item.duration?.text || item.duration?.toString() || "",
                                     thumbnail: item.thumbnails?.[0]?.url || "",
-                                    views: item.views || "",
+                                    views: item.views?.toString() || "",
                                     published: "",
                                     category: 'music'
                                 });
@@ -71,22 +71,22 @@ export default async function handler(req, res) {
             return {
               type: 'video',
               id: item.id,
-              title: item.title.text,
-              artist: item.author.name,
-              artistId: item.author.id,
-              duration: item.duration.text,
-              thumbnail: item.thumbnails[0].url,
-              views: item.short_view_count?.text || "",
+              title: item.title?.text || item.title?.toString() || "Unknown Video",
+              artist: item.author?.name || "Unknown Artist",
+              artistId: item.author?.id || "",
+              duration: item.duration?.text || item.duration?.toString() || "",
+              thumbnail: item.thumbnails?.[0]?.url || "",
+              views: item.short_view_count?.text || item.view_count?.text || "",
               published: item.published?.text || ""
             };
           } else if (item.type === 'Channel') {
             return {
               type: 'channel',
               id: item.id,
-              title: item.author.name,
-              thumbnail: item.thumbnails[0].url,
-              subscribers: item.subscribers.text,
-              video_count: item.video_count.text,
+              title: item.author?.name || item.title?.toString() || "Unknown Channel",
+              thumbnail: item.thumbnails?.[0]?.url || "",
+              subscribers: item.subscribers?.text || "",
+              video_count: item.video_count?.text || "",
               description: item.description_snippet?.text || ""
             };
           }
