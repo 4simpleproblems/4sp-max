@@ -9,13 +9,13 @@
         // Ultraviolet Configuration
         const basePath = "/VORA/VERN_SYSTEM/uv/";
         self.__uv$config = {
-            prefix: basePath + "service/", // STABLE PREFIX: Do not change this, it breaks internal UV paths
+            prefix: basePath + "service/",
             encodeUrl: (url) => {
-                if (!window.Ultraviolet) return url;
+                if (typeof Ultraviolet === 'undefined') return url;
                 return Ultraviolet.codec.xor.encode(url);
             },
             decodeUrl: (url) => {
-                if (!window.Ultraviolet) return url;
+                if (typeof Ultraviolet === 'undefined') return url;
                 return Ultraviolet.codec.xor.decode(url);
             },
             handler: basePath + "uv.handler.js",
@@ -24,7 +24,6 @@
             config: basePath + "uv.config.js",
             sw: basePath + "uv.sw.js",
             stockSW: "/VORA/VERN_SYSTEM/sw.js",
-            // Pass the ID to the bare server for session tracking
             bare: "/api/bare?v=" + viraId,
         };
     </script>
@@ -39,19 +38,16 @@
                 const wispUrl = "wss://wisp.mercurywork.shop/";
                 const transportPath = "/VORA/VERN_SYSTEM/libcurl/index.mjs";
                 
-                const transport = await connection.getTransport();
-                if (!transport || transport.path !== transportPath) {
-                    await connection.setTransport(transportPath, [{ websocket: wispUrl }]);
-                }
+                // Set transport directly to ensure it works even if worker is slow to respond
+                await connection.setTransport(transportPath, [{ websocket: wispUrl }]);
             } catch (e) {
-                console.warn("VIRA: BareMux initialization issue, retrying...", e);
+                console.warn("VIRA: BareMux initialization issue:", e);
             }
         };
 
         (async () => {
             if ("serviceWorker" in navigator) {
                 try {
-                    // Use query param to force a fresh SW instance on refresh
                     await navigator.serviceWorker.register("/VORA/VERN_SYSTEM/sw.js?v=" + viraId, {
                         scope: "/VORA/VERN_SYSTEM/"
                     });
@@ -63,7 +59,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vira - YouTube Alternative</title>
+    <title>Vira - YouTube</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -144,12 +140,6 @@
             border: 1px solid #FF0000;
         }
 
-        .nav-link i {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
-        }
-
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-content { margin-left: 0; padding: 24px; width: 100%; }
@@ -184,8 +174,7 @@
 
         .thumbnail-container img {
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -204,11 +193,6 @@
 
         .video-item:hover .play-overlay { opacity: 1; }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #000000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #444; }
-
         .search-input {
             background: #000000;
             border: 1px solid #333;
@@ -222,15 +206,9 @@
             box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
         }
 
-        button, a, .rounded-xl {
-            border-radius: 14px !important;
-            transition: all 0.2s ease;
-        }
-
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #444; }
     </style>
     
     <script src="../navigation.js"></script>
@@ -253,9 +231,7 @@
                 <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Playlists</h3>
             </div>
             
-            <div id="playlist-list" class="flex flex-col gap-1">
-                <!-- Playlists injected by script -->
-            </div>
+            <div id="playlist-list" class="flex flex-col gap-1"></div>
 
             <button onclick="openCreatePlaylistModal()" class="nav-link w-full text-left mt-2 border border-dashed border-brand-border hover:border-accent-red">
                 <i class="fas fa-plus"></i>
@@ -299,10 +275,10 @@
                 </div>
                 <div class="bg-card-dark p-8 rounded-[14px] border border-brand-border shadow-xl">
                     <div class="flex justify-between items-start mb-6">
-                        <div>
+                        <div class="flex-grow">
                             <h2 id="player-title" class="text-3xl text-white mb-2 font-medium">Video Title</h2>
                             <div class="flex items-center gap-4">
-                                <p id="player-metadata" class="text-gray-500 text-sm">Artist • Duration</p>
+                                <p id="player-metadata" class="text-gray-500 text-sm"></p>
                                 <button onclick="switchInstance()" class="text-accent-red text-xs hover:underline flex items-center gap-1">
                                     <i class="fas fa-redo"></i> Switch Instance
                                 </button>
@@ -312,13 +288,11 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div id="player-description" class="text-gray-400 leading-relaxed max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                        Loading description...
-                    </div>
+                    <div id="player-description" class="text-gray-400 leading-relaxed max-h-40 overflow-y-auto pr-2 custom-scrollbar"></div>
                 </div>
             </section>
 
-            <!-- Grid Results -->
+            <!-- Results Section -->
             <section id="dynamic-section">
                 <div id="dynamic-header" class="flex items-center gap-3 mb-6">
                     <i class="fas fa-youtube text-accent-red"></i>

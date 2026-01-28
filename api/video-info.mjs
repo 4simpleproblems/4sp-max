@@ -1,5 +1,25 @@
 // api/video-info.mjs
-// Failsafe video information extractor
+// Ultra-robust parallel pulling from multiple Invidious instances
+
+const INSTANCES = [
+    'https://invidious.nerdvpn.de',
+    'https://iv.melmac.space',
+    'https://invidious.no-logs.com',
+    'https://yewtu.be'
+];
+
+async function fetchWithTimeout(url, timeout = 3000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(id);
+        return response;
+    } catch (e) {
+        clearTimeout(id);
+        throw e;
+    }
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -9,40 +29,59 @@ export default async function handler(req, res) {
   if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
 
   try {
-    // Attempt 1: Fetch from Invidious (Best for streams and full metadata)
-    const invRes = await fetch(`https://invidious.nerdvpn.de/api/v1/videos/${videoId}`);
-    if (invRes.ok) {
-        const invData = await invRes.json();
+    // Attempt 1: Race across multiple Invidious instances for the fastest response
+    const fetchPromises = INSTANCES.map(async (baseUrl) => {
+        try {
+            const response = await fetchWithTimeout(`${baseUrl}/api/v1/videos/${videoId}`);
+            if (!response.ok) throw new Error(`Instance ${baseUrl} returned ${response.status}`);
+            const data = await response.json();
+            if (!data.title) throw new Error("Incomplete data from instance");
+            return { data, source: baseUrl };
+        } catch (e) {
+            throw e;
+        }
+    });
+
+    // We want the FIRST successful result
+    let winner;
+    try {
+        winner = await Promise.any(fetchPromises);
+    } catch (e) {
+        console.error("All Invidious instances failed for video-info");
+    }
+
+    if (winner) {
+        const { data } = winner;
         return res.status(200).json({
-            title: invData.title,
-            author: invData.author,
-            description: invData.description,
-            duration: invData.lengthSeconds ? `${Math.floor(invData.lengthSeconds / 60)}:${(invData.lengthSeconds % 60).toString().padStart(2, '0')}` : "0:00",
-            views: invData.viewCount ? invData.viewCount.toLocaleString() + " views" : "Unknown views",
-            published: invData.publishedText || "",
-            channel_id: invData.authorId || "",
-            streaming_url: invData.formatStreams?.[0]?.url || ""
+            title: data.title,
+            author: data.author,
+            description: data.description,
+            duration: data.lengthSeconds ? `${Math.floor(data.lengthSeconds / 60)}:${(data.lengthSeconds % 60).toString().padStart(2, '0')}` : "0:00",
+            views: data.viewCount ? data.viewCount.toLocaleString() + " views" : "Unknown views",
+            published: data.publishedText || "",
+            channel_id: data.authorId || "",
+            streaming_url: data.formatStreams?.[0]?.url || ""
         });
     }
 
-    // Attempt 2: Fallback to oEmbed (Always works for basic metadata)
+    // Attempt 2: Fallback to oEmbed if all Invidious instances fail
     const oEmbedRes = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
     if (oEmbedRes.ok) {
         const oEmbed = await oEmbedRes.json();
         return res.status(200).json({
             title: oEmbed.title,
             author: oEmbed.author_name,
-            description: "Detailed metadata unavailable. Stream will use failover mode.",
+            description: "Detailed metadata unavailable. Pulling from fallback source.",
             duration: "0:00",
             views: "Unknown",
             fallback: true
         });
     }
 
-    throw new Error("Video not found or restricted.");
+    throw new Error("Video unavailable or restricted.");
 
   } catch (error) {
-    console.error("Video Info API Failure:", error);
+    console.error("Video Info Critical Failure:", error);
     return res.status(500).json({ error: error.message });
   }
 }
