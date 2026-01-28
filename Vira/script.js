@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 playerDescription.textContent = data.description || 'No description available.';
             }
 
-            const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&autoplay=1`;
+            const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1`;
             
             // Use UV proxy for the embed URL
             if (window.__uv$config && window.__uv$config.prefix) {
