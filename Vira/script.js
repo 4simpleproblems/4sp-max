@@ -216,20 +216,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Navigation & Player ---
     window.switchInstance = () => {
-        // Force reload the current video to reset state
+        // Toggle between direct extraction and official embed
+        const viraPlayer = getEl('vira-player');
+        const embedCont = getEl('embed-container');
+        
+        if (viraPlayer && !viraPlayer.classList.contains('hidden')) {
+            hide(viraPlayer);
+            viraPlayer.pause();
+            viraPlayer.src = '';
+            show(embedCont);
+        } else {
+            hide(embedCont);
+            show(viraPlayer);
+        }
         loadVideoFromHash();
     };
 
     async function loadVideoFromHash() {
         const hash = window.location.hash;
-        if (!playerSection || !dynamicSection) return;
+        const playerSec = getEl('player-section');
+        const gridSec = getEl('dynamic-section');
+        const viraPlayer = getEl('vira-player');
+        const embedCont = getEl('embed-container');
+        const embedIframe = getEl('youtube-embed');
+        const closeBtn = getEl('searchCloseBtn');
+        
+        if (!playerSec || !gridSec) return;
 
         if (hash.startsWith('#playlist/')) {
             const plId = hash.replace('#playlist/', '');
             const pl = library.playlists.find(p => p.id === plId);
             if (!pl) return;
             
-            hide(playerSection); show(dynamicSection);
+            hide(playerSec); show(gridSec);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
             
@@ -251,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (hash.startsWith('#channel/')) {
             const channelId = hash.replace('#channel/', '');
-            hide(playerSection); show(dynamicSection);
+            hide(playerSec); show(gridSec);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
             if (dynamicTitle) dynamicTitle.textContent = 'Channel View';
@@ -260,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!hash.startsWith('#video/')) {
-            hide(playerSection); show(dynamicSection);
+            hide(playerSec); show(gridSec);
             if (searchCloseBtn) hide(searchCloseBtn);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
@@ -273,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const videoId = hash.replace('#video/', '');
-        show(playerSection); hide(dynamicSection);
+        show(playerSec); hide(gridSec);
         if (searchCloseBtn) show(searchCloseBtn);
         
         if (playerTitle) playerTitle.textContent = 'Loading...';
@@ -327,7 +346,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.warn("VIRA: Native extraction failed, using proxied YouTube player:", error);
             // 2. Fallback: Use standard YouTube Embed URL proxied through WISP
-            // origin is required for YouTube embeds to work via proxy sometimes
             const youtubeUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&origin=${encodeURIComponent(window.location.origin)}`;
             if (viraPlayer) { hide(viraPlayer); viraPlayer.pause(); }
             show(embedCont);
