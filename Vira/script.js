@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const baseUrl = validEmbedInstances[currentInstanceIndex % validEmbedInstances.length];
             const embedUrl = `${baseUrl}/embed/${videoId}?autoplay=1`;
             if (viraPlayer) { hide(viraPlayer); viraPlayer.pause(); }
-            show(embedContainer);
+            show(embedCont);
             if (embedIframe) embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(embedUrl);
         }
     }
