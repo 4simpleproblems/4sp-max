@@ -1,11 +1,13 @@
 // api/video-info.mjs
 // Ultra-robust parallel pulling from multiple Invidious instances
+// Updated 2026 Uptime List
 
 const INSTANCES = [
+    'https://yewtu.be',
+    'https://inv.vern.cc',
     'https://invidious.nerdvpn.de',
     'https://iv.melmac.space',
-    'https://invidious.no-logs.com',
-    'https://yewtu.be'
+    'https://inv.odyssey346.dev'
 ];
 
 async function fetchWithTimeout(url, timeout = 3000) {

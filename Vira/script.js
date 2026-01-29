@@ -1,17 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- DOM Elements ---
+    const searchInput = document.getElementById('searchInput');
+    const videoGrid = document.getElementById('videoGrid');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const playerSection = document.getElementById('player-section');
+    const dynamicSection = document.getElementById('dynamic-section');
+    const viraPlayer = document.getElementById('vira-player');
+    const embedContainer = document.getElementById('embed-container');
+    const embedIframe = document.getElementById('youtube-embed');
+    const playerTitle = document.getElementById('player-title');
+    const playerMetadata = document.getElementById('player-metadata');
+    const playerDescription = document.getElementById('player-description');
+    const searchCloseBtn = document.getElementById('searchCloseBtn');
+    const playlistList = document.getElementById('playlist-list');
+    const dynamicTitle = document.getElementById('dynamic-title');
+
     // --- State ---
     let currentCategory = 'youtube';
     let library = { playlists: [] };
     let itemToAdd = null;
     let currentInstanceIndex = 0;
     
+    // Updated 2026 High-Uptime Invidious Instances
     const instances = [
         window.location.origin + '/api/local-instance',
+        'https://yewtu.be',
+        'https://inv.vern.cc',
         'https://invidious.nerdvpn.de',
         'https://iv.melmac.space',
-        'https://invidious.no-logs.com',
-        'https://yewtu.be',
-        'https://inv.zzls.xyz'
+        'https://inv.odyssey346.dev',
+        'https://invidious.baczek.me',
+        'https://invidious.snopyta.org'
     ];
 
     // --- Helpers ---
@@ -23,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLibrary();
     renderPlaylistSidebar();
 
-    const searchInput = getEl('searchInput');
     if (searchInput) {
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -43,7 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 library = JSON.parse(stored);
                 if (!library.playlists) library.playlists = [];
-            } catch (e) { library = { playlists: [] }; }
+            } catch (e) {
+                console.error("Library parse failed:", e);
+                library = { playlists: [] };
+            }
         }
         renderPlaylistSidebar();
     }
@@ -54,21 +75,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPlaylistSidebar() {
-        const list = getEl('playlist-list');
-        if (!list) return;
-        list.innerHTML = '';
+        if (!playlistList) return;
+        playlistList.innerHTML = '';
         library.playlists.forEach(pl => {
             const link = document.createElement('a');
             link.href = 'javascript:void(0)';
-            link.className = 'nav-link';
-            link.innerHTML = `<i class="fas fa-list"></i> <span class="truncate">${pl.name}</span>`;
+            link.className = 'nav-link flex items-center gap-2 px-4 py-2 hover:bg-white/5 rounded-lg transition-all';
+            link.innerHTML = `<i class="fas fa-list text-gray-500"></i> <span class="truncate text-sm">${pl.name}</span>`;
             link.onclick = () => window.location.hash = `playlist/${pl.id}`;
-            list.appendChild(link);
+            playlistList.appendChild(link);
         });
     }
 
     window.openCreatePlaylistModal = () => {
-        show(getEl('create-playlist-modal'));
+        const modal = getEl('create-playlist-modal');
+        if (modal) show(modal);
         const input = getEl('new-playlist-name');
         if (input) { input.value = ''; input.focus(); }
     };
@@ -120,85 +141,105 @@ document.addEventListener('DOMContentLoaded', () => {
             library.playlists = library.playlists.filter(p => p.id !== plId);
             saveLibrary();
             window.location.hash = '';
+            const title = document.querySelector('h2.text-2xl');
+            if (title) title.textContent = 'Explore YouTube';
             searchVideos('trending');
         }
     };
 
-    // --- Core Logic ---
-    window.switchCategory = (cat) => {
-        currentCategory = cat;
-        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-        const catEl = getEl(`cat-${cat}`);
-        if (catEl) catEl.classList.add('active');
-        closePlayer();
-        const query = searchInput ? searchInput.value.trim() : '';
-        if (query) searchVideos(query);
-    };
-
+    // --- Search & Results ---
     async function searchVideos(query) {
-        const grid = getEl('videoGrid');
-        if (!grid) return;
-        grid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500"><i class="fas fa-circle-notch fa-spin text-3xl"></i><p>Searching YouTube...</p></div>';
-        hide(getEl('noResultsMessage'));
+        if (!videoGrid) return;
+        videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500"><i class="fas fa-circle-notch fa-spin text-3xl"></i><p>Searching YouTube...</p></div>';
+        if (noResultsMessage) hide(noResultsMessage);
 
         try {
             const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&category=${currentCategory}`);
             const data = await res.json();
-            if (data.results && data.results.length > 0) renderResults(data.results);
-            else grid.innerHTML = '<p class="text-gray-500 text-center col-span-full py-20">No results found.</p>';
+            if (data.results && data.results.length > 0) {
+                renderResults(data.results);
+            } else {
+                if (noResultsMessage) {
+                    noResultsMessage.textContent = 'No results found.';
+                    show(noResultsMessage);
+                }
+                videoGrid.innerHTML = '';
+            }
         } catch (e) {
-            grid.innerHTML = `<p class="text-red-500 text-center col-span-full py-20">Search failed: ${e.message}</p>`;
+            videoGrid.innerHTML = `<p class="text-red-500 text-center col-span-full py-20">Search failed: ${e.message}</p>`;
         }
     }
 
     function renderResults(results) {
-        const grid = getEl('videoGrid');
-        if (!grid) return;
-        grid.innerHTML = '';
+        if (!videoGrid) return;
+        videoGrid.innerHTML = '';
         results.forEach(item => {
-            const card = document.createElement('div');
+            const resultItem = document.createElement('div');
+            
             if (item.type === 'video') {
-                card.className = 'video-item relative group';
-                card.innerHTML = `
+                resultItem.classList.add('video-item', 'relative', 'group');
+                resultItem.innerHTML = `
                     <div class="thumbnail-container">
                         <img src="${item.thumbnail}" alt="" class="w-full h-full object-cover">
                         <div class="play-overlay"><i class="fas fa-play play-icon"></i></div>
-                        <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-red z-10" onclick="event.stopPropagation(); addToPlaylist(${JSON.stringify(item).replace(/'/g, "&apos;")})">
+                        <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-red z-10 add-pl-btn" title="Add to Playlist">
                             <i class="fas fa-plus text-xs"></i>
                         </button>
                     </div>
                     <div class="p-4">
-                        <h3 class="text-white text-base font-medium mb-1 line-clamp-2">${item.title}</h3>
-                        <p class="text-gray-400 text-sm hover:text-white cursor-pointer" onclick="event.stopPropagation(); window.location.hash='channel/${item.artistId}'">${item.artist}</p>
+                        <h3 class="text-white text-base font-medium mb-1 line-clamp-2" title="${item.title}">${item.title}</h3>
+                        <p class="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors author-link" onclick="event.stopPropagation(); window.location.hash='channel/${item.artistId}'">
+                            ${item.artist}
+                        </p>
                         <div class="flex justify-between items-center mt-2 text-gray-500 text-xs">
                             <span>${item.duration}</span><span>${item.views || ''}</span>
                         </div>
                     </div>
                 `;
-                card.onclick = () => window.location.hash = `video/${item.id}`;
+                resultItem.addEventListener('click', (e) => {
+                    if (e.target.closest('.add-pl-btn') || e.target.closest('.author-link')) return;
+                    window.location.hash = `video/${item.id}`;
+                });
+                const addBtn = resultItem.querySelector('.add-pl-btn');
+                if (addBtn) addBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    window.addToPlaylist(item);
+                };
             } else if (item.type === 'channel' || item.type === 'channel_header') {
                 const isHeader = item.type === 'channel_header';
-                card.className = 'flex flex-col items-center p-8 bg-card-dark border border-brand-border rounded-[24px] col-span-full mb-8';
-                if (isHeader) card.classList.add('bg-gradient-to-b', 'from-zinc-900', 'to-black');
-                else card.classList.add('cursor-pointer', 'hover:border-accent-red', 'transition-all');
+                resultItem.className = 'flex flex-col items-center p-8 bg-card-dark border border-brand-border rounded-[24px] col-span-full mb-8';
+                if (isHeader) resultItem.classList.add('bg-gradient-to-b', 'from-zinc-900', 'to-black');
+                else resultItem.classList.add('cursor-pointer', 'hover:border-accent-red', 'transition-all', 'group');
                 
-                card.innerHTML = `
+                resultItem.innerHTML = `
                     <div class="flex flex-col md:flex-row items-center gap-8 w-full max-w-4xl">
-                        <img src="${item.thumbnail}" class="w-32 h-32 rounded-full border-4 border-brand-border bg-black shadow-2xl">
+                        <img src="${item.thumbnail}" class="w-32 h-32 rounded-full border-4 border-brand-border bg-black shadow-2xl transition-transform group-hover:scale-105" alt="${item.title}">
                         <div class="flex-grow text-center md:text-left">
                             <h2 class="text-3xl text-white font-medium mb-2">${item.title}</h2>
-                            <p class="text-gray-400 text-sm leading-relaxed">${item.description || ''}</p>
+                            <p class="text-gray-400 text-sm leading-relaxed line-clamp-3">${item.description || 'No channel description available.'}</p>
                         </div>
                     </div>
                     ${isHeader ? '<div class="w-full h-px bg-brand-border mt-12 mb-4"></div><h3 class="text-white text-xl self-start px-4">Latest Videos</h3>' : ''}
                 `;
-                if (!isHeader) card.onclick = () => window.location.hash = `channel/${item.id}`;
+                if (!isHeader) resultItem.addEventListener('click', () => window.location.hash = `channel/${item.id}`);
             }
-            grid.appendChild(card);
+            videoGrid.appendChild(resultItem);
         });
     }
 
-    // --- Player Logic ---
+    // --- Navigation & Player ---
+    window.switchInstance = () => {
+        if (viraPlayer && !viraPlayer.classList.contains('hidden')) {
+            viraPlayer.classList.add('hidden');
+            viraPlayer.pause();
+            viraPlayer.src = '';
+            if (embedContainer) show(embedContainer);
+        } else {
+            currentInstanceIndex = (currentInstanceIndex + 1) % instances.length;
+        }
+        loadVideoFromHash();
+    };
+
     async function loadVideoFromHash() {
         const hash = window.location.hash;
         const playerSec = getEl('player-section');
@@ -211,41 +252,61 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!playerSec || !gridSec) return;
 
         if (hash.startsWith('#playlist/')) {
-            const pl = library.playlists.find(p => p.id === hash.replace('#playlist/', ''));
+            const plId = hash.replace('#playlist/', '');
+            const pl = library.playlists.find(p => p.id === plId);
             if (!pl) return;
+            
             hide(playerSec); show(gridSec);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
-            document.querySelector('h2.text-2xl').textContent = `Playlist: ${pl.name}`;
-            getEl('dynamic-title').textContent = pl.name;
-            renderResults(pl.videos);
-            const delBox = document.createElement('div');
-            delBox.className = 'col-span-full flex justify-center mt-10';
-            delBox.innerHTML = `<button onclick="deletePlaylist('${pl.id}')" class="text-red-500 text-xs hover:underline">Delete Playlist</button>`;
-            getEl('videoGrid').appendChild(delBox);
+            
+            const title = document.querySelector('h2.text-2xl');
+            if (title) title.textContent = `Playlist: ${pl.name}`;
+            if (dynamicTitle) dynamicTitle.textContent = pl.name;
+            
+            if (pl.videos && pl.videos.length > 0) {
+                renderResults(pl.videos);
+                const delContainer = document.createElement('div');
+                delContainer.className = 'col-span-full flex justify-center mt-12 pt-8 border-t border-brand-border';
+                delContainer.innerHTML = `<button onclick="deletePlaylist('${pl.id}')" class="text-red-500 text-xs hover:underline flex items-center gap-2"><i class="fas fa-trash"></i> Delete Playlist</button>`;
+                videoGrid.appendChild(delContainer);
+            } else {
+                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\''+pl.id+'\'')" class="text-xs underline">Delete Playlist</button></div>';
+            }
             return;
         }
 
         if (hash.startsWith('#channel/')) {
+            const channelId = hash.replace('#channel/', '');
             hide(playerSec); show(gridSec);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
-            getEl('dynamic-title').textContent = 'Channel View';
-            searchVideos(hash.replace('#channel/', ''));
+            if (dynamicTitle) dynamicTitle.textContent = 'Channel View';
+            searchVideos(channelId); 
             return;
         }
 
         if (!hash.startsWith('#video/')) {
-            hide(playerSec); show(gridSec); hide(closeBtn);
+            hide(playerSec); show(gridSec);
+            if (searchCloseBtn) hide(searchCloseBtn);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
+            const mainTitle = document.querySelector('h2.text-2xl');
+            if (mainTitle && !mainTitle.textContent.startsWith('Playlist:')) {
+                mainTitle.textContent = 'Explore YouTube';
+            }
+            if (dynamicTitle) dynamicTitle.textContent = 'Search Results';
             return;
         }
 
         const videoId = hash.replace('#video/', '');
-        show(playerSec); hide(gridSec); show(closeBtn);
-        getEl('player-title').textContent = 'Loading...';
-        getEl('player-description').textContent = 'Connecting to stream...';
+        show(playerSec); hide(gridSec);
+        if (searchCloseBtn) show(searchCloseBtn);
+        
+        if (playerTitle) playerTitle.textContent = 'Loading...';
+        if (playerDescription) playerDescription.innerHTML = '<p class="text-gray-500 italic">Preparing stream...</p>';
+        if (playerMetadata) playerMetadata.textContent = '';
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         try {
@@ -253,27 +314,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (data.error) throw new Error(data.error);
 
-            getEl('player-title').textContent = data.title;
-            getEl('player-metadata').innerHTML = `<span class="text-gray-400 font-medium cursor-pointer hover:underline" onclick="window.location.hash='channel/${data.channel_id}'">${data.author}</span> • <span class="text-gray-500">${data.duration}</span> • <span class="text-gray-500">${data.views}</span>`;
-            getEl('player-description').innerHTML = `<div class="whitespace-pre-wrap">${data.description}</div><button id="player-add-btn" class="mt-6 bg-brand-border px-4 py-2 rounded-full text-xs hover:bg-accent-red transition-all">Add to Playlist</button>`;
-            
-            const addBtn = getEl('player-add-btn');
-            if (addBtn) addBtn.onclick = () => window.addToPlaylist({
-                type: 'video',
-                id: videoId,
-                title: data.title,
-                artist: data.author,
-                artistId: data.channel_id,
-                thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
-                duration: data.duration,
-                views: data.views
-            });
+            if (playerTitle) playerTitle.textContent = data.title;
+            if (playerMetadata) {
+                playerMetadata.innerHTML = `
+                    <span class="text-gray-400 font-medium cursor-pointer hover:underline" onclick="window.location.hash='channel/${data.channel_id}'">${data.author}</span> • 
+                    <span class="text-gray-500">${data.duration}</span> • 
+                    <span class="text-gray-500">${data.views}</span>
+                `;
+            }
+            if (playerDescription) {
+                playerDescription.innerHTML = `
+                    <div class="mb-6 flex items-center gap-4">
+                        <span class="hover:underline cursor-pointer flex items-center gap-2 text-white font-medium" onclick="window.location.hash='channel/${data.channel_id}'">
+                            <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
+                        </span>
+                        <button id="player-add-pl-btn" class="text-xs bg-brand-border px-3 py-1 rounded-full hover:bg-accent-red transition-all text-white">
+                            <i class="fas fa-plus"></i> Add to Playlist
+                        </button>
+                    </div>
+                    <div class="whitespace-pre-wrap text-sm leading-relaxed">${data.description || 'No description available.'}</div>
+                `;
+                const addBtn = document.getElementById('player-add-pl-btn');
+                if (addBtn) addBtn.onclick = () => window.addToPlaylist({
+                    type: 'video', id: videoId, title: data.title, artist: data.author, artistId: data.channel_id,
+                    thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`, duration: data.duration, views: data.views
+                });
+            }
 
             if (data.streaming_url && viraPlayer) {
                 hide(embedCont); show(viraPlayer);
                 viraPlayer.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
                 viraPlayer.play().catch(() => {});
-            } else { throw new Error("No stream"); }
+            } else { throw new Error("Direct stream unavailable"); }
+
         } catch (error) {
             console.warn("VIRA: Direct pulling failed, using failover:", error);
             // Skip local-instance for embeds as it doesn't support them
@@ -286,11 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    window.closePlayer = () => window.location.hash = '';
-    window.switchInstance = () => {
-        currentInstanceIndex = (currentInstanceIndex + 1) % instances.length;
-        loadVideoFromHash();
-    };
+    window.closePlayer = () => { window.location.hash = ''; };
 
     window.addEventListener('hashchange', loadVideoFromHash);
     if (window.location.hash) loadVideoFromHash();
