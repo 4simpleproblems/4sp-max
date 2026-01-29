@@ -216,19 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Navigation & Player ---
     window.switchInstance = () => {
-        // Toggle between direct extraction and official embed
-        const viraPlayer = getEl('vira-player');
-        const embedCont = getEl('embed-container');
-        
-        if (viraPlayer && !viraPlayer.classList.contains('hidden')) {
-            hide(viraPlayer);
-            viraPlayer.pause();
-            viraPlayer.src = '';
-            show(embedCont);
-        } else {
-            hide(embedCont);
-            show(viraPlayer);
-        }
+        // Simple reload to reset state
         loadVideoFromHash();
     };
 
@@ -248,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pl = library.playlists.find(p => p.id === plId);
             if (!pl) return;
             
-            hide(playerSec); show(gridSec);
+            hide(playerSection); show(gridSec);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
             
@@ -263,14 +251,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 delContainer.innerHTML = `<button onclick="deletePlaylist('${pl.id}')" class="text-red-500 text-xs hover:underline flex items-center gap-2"><i class="fas fa-trash"></i> Delete Playlist</button>`;
                 videoGrid.appendChild(delContainer);
             } else {
-                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\' '+pl.id+' \')" class="text-xs underline">Delete Playlist</button></div>';
+                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\"' + pl.id + '\")" class="text-xs underline">Delete Playlist</button></div>';
             }
             return;
         }
 
         if (hash.startsWith('#channel/')) {
             const channelId = hash.replace('#channel/', '');
-            hide(playerSec); show(gridSec);
+            hide(playerSection); show(gridSec);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
             if (dynamicTitle) dynamicTitle.textContent = 'Channel View';
@@ -279,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!hash.startsWith('#video/')) {
-            hide(playerSec); show(gridSec);
+            hide(playerSection); show(gridSec);
             if (searchCloseBtn) hide(searchCloseBtn);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
@@ -292,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const videoId = hash.replace('#video/', '');
-        show(playerSec); hide(gridSec);
+        show(playerSection); hide(gridSec);
         if (searchCloseBtn) show(searchCloseBtn);
         
         if (playerTitle) playerTitle.textContent = 'Loading...';
@@ -301,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // WAIT FOR PROXY: Ensure Bare transport is established before fetching
+        // Ensure transport is ready
         if (window.checkBare) await window.checkBare();
 
         try {
@@ -336,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // 1. Try Direct Native Playback through WISP Proxy (Using extracted YouTube URL)
+            // 1. Try Direct Native Playback through WISP Proxy
             if (data.streaming_url && viraPlayer) {
                 hide(embedCont); show(viraPlayer);
                 viraPlayer.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
@@ -344,8 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else { throw new Error("Direct extraction failed"); }
 
         } catch (error) {
-            console.warn("VIRA: Native extraction failed, using proxied YouTube player:", error);
-            // 2. Fallback: Use standard YouTube Embed URL proxied through WISP
+            console.warn("VIRA: Native loading failed, using proxied YouTube URL:", error);
+            // 2. Fallback: Use official YouTube Embed URL proxied through WISP
             const youtubeUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&origin=${encodeURIComponent(window.location.origin)}`;
             if (viraPlayer) { hide(viraPlayer); viraPlayer.pause(); }
             show(embedCont);
