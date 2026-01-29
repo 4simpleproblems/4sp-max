@@ -1,348 +1,334 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Elements ---
-    const searchInput = document.getElementById('searchInput');
-    const videoGrid = document.getElementById('videoGrid');
-    const noResultsMessage = document.getElementById('noResultsMessage');
-    const playerSection = document.getElementById('player-section');
-    const dynamicSection = document.getElementById('dynamic-section');
-    const viraPlayer = document.getElementById('vira-player');
-    const embedCont = document.getElementById('embed-container');
-    const embedIframe = document.getElementById('youtube-embed');
-    const playerTitle = document.getElementById('player-title');
-    const playerMetadata = document.getElementById('player-metadata');
-    const playerDescription = document.getElementById('player-description');
-    const searchCloseBtn = document.getElementById('searchCloseBtn');
-    const playlistList = document.getElementById('playlist-list');
-    const dynamicTitle = document.getElementById('dynamic-title');
+const urlInput = document.getElementById("link");
+const launch = document.getElementById("launch");
+const feedbackMessage = document.getElementById("feedbackMessage");
+const videoPlayersContainer = document.getElementById("videoPlayersContainer");
+const loadStatus = document.getElementById("loadStatus");
+const unhelpfulText = document.getElementById("offtext");
 
-    // --- State ---
-    let currentCategory = 'youtube';
-    let library = { playlists: [] };
-    let itemToAdd = null;
+// --- CONSTANTS ---
+const INITIAL_VIDEO_WIDTH = 688;
+const INITIAL_VIDEO_HEIGHT = 387;
+const RESIZE_STEP = 0.10;
+const ASPECT_RATIO = 0.5625;
 
-    // --- Helpers ---
-    const getEl = (id) => document.getElementById(id);
-    const hide = (el) => el && el.classList.add('hidden');
-    const show = (el) => el && el.classList.remove('hidden');
+function showToast(message, isError = false) {
+    const toast = document.createElement("div");
+    toast.className = "toast-notification";
+    if (isError) toast.style.borderColor = "#D73939"; // Red border for errors
+    toast.textContent = message;
+    document.body.appendChild(toast);
 
-    // --- Initialization ---
-    loadLibrary();
-    renderPlaylistSidebar();
+    setTimeout(() => toast.classList.add("show"), 10);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
 
-    if (searchInput) {
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value.trim();
-                if (query) {
-                    window.location.hash = ''; 
-                    searchVideos(query);
-                }
+function extractVideoId(url) {
+    if (/playlist|\/channel\/|\/@/.test(url)) return null;
+    const patterns = [
+        /youtu\.be\/([\w-]{11})/,
+        /[?&]v=([\w-]{11})/,
+        /embed\/([\w-]{11})/,
+        /shorts\/([\w-]{11})/,
+        /googleusercontent\.com\/youtube\.com\/5\/([\w-]{11})/,
+    ];
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) return match[1];
+    }
+    return null;
+}
+
+function preflightCheck(videoId) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        let done = false;
+        img.onload = () => {
+            if (!done) {
+                done = true;
+                resolve();
             }
-        });
-    }
-
-    // --- Library Management ---
-    function loadLibrary() {
-        const stored = localStorage.getItem('vira_library');
-        if (stored) {
-            try {
-                library = JSON.parse(stored);
-                if (!library.playlists) library.playlists = [];
-            } catch (e) {
-                console.error("Library parse failed:", e);
-                library = { playlists: [] };
+        };
+        img.onerror = () => {
+            if (!done) {
+                done = true;
+                reject("This video is unavailable or blocked.");
             }
+        };
+        img.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        setTimeout(() => {
+            if (!done) {
+                done = true;
+                reject("Network blocked video access.");
+            }
+        }, 1500);
+    });
+}
+
+// --- PERSISTENCE UTILS ---
+function saveOpenVideos() {
+    const videos = [];
+    const wrappers = videoPlayersContainer.querySelectorAll(
+        ".video-unit-wrapper",
+    );
+    wrappers.forEach((wrapper) => {
+        if (wrapper.dataset.videoId) {
+            videos.push(wrapper.dataset.videoId);
         }
-        renderPlaylistSidebar();
-    }
+    });
+    localStorage.setItem("savedVideos", JSON.stringify(videos));
+}
 
-    function saveLibrary() {
-        localStorage.setItem('vira_library', JSON.stringify(library));
-        renderPlaylistSidebar();
-    }
-
-    function renderPlaylistSidebar() {
-        if (!playlistList) return;
-        playlistList.innerHTML = '';
-        library.playlists.forEach(pl => {
-            const link = document.createElement('a');
-            link.href = 'javascript:void(0)';
-            link.className = 'nav-link flex items-center gap-2 px-4 py-2 hover:bg-white/5 rounded-lg transition-all';
-            link.innerHTML = `<i class="fas fa-list text-gray-500"></i> <span class="truncate text-sm">${pl.name}</span>`;
-            link.onclick = () => window.location.hash = `playlist/${pl.id}`;
-            playlistList.appendChild(link);
-        });
-    }
-
-    window.openCreatePlaylistModal = () => {
-        const modal = getEl('create-playlist-modal');
-        if (modal) show(modal);
-        const input = getEl('new-playlist-name');
-        if (input) { input.value = ''; input.focus(); }
-    };
-
-    window.closeModals = () => {
-        document.querySelectorAll('[id$="-modal"]').forEach(hide);
-        itemToAdd = null;
-    };
-
-    window.confirmCreatePlaylist = () => {
-        const input = getEl('new-playlist-name');
-        const name = input ? input.value.trim() : '';
-        if (name) {
-            library.playlists.push({ id: 'pl-' + Date.now(), name, videos: [] });
-            saveLibrary();
-            closeModals();
-        }
-    };
-
-    window.addToPlaylist = (item) => {
-        if (library.playlists.length === 0) {
-            window.openCreatePlaylistModal();
-            return;
-        }
-        itemToAdd = item;
-        const list = getEl('modal-playlist-list');
-        if (list) {
-            list.innerHTML = '';
-            library.playlists.forEach(pl => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-left p-4 bg-black/40 hover:bg-accent-red hover:text-white rounded-[12px] transition-all flex justify-between items-center group';
-                btn.innerHTML = `<span>${pl.name}</span> <span class="text-xs opacity-60 group-hover:opacity-100">${pl.videos.length} videos</span>`;
-                btn.onclick = () => {
-                    const exists = pl.videos.some(v => v.id === itemToAdd.id);
-                    if (!exists) {
-                        pl.videos.push({...itemToAdd});
-                        saveLibrary();
-                    }
-                    closeModals();
-                };
-                list.appendChild(btn);
+function loadSavedVideos() {
+    const saved = localStorage.getItem("savedVideos");
+    if (saved) {
+        try {
+            const videoIds = JSON.parse(saved);
+            [...videoIds].reverse().forEach((videoId) => {
+                addVideoPlayer(videoId, false);
             });
-        }
-        show(getEl('add-to-playlist-modal'));
-    };
-
-    window.deletePlaylist = (plId) => {
-        if (confirm("Delete this playlist?")) {
-            library.playlists = library.playlists.filter(p => p.id !== plId);
-            saveLibrary();
-            window.location.hash = '';
-            const title = document.querySelector('h2.text-2xl');
-            if (title) title.textContent = 'Explore YouTube';
-            searchVideos('trending');
-        }
-    };
-
-    // --- Search & Results ---
-    async function searchVideos(query) {
-        if (!videoGrid) return;
-        videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500"><i class="fas fa-circle-notch fa-spin text-3xl"></i><p>Searching YouTube...</p></div>';
-        if (noResultsMessage) hide(noResultsMessage);
-
-        try {
-            const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&category=${currentCategory}`);
-            const data = await res.json();
-            if (data.results && data.results.length > 0) {
-                renderResults(data.results);
-            } else {
-                if (noResultsMessage) {
-                    noResultsMessage.textContent = 'No results found.';
-                    show(noResultsMessage);
-                }
-                videoGrid.innerHTML = '';
-            }
         } catch (e) {
-            videoGrid.innerHTML = `<p class="text-red-500 text-center col-span-full py-20">Search failed: ${e.message}</p>`;
+            console.error("Failed to load saved videos", e);
         }
     }
+}
 
-    function renderResults(results) {
-        if (!videoGrid) return;
-        videoGrid.innerHTML = '';
-        results.forEach(item => {
-            const resultItem = document.createElement('div');
-            
-            if (item.type === 'video') {
-                resultItem.classList.add('video-item', 'relative', 'group');
-                resultItem.innerHTML = `
-                    <div class="thumbnail-container">
-                        <img src="${item.thumbnail}" alt="" class="w-full h-full object-cover">
-                        <div class="play-overlay"><i class="fas fa-play play-icon"></i></div>
-                        <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-accent-red z-10 add-pl-btn" title="Add to Playlist">
-                            <i class="fas fa-plus text-xs"></i>
-                        </button>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-white text-base font-medium mb-1 line-clamp-2" title="${item.title}">${item.title}</h3>
-                        <p class="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors author-link" onclick="event.stopPropagation(); window.location.hash='channel/${item.artistId}'">
-                            ${item.artist}
-                        </p>
-                        <div class="flex justify-between items-center mt-2 text-gray-500 text-xs">
-                            <span>${item.duration}</span><span>${item.views || ''}</span>
-                        </div>
-                    </div>
-                `;
-                resultItem.addEventListener('click', (e) => {
-                    if (e.target.closest('.add-pl-btn') || e.target.closest('.author-link')) return;
-                    window.location.hash = `video/${item.id}`;
-                });
-                const addBtn = resultItem.querySelector('.add-pl-btn');
-                if (addBtn) addBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    window.addToPlaylist(item);
-                };
-            } else if (item.type === 'channel' || item.type === 'channel_header') {
-                const isHeader = item.type === 'channel_header';
-                resultItem.className = 'flex flex-col items-center p-8 bg-card-dark border border-brand-border rounded-[24px] col-span-full mb-8';
-                if (isHeader) resultItem.classList.add('bg-gradient-to-b', 'from-zinc-900', 'to-black');
-                else resultItem.classList.add('cursor-pointer', 'hover:border-accent-red', 'transition-all', 'group');
-                
-                resultItem.innerHTML = `
-                    <div class="flex flex-col md:flex-row items-center gap-8 w-full max-w-4xl">
-                        <img src="${item.thumbnail}" class="w-32 h-32 rounded-full border-4 border-brand-border bg-black shadow-2xl transition-transform group-hover:scale-105" alt="${item.title}">
-                        <div class="flex-grow text-center md:text-left">
-                            <h2 class="text-3xl text-white font-medium mb-2">${item.title}</h2>
-                            <p class="text-gray-400 text-sm leading-relaxed line-clamp-3">${item.description || 'No channel description available.'}</p>
-                        </div>
-                    </div>
-                    ${isHeader ? '<div class="w-full h-px bg-brand-border mt-12 mb-4"></div><h3 class="text-white text-xl self-start px-4">Latest Videos</h3>' : ''}
-                `;
-                if (!isHeader) resultItem.addEventListener('click', () => window.location.hash = `channel/${item.id}`);
-            }
-            videoGrid.appendChild(resultItem);
-        });
+// --- VIDEO PLAYER LOGIC ---
+function addVideoPlayer(videoId, showLoadedFeedback = true) {
+    if (unhelpfulText) {
+        unhelpfulText.classList.remove("active");
+        unhelpfulText.style.display = "none";
     }
 
-    // --- Navigation & Player ---
-    window.switchInstance = () => {
-        // Simple reload to reset state
-        loadVideoFromHash();
+    if (!videoId) return showToast("Invalid YouTube URL.", true);
+
+    const videoUnitWrapper = document.createElement("div");
+    videoUnitWrapper.classList.add("video-unit-wrapper", "fade-in");
+    videoUnitWrapper.dataset.videoId = videoId;
+
+    // --- OPTIMIZED ATTRIBUTES ---
+    const iframe = document.createElement("iframe");
+    const origin = window.location.origin;
+    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?origin=${origin}`;
+
+    iframe.setAttribute("frameborder", "0");
+    iframe.loading = "lazy";
+    iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.borderRadius = "8px";
+
+    // Spinner load
+    const loadingOverlay = document.createElement("div");
+    loadingOverlay.className = "video-loading-overlay";
+    const spinner = document.createElement("div");
+    spinner.className = "spinner";
+    loadingOverlay.appendChild(spinner);
+
+    iframe.onload = () => {
+        loadingOverlay.classList.add("hidden");
+        setTimeout(() => loadingOverlay.remove(), 300);
     };
 
-    async function loadVideoFromHash() {
-        const hash = window.location.hash;
-        const playerSec = getEl('player-section');
-        const gridSec = getEl('dynamic-section');
-        const viraPlayer = getEl('vira-player');
-        const embedCont = getEl('embed-container');
-        const embedIframe = getEl('youtube-embed');
-        const closeBtn = getEl('searchCloseBtn');
-        
-        if (!playerSec || !gridSec) return;
+    const videoDisplay = document.createElement("div");
+    videoDisplay.classList.add("video-display");
+    videoDisplay.style.width = `${INITIAL_VIDEO_WIDTH}px`;
+    videoDisplay.style.height = `${INITIAL_VIDEO_HEIGHT}px`;
+    videoDisplay.dataset.initialWidth = INITIAL_VIDEO_WIDTH;
+    videoDisplay.dataset.initialHeight = INITIAL_VIDEO_HEIGHT;
 
-        if (hash.startsWith('#playlist/')) {
-            const plId = hash.replace('#playlist/', '');
-            const pl = library.playlists.find(p => p.id === plId);
-            if (!pl) return;
-            
-            hide(playerSection); show(gridSec);
-            if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
-            if (embedIframe) embedIframe.src = '';
-            
-            const title = document.querySelector('h2.text-2xl');
-            if (title) title.textContent = `Playlist: ${pl.name}`;
-            if (dynamicTitle) dynamicTitle.textContent = pl.name;
-            
-            if (pl.videos && pl.videos.length > 0) {
-                renderResults(pl.videos);
-                const delContainer = document.createElement('div');
-                delContainer.className = 'col-span-full flex justify-center mt-12 pt-8 border-t border-brand-border';
-                delContainer.innerHTML = `<button onclick="deletePlaylist('${pl.id}')" class="text-red-500 text-xs hover:underline flex items-center gap-2"><i class="fas fa-trash"></i> Delete Playlist</button>`;
-                videoGrid.appendChild(delContainer);
-            } else {
-                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\"' + pl.id + '\")" class="text-xs underline">Delete Playlist</button></div>';
-            }
-            return;
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "X";
+    closeButton.title = "Close Video";
+    closeButton.classList.add("close-video-button");
+    closeButton.addEventListener("click", () => {
+        videoUnitWrapper.remove();
+        saveOpenVideos();
+        if (videoPlayersContainer.children.length === 0 && unhelpfulText) {
+            unhelpfulText.classList.add("active");
+            unhelpfulText.style.display = "block";
         }
+    });
 
-        if (hash.startsWith('#channel/')) {
-            const channelId = hash.replace('#channel/', '');
-            hide(playerSection); show(gridSec);
-            if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
-            if (embedIframe) embedIframe.src = '';
-            if (dynamicTitle) dynamicTitle.textContent = 'Channel View';
-            searchVideos(channelId); 
-            return;
-        }
+    videoDisplay.appendChild(loadingOverlay);
+    videoDisplay.appendChild(iframe);
+    videoDisplay.appendChild(closeButton);
 
-        if (!hash.startsWith('#video/')) {
-            hide(playerSection); show(gridSec);
-            if (searchCloseBtn) hide(searchCloseBtn);
-            if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
-            if (embedIframe) embedIframe.src = '';
-            const mainTitle = document.querySelector('h2.text-2xl');
-            if (mainTitle && !mainTitle.textContent.startsWith('Playlist:')) {
-                mainTitle.textContent = 'Explore YouTube';
-            }
-            if (dynamicTitle) dynamicTitle.textContent = 'Search Results';
-            return;
-        }
+    // --- CONTROLS SIDEBAR ---
+    const sizeControls = document.createElement("div");
+    sizeControls.classList.add("video-size-controls");
 
-        const videoId = hash.replace('#video/', '');
-        show(playerSection); hide(gridSec);
-        if (searchCloseBtn) show(searchCloseBtn);
-        
-        if (playerTitle) playerTitle.textContent = 'Loading...';
-        if (playerDescription) playerDescription.innerHTML = '<p class="text-gray-500 italic">Preparing stream...</p>';
-        if (playerMetadata) playerMetadata.textContent = '';
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    const createCtrlBtn = (text, cls, title, action) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = text;
+        btn.className = `size-button ${cls}`;
+        btn.title = title;
+        btn.addEventListener("click", action);
+        return btn;
+    };
 
-        // Ensure transport is ready
-        if (window.checkBare) await window.checkBare();
+    // Plus
+    sizeControls.appendChild(
+        createCtrlBtn("+", "plus", "Increase Size", () => {
+            const w = videoDisplay.offsetWidth * (1 + RESIZE_STEP);
+            resizeVideoElement(videoDisplay, w);
+        }),
+    );
+
+    // Minus
+    sizeControls.appendChild(
+        createCtrlBtn("\u2212", "minus", "Decrease Size", () => {
+            const w = videoDisplay.offsetWidth * (1 - RESIZE_STEP);
+            resizeVideoElement(videoDisplay, w);
+        }),
+    );
+
+    // Reset
+    sizeControls.appendChild(
+        createCtrlBtn("\u21BA", "default", "Reset Size", () => {
+            const w = parseInt(videoDisplay.dataset.initialWidth);
+            resizeVideoElement(videoDisplay, w);
+        }),
+    );
+
+    // Copy Button (SVG)
+    const copySvg = `<svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
+    const copyBtn = createCtrlBtn(
+        copySvg,
+        "copy-mini",
+        "Copy Video Link",
+        () => {
+            const finalLink = `https://www.youtube-nocookie.com/embed/${videoId}`;
+            window.open(finalLink, '_blank').focus();
+            navigator.clipboard.writeText(finalLink);
+            showToast("Video Link Copied and Opened!");
+        },
+    );
+    copyBtn.style.marginTop = "10px";
+    copyBtn.style.backgroundColor = "#AB47BC";
+
+    sizeControls.appendChild(copyBtn);
+
+    videoUnitWrapper.appendChild(videoDisplay);
+    videoUnitWrapper.appendChild(sizeControls);
+    videoPlayersContainer.prepend(videoUnitWrapper);
+
+    if (typeof fadeInObserver !== "undefined")
+        fadeInObserver.observe(videoUnitWrapper);
+
+    if (showLoadedFeedback) {
+        showToast("Video Loaded Successfully!");
+    }
+    saveOpenVideos();
+}
+
+function resizeVideoElement(elementToResize, newWidth) {
+    const newHeight = newWidth * ASPECT_RATIO;
+    elementToResize.style.width = `${Math.round(newWidth)}px`;
+    elementToResize.style.height = `${Math.round(newHeight)}px`;
+}
+
+// --- LAUNCH HANDLER ---
+if (launch) {
+    launch.addEventListener("click", async () => {
+        const url = urlInput.value.trim();
+        if (!url) return showToast("Please paste a YouTube link first.");
+
+        const videoId = extractVideoId(url);
+        if (!videoId)
+            return showToast("That doesn't look like a valid YouTube link.");
+
+        launch.disabled = true;
+        showToast("Checking availability...");
 
         try {
-            const res = await fetch(`/api/video-info?videoId=${videoId}`);
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
-
-            if (playerTitle) playerTitle.textContent = data.title;
-            if (playerMetadata) {
-                playerMetadata.innerHTML = `
-                    <span class="text-gray-400 font-medium cursor-pointer hover:underline" onclick="window.location.hash='channel/${data.channel_id}'">${data.author}</span> • 
-                    <span class="text-gray-500">${data.duration}</span> • 
-                    <span class="text-gray-500">${data.views}</span>
-                `;
-            }
-            if (playerDescription) {
-                playerDescription.innerHTML = `
-                    <div class="mb-6 flex items-center gap-4">
-                        <span class="hover:underline cursor-pointer flex items-center gap-2 text-white font-medium" onclick="window.location.hash='channel/${data.channel_id}'">
-                            <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
-                        </span>
-                        <button id="player-add-pl-btn" class="text-xs bg-brand-border px-3 py-1 rounded-full hover:bg-accent-red transition-all text-white">
-                            <i class="fas fa-plus"></i> Add to Playlist
-                        </button>
-                    </div>
-                    <div class="whitespace-pre-wrap text-sm leading-relaxed">${data.description || 'No description available.'}</div>
-                `;
-                const addBtn = document.getElementById('player-add-pl-btn');
-                if (addBtn) addBtn.onclick = () => window.addToPlaylist({
-                    type: 'video', id: videoId, title: data.title, artist: data.author, artistId: data.channel_id,
-                    thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`, duration: data.duration, views: data.views
-                });
-            }
-
-            // 1. Try Direct Native Playback through WISP Proxy
-            if (data.streaming_url && viraPlayer) {
-                hide(embedCont); show(viraPlayer);
-                viraPlayer.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
-                viraPlayer.play().catch(() => {});
-            } else { throw new Error("Direct extraction failed"); }
-
-        } catch (error) {
-            console.warn("VIRA: Native loading failed, using proxied YouTube URL:", error);
-            // 2. Fallback: Use official YouTube Embed URL proxied through WISP
-            const youtubeUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&origin=${encodeURIComponent(window.location.origin)}`;
-            if (viraPlayer) { hide(viraPlayer); viraPlayer.pause(); }
-            show(embedCont);
-            if (embedIframe) embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(youtubeUrl);
+            await preflightCheck(videoId);
+            addVideoPlayer(videoId);
+            urlInput.value = "";
+        } catch (err) {
+            showToast(err);
+        } finally {
+            launch.disabled = false;
         }
+    });
+}
+
+// --- Button Functions ---
+function toggleOptimization() {
+    const toggle = document.getElementById("optToggle");
+    const statusText = document.getElementById("optStatusText");
+    const isOpt = toggle.checked;
+
+    localStorage.setItem("optimizedMode", isOpt);
+
+    // Update Text UI
+    if (isOpt) {
+        statusText.textContent = "Enabled";
+        statusText.classList.remove("disabled");
+        statusText.classList.add("enabled");
+        document.body.classList.add("optimized");
+    } else {
+        statusText.textContent = "Disabled";
+        statusText.classList.remove("enabled");
+        statusText.classList.add("disabled");
+        document.body.classList.remove("optimized");
     }
 
-    window.closePlayer = () => { window.location.hash = ''; };
+    // Handle Particles visibility
+    const pContainer = document.getElementById("particles-js");
+    if (pContainer) pContainer.style.display = isOpt ? "none" : "block";
+}
 
-    window.addEventListener('hashchange', loadVideoFromHash);
-    if (window.location.hash) loadVideoFromHash();
+function clearAllVideos() {
+    videoPlayersContainer.innerHTML = "";
+    if (unhelpfulText) {
+        unhelpfulText.classList.add("active");
+        unhelpfulText.style.display = "block";
+    }
+    localStorage.removeItem("savedVideos");
+}
+
+// --- INIT for home---
+document.addEventListener("DOMContentLoaded", () => {
+    // Check saved mode for switch
+    const savedMode = localStorage.getItem("optimizedMode") === "true";
+    const toggle = document.getElementById("optToggle");
+
+    // Set initial UI state
+    if (toggle) {
+        toggle.checked = savedMode;
+        const statusText = document.getElementById("optStatusText");
+        if (savedMode) {
+            statusText.textContent = "Enabled";
+            statusText.classList.add("enabled");
+            document.body.classList.add("optimized");
+            const pContainer = document.getElementById("particles-js");
+            if (pContainer) pContainer.style.display = "none";
+        } else {
+            statusText.classList.add("disabled");
+        }
+    }
+    loadSavedVideos();
 });
+
+// Toggle Instructions
+const instBox = document.getElementById("instructions");
+const settingsBox = document.getElementById("settings");
+const hideBtn = document.querySelector(".hide-button");
+const showBtn = document.querySelector(".show-button");
+
+if (hideBtn && showBtn && instBox && settingsBox) {
+    hideBtn.onclick = () => {
+        instBox.style.display = "none";
+        settingsBox.style.display = "none";
+        showBtn.style.display = "block";
+    };
+    showBtn.onclick = () => {
+        instBox.style.display = "block";
+        settingsBox.style.display = "block";
+        showBtn.style.display = "none";
+    };
+}
