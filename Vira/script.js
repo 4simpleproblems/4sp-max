@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 delContainer.innerHTML = `<button onclick="deletePlaylist('${pl.id}')" class="text-red-500 text-xs hover:underline flex items-center gap-2"><i class="fas fa-trash"></i> Delete Playlist</button>`;
                 videoGrid.appendChild(delContainer);
             } else {
-                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\''+pl.id+'\'')" class="text-xs underline">Delete Playlist</button></div>';
+                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\''+pl.id+'\')" class="text-xs underline">Delete Playlist</button></div>';
             }
             return;
         }
