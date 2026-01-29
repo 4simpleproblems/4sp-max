@@ -216,16 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Navigation & Player ---
     window.switchInstance = () => {
-        // Toggle between native and embed mode
-        if (viraPlayer && !viraPlayer.classList.contains('hidden')) {
-            hide(viraPlayer);
-            viraPlayer.pause();
-            viraPlayer.src = '';
-            show(embedCont);
-        } else {
-            hide(embedCont);
-            show(viraPlayer);
-        }
+        // Force reload the current video to reset state
         loadVideoFromHash();
     };
 
@@ -326,17 +317,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // 1. Try Direct Native Playback through WISP Proxy
+            // 1. Try Direct Native Playback through WISP Proxy (Using extracted YouTube URL)
             if (data.streaming_url && viraPlayer) {
                 hide(embedCont); show(viraPlayer);
                 viraPlayer.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(data.streaming_url);
                 viraPlayer.play().catch(() => {});
-            } else { throw new Error("Direct stream unavailable"); }
+            } else { throw new Error("Direct extraction failed"); }
 
         } catch (error) {
-            console.warn("VIRA: Native loading failed, using proxied YouTube URL:", error);
+            console.warn("VIRA: Native extraction failed, using proxied YouTube player:", error);
             // 2. Fallback: Use standard YouTube Embed URL proxied through WISP
-            const youtubeUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&origin=${window.location.origin}`;
+            // origin is required for YouTube embeds to work via proxy sometimes
+            const youtubeUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&origin=${encodeURIComponent(window.location.origin)}`;
             if (viraPlayer) { hide(viraPlayer); viraPlayer.pause(); }
             show(embedCont);
             if (embedIframe) embedIframe.src = window.location.origin + window.__uv$config.prefix + window.__uv$config.encodeUrl(youtubeUrl);

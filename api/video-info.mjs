@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
 
   try {
-    // Standard YouTube Backend Only (Bypassing Invidious)
+    // 1. Try our own scraper (Innertube) - Standard YouTube URLs
     const yt = await getYoutube();
     if (yt) {
         const ytInfo = await yt.getInfo(videoId).catch(() => null);
@@ -49,14 +49,16 @@ export default async function handler(req, res) {
         }
     }
 
-    // Fallback to oEmbed for metadata only
+    // 2. Fallback to oEmbed for metadata only (Always works)
     const oEmbedRes = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`).catch(() => null);
     if (oEmbedRes && oEmbedRes.ok) {
         const oEmbed = await oEmbedRes.json();
         return res.status(200).json({
             title: oEmbed.title,
             author: oEmbed.author_name,
-            description: "Direct stream unavailable. Using proxied YouTube embed.",
+            description: "Direct stream extraction restricted. Using proxied YouTube player.",
+            duration: "0:00",
+            views: "Unknown",
             fallback: true
         });
     }
@@ -64,7 +66,7 @@ export default async function handler(req, res) {
     throw new Error("Video unavailable.");
 
   } catch (error) {
-    console.error("Video Info Failure:", error);
+    console.error("Video Info Critical Failure:", error);
     return res.status(200).json({ error: error.message, title: "Playback Error", fallback: true });
   }
 }
