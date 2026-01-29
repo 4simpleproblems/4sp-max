@@ -69,7 +69,7 @@ export default async function handler(req, res) {
         }
     }
 
-    // Standard YouTube search (YouTube Music removed as requested)
+    // Standard YouTube search
     const searchFilter = type || 'all'; 
     const searchResults = await yt.search(query, { type: searchFilter });
     
@@ -87,7 +87,6 @@ export default async function handler(req, res) {
           published: item.published?.text || ""
         };
       } else if (item.type === 'Channel') {
-        // Robust thumbnail extraction for search results
         const channelThumb = item.thumbnails?.[0]?.url || 
                            item.author?.thumbnails?.[0]?.url || 
                            item.author?.avatar?.[0]?.url || 
@@ -108,27 +107,6 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error("Search API Critical Failure:", error);
-    try {
-        const invRes = await fetch(`https://invidious.nerdvpn.de/api/v1/search?q=${encodeURIComponent(query)}&type=video`);
-        const invData = await invRes.json();
-        if (Array.isArray(invData)) {
-            const fallbackResults = invData.map(item => ({
-                type: 'video',
-                id: item.videoId,
-                title: item.title,
-                artist: item.author,
-                artistId: item.authorId,
-                duration: item.durationText,
-                thumbnail: item.videoThumbnails?.find(t => t.quality === 'medium')?.url || item.videoThumbnails?.[0]?.url,
-                views: item.viewCountText || "",
-                published: item.publishedText || "",
-                fallback: true
-            }));
-            return res.status(200).json({ results: fallbackResults });
-        }
-        throw new Error("Invidious fallback failure");
-    } catch (fallbackError) {
-        return res.status(500).json({ error: error.message });
-    }
+    return res.status(500).json({ error: error.message });
   }
 }
