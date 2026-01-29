@@ -21,16 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let itemToAdd = null;
     let currentInstanceIndex = 0;
     
-    // Updated 2026 High-Uptime Invidious Instances
+    // Use yewtu.be as the only external instance as requested
     const instances = [
         window.location.origin + '/api/local-instance',
-        'https://yewtu.be',
-        'https://inv.vern.cc',
-        'https://invidious.nerdvpn.de',
-        'https://iv.melmac.space',
-        'https://inv.odyssey346.dev',
-        'https://invidious.baczek.me',
-        'https://invidious.snopyta.org'
+        'https://yewtu.be'
     ];
 
     // --- Helpers ---
