@@ -134,16 +134,18 @@ window.applyTheme = (theme) => {
         }
     }
 
-    const logoImg = document.getElementById('navbar-logo');
-    if (logoImg) {
+    const logos = document.querySelectorAll('.navbar-logo, #navbar-logo');
+    logos.forEach(logoImg => {
         let newLogoSrc;
         if (themeToApply.name === 'Christmas') {
             newLogoSrc = '/images/logo-christmas.png';
+        } else if (themeToApply.name === 'Potato') {
+            newLogoSrc = '/images/potato.png';
         } else {
             newLogoSrc = themeToApply['logo-src'] || DEFAULT_THEME['logo-src'];
         }
+        
         const currentSrc = logoImg.src;
-        // Check if src needs update (ignoring protocol for safer comparison if needed, but strict is fine here)
         if (!currentSrc.includes(newLogoSrc)) {
             logoImg.src = newLogoSrc;
         }
@@ -151,7 +153,6 @@ window.applyTheme = (theme) => {
         const noFilterThemes = ['Dark', 'Light', 'Christmas', 'Potato'];
         const isNoFilter = noFilterThemes.includes(themeToApply.name);
         
-        // Check if mode is changing (Tinted <-> Standard)
         const wasNoFilter = logoImg.style.transform === '' || logoImg.style.transform === 'none';
         const modeChanged = isNoFilter !== wasNoFilter;
 
@@ -169,11 +170,10 @@ window.applyTheme = (theme) => {
         }
 
         if (modeChanged) {
-            // Force Reflow
             void logoImg.offsetWidth; 
-            logoImg.style.transition = 'filter 0.3s ease'; // Restore transition
+            logoImg.style.transition = 'filter 0.3s ease'; 
         }
-    }
+    });
 };
 
 let auth;
@@ -1171,17 +1171,20 @@ let db;
             // --- Updated Selectors to Match new structure ---
             const tabContainer = document.getElementById('tabs-container'); 
             const authControlsWrapper = document.getElementById('auth-controls-wrapper');
-            const navbarLogo = document.getElementById('navbar-logo');
-
-            let currentTheme;
-            try {
-                currentTheme = JSON.parse(localStorage.getItem(THEME_STORAGE_KEY)) || DEFAULT_THEME;
-            } catch (e) { currentTheme = DEFAULT_THEME; }
-
-            const logoPath = currentTheme['logo-src'] || DEFAULT_THEME['logo-src']; 
-            if (navbarLogo) navbarLogo.src = logoPath;
-            
-            // Determine the single active page key first
+                                    const logos = document.querySelectorAll('.navbar-logo, #navbar-logo');
+                        
+                                    let currentTheme;
+                                    try {
+                                        currentTheme = JSON.parse(localStorage.getItem(THEME_STORAGE_KEY)) || DEFAULT_THEME;
+                                    } catch (e) { currentTheme = DEFAULT_THEME; }
+                        
+                                    const logoPath = (currentTheme.name === 'Christmas') ? '/images/logo-christmas.png' :
+                                                     (currentTheme.name === 'Potato') ? '/images/potato.png' :
+                                                     currentTheme['logo-src'] || DEFAULT_THEME['logo-src'];
+                                    
+                                    logos.forEach(logoImg => {
+                                        if (logoImg) logoImg.src = logoPath;
+                                    });            // Determine the single active page key first
             const activePageKey = getCurrentPageKey();
 
             const tabsHtml = Object.entries(pages || {})
