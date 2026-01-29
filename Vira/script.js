@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerSection = document.getElementById('player-section');
     const dynamicSection = document.getElementById('dynamic-section');
     const viraPlayer = document.getElementById('vira-player');
-    const embedContainer = document.getElementById('embed-container');
+    const embedCont = document.getElementById('embed-container');
     const embedIframe = document.getElementById('youtube-embed');
     const playerTitle = document.getElementById('player-title');
     const playerMetadata = document.getElementById('player-metadata');
@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let itemToAdd = null;
     let currentInstanceIndex = 0;
     
-    // We prioritize yewtu.be but keep backups because of the 403 blocks seen in logs
     const instances = [
         window.location.origin + '/api/local-instance',
         'https://yewtu.be',
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') {
                 const query = searchInput.value.trim();
                 if (query) {
-                    window.location.hash = ''; // Clear video state
+                    window.location.hash = ''; 
                     searchVideos(query);
                 }
             }
@@ -230,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             viraPlayer.classList.add('hidden');
             viraPlayer.pause();
             viraPlayer.src = '';
-            if (embedContainer) show(embedContainer);
+            if (embedCont) show(embedCont);
         } else {
             currentInstanceIndex = (currentInstanceIndex + 1) % instances.length;
         }
@@ -239,21 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadVideoFromHash() {
         const hash = window.location.hash;
-        const playerSec = getEl('player-section');
-        const gridSec = getEl('dynamic-section');
-        const viraPlayer = getEl('vira-player');
-        const embedCont = getEl('embed-container');
-        const embedIframe = getEl('youtube-embed');
-        const closeBtn = getEl('searchCloseBtn');
-        
-        if (!playerSec || !gridSec) return;
+        if (!playerSection || !dynamicSection) return;
 
         if (hash.startsWith('#playlist/')) {
             const plId = hash.replace('#playlist/', '');
             const pl = library.playlists.find(p => p.id === plId);
             if (!pl) return;
             
-            hide(playerSec); show(gridSec);
+            hide(playerSection); show(dynamicSection);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
             
@@ -268,14 +260,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 delContainer.innerHTML = `<button onclick="deletePlaylist('${pl.id}')" class="text-red-500 text-xs hover:underline flex items-center gap-2"><i class="fas fa-trash"></i> Delete Playlist</button>`;
                 videoGrid.appendChild(delContainer);
             } else {
-                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\''+pl.id+'\')" class="text-xs underline">Delete Playlist</button></div>';
+                videoGrid.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center gap-4 text-gray-500 italic"><p>This playlist is empty.</p><button onclick="deletePlaylist(\' '+pl.id+' \')" class="text-xs underline">Delete Playlist</button></div>';
             }
             return;
         }
 
         if (hash.startsWith('#channel/')) {
             const channelId = hash.replace('#channel/', '');
-            hide(playerSec); show(gridSec);
+            hide(playerSection); show(dynamicSection);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
             if (dynamicTitle) dynamicTitle.textContent = 'Channel View';
@@ -284,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!hash.startsWith('#video/')) {
-            hide(playerSec); show(gridSec);
+            hide(playerSection); show(dynamicSection);
             if (searchCloseBtn) hide(searchCloseBtn);
             if (viraPlayer) { viraPlayer.pause(); viraPlayer.src = ''; }
             if (embedIframe) embedIframe.src = '';
@@ -297,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const videoId = hash.replace('#video/', '');
-        show(playerSec); hide(gridSec);
+        show(playerSection); hide(dynamicSection);
         if (searchCloseBtn) show(searchCloseBtn);
         
         if (playerTitle) playerTitle.textContent = 'Loading...';
