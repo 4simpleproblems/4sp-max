@@ -109,6 +109,8 @@ window.applyTheme = (theme) => {
         let newLogoSrc;
         if (themeToApply.name === 'Christmas') {
             newLogoSrc = '/images/logo-christmas.png';
+        } else if (themeToApply.name === 'Potato') {
+            newLogoSrc = '/images/potato.png';
         } else {
             newLogoSrc = themeToApply['logo-src'] || DEFAULT_THEME['logo-src'];
         }
@@ -119,7 +121,7 @@ window.applyTheme = (theme) => {
         }
 
         // --- NEW: Logo Tinting Logic ---
-const noFilterThemes = ['Dark', 'Light', 'Christmas'];
+const noFilterThemes = ['Dark', 'Light', 'Christmas', 'Potato'];
 
 if (noFilterThemes.includes(themeToApply.name)) {
     // Reset styles for themes that don't need tinting

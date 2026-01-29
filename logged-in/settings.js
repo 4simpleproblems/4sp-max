@@ -3992,7 +3992,7 @@ const performAccountDeletion = async (credential) => {
                 }
 
                 // --- NEW: Sorting Logic ---
-                const orderedThemeNames = ['Dark', 'Light', 'Christmas', 'The New Year'];
+                const orderedThemeNames = ['Dark', 'Light', 'Christmas', 'The New Year', 'Potato'];
                 const sortedThemes = [];
                 let remainingThemes = [];
 
@@ -4010,7 +4010,7 @@ const performAccountDeletion = async (credential) => {
 
                 // 3. Sort subgroups (Rainbow/Alphabetical)
                 const colorMap = {
-                    'Crimson': 1, 'Fire': 1, 'Orange': 2, 'Sunset': 2, 'Rust': 2, 'Ember': 2, 'Copper': 2, 'Gold': 3,
+                    'Crimson': 1, 'Fire': 1, 'Orange': 2, 'Sunset': 2, 'Potato': 2, 'Ember': 2, 'Copper': 2, 'Gold': 3,
                     'Green': 4, 'Forest': 4, 'Matrix': 4, 'Mint': 5, 'Ocean': 6, 'Deep Blue': 6,
                     'Purple': 7, 'Royal': 7, 'Haze': 7, 'Lavender': 7, 'Pink': 8, 'Coral': 8, 'Rose Gold': 8,
                     'Clanker': 9, 'Monochrome': 9, 'Silver': 9, 'Slate': 9

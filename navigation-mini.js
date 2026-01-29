@@ -131,16 +131,17 @@ window.applyTheme = (theme) => {
         let newLogoSrc;
         if (themeToApply.name === 'Christmas') {
             newLogoSrc = '/images/logo-christmas.png';
+        } else if (themeToApply.name === 'Potato') {
+            newLogoSrc = '/images/potato.png';
         } else {
             newLogoSrc = themeToApply['logo-src'] || DEFAULT_THEME['logo-src'];
         }
         const currentSrc = logoImg.src;
-        // Check if src needs update (ignoring protocol for safer comparison if needed, but strict is fine here)
         if (!currentSrc.includes(newLogoSrc)) {
             logoImg.src = newLogoSrc;
         }
 
-        const noFilterThemes = ['Dark', 'Light', 'Christmas'];
+        const noFilterThemes = ['Dark', 'Light', 'Christmas', 'Potato'];
         const isNoFilter = noFilterThemes.includes(themeToApply.name);
         
         // Check if mode is changing (Tinted <-> Standard)

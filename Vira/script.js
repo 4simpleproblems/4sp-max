@@ -23,9 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const instances = [
         window.location.origin + '/api/local-instance',
-        'https://yewtu.be',
         'https://inv.vern.cc',
         'https://iv.melmac.space',
+        'https://yewtu.be',
         'https://inv.odyssey346.dev'
     ];
 

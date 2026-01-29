@@ -4069,23 +4069,22 @@ const performAccountDeletion = async (credential) => {
                 }
 
                 // --- NEW: Sorting Logic ---
-                const orderedThemeNames = ['Dark', 'Light', 'Christmas'];
-                const sortedThemes = [];
-
-                // Add themes in the specified order first
-                orderedThemeNames.forEach(name => {
-                    const theme = themes.find(t => t.name === name);
-                    if (theme) {
-                        sortedThemes.push(theme);
-                        themes = themes.filter(t => t.name !== name); // Remove from original list
-                    }
-                });
-
-                // Sort remaining themes by Rainbow Color then Type
-                const colorMap = {
-                    'Crimson': 1, 'Fire': 1,
-                    'Orange': 2, 'Sunset': 2, 'Rust': 2, 'Ember': 2, 'Copper': 2,
-                    'Gold': 3,
+                                const orderedThemeNames = ['Dark', 'Light', 'Christmas', 'Potato'];
+                                const sortedThemes = [];
+                
+                                // Add themes in the specified order first
+                                orderedThemeNames.forEach(name => {
+                                    const theme = themes.find(t => t.name === name);
+                                    if (theme) {
+                                        sortedThemes.push(theme);
+                                        themes = themes.filter(t => t.name !== name); // Remove from original list
+                                    }
+                                });
+                
+                                // Sort remaining themes by Rainbow Color then Type
+                                const colorMap = {
+                                    'Crimson': 1, 'Fire': 1,
+                                    'Orange': 2, 'Sunset': 2, 'Potato': 2, 'Ember': 2, 'Copper': 2, 'Gold': 3,
                     'Green': 4, 'Forest': 4, 'Matrix': 4,
                     'Mint': 5,
                     'Ocean': 6, 'Deep Blue': 6,
