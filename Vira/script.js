@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') {
                 const query = searchInput.value.trim();
                 if (query) {
-                    window.location.hash = ''; // Clear video state
+                    window.location.hash = ''; 
                     searchVideos(query);
                 }
             }
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (item.type === 'video') {
                 resultItem.classList.add('video-item', 'relative', 'group');
-                resultItem.innerHTML = "`
+                resultItem.innerHTML = `
                     <div class="thumbnail-container">
                         <img src="${item.thumbnail}" alt="" class="w-full h-full object-cover">
                         <div class="play-overlay"><i class="fas fa-play play-icon"></i></div>
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>${item.duration}</span><span>${item.views || ''}</span>
                         </div>
                     </div>
-                `";
+                `;
                 resultItem.addEventListener('click', (e) => {
                     if (e.target.closest('.add-pl-btn') || e.target.closest('.author-link')) return;
                     window.location.hash = `video/${item.id}`;
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isHeader) resultItem.classList.add('bg-gradient-to-b', 'from-zinc-900', 'to-black');
                 else resultItem.classList.add('cursor-pointer', 'hover:border-accent-red', 'transition-all', 'group');
                 
-                resultItem.innerHTML = "`
+                resultItem.innerHTML = `
                     <div class="flex flex-col md:flex-row items-center gap-8 w-full max-w-4xl">
                         <img src="${item.thumbnail}" class="w-32 h-32 rounded-full border-4 border-brand-border bg-black shadow-2xl transition-transform group-hover:scale-105" alt="${item.title}">
                         <div class="flex-grow text-center md:text-left">
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     ${isHeader ? '<div class="w-full h-px bg-brand-border mt-12 mb-4"></div><h3 class="text-white text-xl self-start px-4">Latest Videos</h3>' : ''}
-                `";
+                `;
                 if (!isHeader) resultItem.addEventListener('click', () => window.location.hash = `channel/${item.id}`);
             }
             videoGrid.appendChild(resultItem);
@@ -301,14 +301,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (playerTitle) playerTitle.textContent = data.title;
             if (playerMetadata) {
-                playerMetadata.innerHTML = "`
+                playerMetadata.innerHTML = `
                     <span class="text-gray-400 font-medium cursor-pointer hover:underline" onclick="window.location.hash='channel/${data.channel_id}'">${data.author}</span> • 
                     <span class="text-gray-500">${data.duration}</span> • 
                     <span class="text-gray-500">${data.views}</span>
-                `";
+                `;
             }
             if (playerDescription) {
-                playerDescription.innerHTML = "`
+                playerDescription.innerHTML = `
                     <div class="mb-6 flex items-center gap-4">
                         <span class="hover:underline cursor-pointer flex items-center gap-2 text-white font-medium" onclick="window.location.hash='channel/${data.channel_id}'">
                             <i class="fas fa-check-circle text-accent-red"></i> ${data.author}
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </button>
                     </div>
                     <div class="whitespace-pre-wrap text-sm leading-relaxed">${data.description || 'No description available.'}</div>
-                `";
+                `;
                 const addBtn = document.getElementById('player-add-pl-btn');
                 if (addBtn) addBtn.onclick = () => window.addToPlaylist({
                     type: 'video', id: videoId, title: data.title, artist: data.author, artistId: data.channel_id,
