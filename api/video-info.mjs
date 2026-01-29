@@ -1,7 +1,19 @@
 // api/video-info.mjs
-// Optimized for yewtu.be as requested
+import { Innertube } from 'youtubei.js';
 
-const PRIMARY_INSTANCE = 'https://yewtu.be';
+let youtubePromise; 
+
+async function getYoutube() {
+  if (!youtubePromise) {
+    youtubePromise = (async () => {
+      return Innertube.create({ 
+        cache: null,
+        generate_session_locally: true 
+      });
+    })();
+  }
+  return youtubePromise;
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,11 +23,32 @@ export default async function handler(req, res) {
   if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
 
   try {
-    // Attempt 1: Fetch from yewtu.be
-    const response = await fetch(`${PRIMARY_INSTANCE}/api/v1/videos/${videoId}`);
+    const yt = await getYoutube();
     
-    if (response.ok) {
-        const data = await response.json();
+    // Attempt 1: Fetch from our own backend (youtubei.js)
+    // This is the "implement in Vira" approach the user wanted
+    const ytInfo = await yt.getInfo(videoId).catch(() => null);
+
+    if (ytInfo) {
+        let format = ytInfo.chooseFormat({ type: 'video+audio', quality: 'best' });
+        if (!format) format = ytInfo.chooseFormat({ type: 'video', quality: 'best' });
+        
+        return res.status(200).json({
+            title: ytInfo.basic_info.title,
+            author: ytInfo.basic_info.author,
+            description: ytInfo.primary_info?.description?.text || ytInfo.basic_info.short_description || "",
+            duration: ytInfo.basic_info.duration_text || "0:00",
+            streaming_url: format ? format.decipher(yt.session.player) : "",
+            channel_id: ytInfo.basic_info.channel_id,
+            views: ytInfo.primary_info?.view_count?.text || `${ytInfo.basic_info.view_count} views`,
+            published: ytInfo.primary_info?.published?.text || ytInfo.basic_info.publish_date
+        });
+    }
+
+    // Attempt 2: Fallback to yewtu.be API
+    const invRes = await fetch(`https://yewtu.be/api/v1/videos/${videoId}`).catch(() => null);
+    if (invRes && invRes.ok) {
+        const data = await invRes.json();
         return res.status(200).json({
             title: data.title,
             author: data.author,
@@ -25,20 +58,6 @@ export default async function handler(req, res) {
             published: data.publishedText || "",
             channel_id: data.authorId || "",
             streaming_url: data.formatStreams?.[0]?.url || ""
-        });
-    }
-
-    // Attempt 2: Fallback to oEmbed for metadata if yewtu.be API is slow/down
-    const oEmbedRes = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
-    if (oEmbedRes.ok) {
-        const oEmbed = await oEmbedRes.json();
-        return res.status(200).json({
-            title: oEmbed.title,
-            author: oEmbed.author_name,
-            description: "Detailed metadata unavailable. Pulling from yewtu.be fallback.",
-            duration: "0:00",
-            views: "Unknown",
-            fallback: true
         });
     }
 

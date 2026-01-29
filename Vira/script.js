@@ -21,10 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let itemToAdd = null;
     let currentInstanceIndex = 0;
     
-    // Use yewtu.be as the only external instance as requested
+    // We prioritize yewtu.be but keep backups because of the 403 blocks seen in logs
     const instances = [
         window.location.origin + '/api/local-instance',
-        'https://yewtu.be'
+        'https://yewtu.be',
+        'https://inv.vern.cc',
+        'https://iv.melmac.space',
+        'https://inv.odyssey346.dev'
     ];
 
     // --- Helpers ---
@@ -302,6 +305,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (playerMetadata) playerMetadata.textContent = '';
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // WAIT FOR PROXY: Ensure Bare transport is established before fetching
+        if (window.checkBare) await window.checkBare();
 
         try {
             const res = await fetch(`/api/video-info?videoId=${videoId}`);
